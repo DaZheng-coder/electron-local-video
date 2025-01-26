@@ -1,19 +1,23 @@
-import Layout, { Content, Footer, Header } from 'antd/es/layout/layout'
-import Sider from 'antd/es/layout/Sider'
+import { Flex, Splitter } from 'antd'
+import FolderList from './components/FolderList'
+import VideoList from './components/VideoList'
 
 function App(): JSX.Element {
   // const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
 
   return (
-    <Layout className="h-screen">
-      <Header>header</Header>
-      <Layout>
-        <Sider>left sidebar</Sider>
-        <Content>main content</Content>
-        <Sider>right sidebar</Sider>
-      </Layout>
-      {/* <Footer>footer</Footer> */}
-    </Layout>
+    <Splitter className="!h-screen bg-white shadow-md">
+      <Splitter.Panel defaultSize="25%" min="2%" max="70%">
+        <Flex justify="center" align="center" className="h-full">
+          <FolderList />
+        </Flex>
+      </Splitter.Panel>
+      <Splitter.Panel>
+        <Flex justify="center" align="center" className="h-full">
+          <VideoList />
+        </Flex>
+      </Splitter.Panel>
+    </Splitter>
   )
 }
 
