@@ -1,8 +1,22 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-// Custom APIs for renderer
-const api = {}
+const api = {
+  fileService: new Proxy(
+    {},
+    {
+      get:
+        (_, methodName) =>
+        async (...args: unknown[]) => {
+          try {
+            return await ipcRenderer.invoke('FileService', methodName, ...args)
+          } catch (error) {
+            console.error(error)
+          }
+        }
+    }
+  )
+}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
