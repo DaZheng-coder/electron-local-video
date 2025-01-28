@@ -1,26 +1,40 @@
-import { Button, Empty } from 'antd'
-import { FC } from 'react'
+import { Button, List } from 'antd'
+import { FC, useState } from 'react'
+import { FileItem } from 'src/main/types/file'
+import FolderItem from './components/FolderItem'
+import useRenderStore from '@renderer/store/useRenderStore'
 
 const FolderList: FC = () => {
-  const handleSelectFolder = async () => {
-    console.log('*** window.api', window.api)
+  const [folderList, setFolderList] = useState<FileItem[]>([])
+  const { selectFolder } = useRenderStore((state) => state)
+
+  const handleAddFolder = async () => {
     try {
-      const folderPath = await window.api.fileApis.openFolderDialog()
-      if (!folderPath) return
-      const folderFiles = await window.api.fileApis.getFolderFiles(folderPath)
-      console.log(folderFiles)
+      const folder = await window.api.fileApis.openFolderDialog()
+      if (!folder) return
+      setFolderList((pre) => [...pre, folder])
     } catch (error) {
       console.error('Error selecting folder:', error)
     }
   }
 
   return (
-    <div>
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}>
-        <Button type="primary" onClick={handleSelectFolder}>
-          选择文件夹
-        </Button>
-      </Empty>
+    <div className="flex flex-col flex-1 px-2">
+      <List
+        header={<div className="flex items-center bg-cyan-700 h-15" />}
+        split={false}
+        grid={{ gutter: 16, column: 1 }}
+        itemLayout="vertical"
+        dataSource={folderList}
+        renderItem={(folder: FileItem) => (
+          <List.Item>
+            <FolderItem folderItem={folder} onClick={selectFolder} />
+          </List.Item>
+        )}
+      />
+      <Button type="primary" onClick={handleAddFolder}>
+        选择文件夹
+      </Button>
     </div>
   )
 }

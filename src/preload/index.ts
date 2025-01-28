@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import fileApis, { FileApisType } from '../main/FileApis'
+import fileApis, { FileApisType } from '../main/apis/FileApis'
 
 const getInvokeFromMain = <T extends object>(apiObjects: object): T => {
   const res = {}

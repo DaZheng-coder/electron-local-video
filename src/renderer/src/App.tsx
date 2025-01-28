@@ -7,13 +7,13 @@ function App(): JSX.Element {
 
   return (
     <Splitter className="!h-screen bg-white shadow-md">
-      <Splitter.Panel defaultSize="25%" min="2%" max="70%">
-        <Flex justify="center" align="center" className="h-full">
+      <Splitter.Panel defaultSize="25%" min="25%" max="70%">
+        <Flex className="h-full">
           <FolderList />
         </Flex>
       </Splitter.Panel>
       <Splitter.Panel>
-        <Flex justify="center" align="center" className="h-full">
+        <Flex className="h-full">
           <VideoList />
         </Flex>
       </Splitter.Panel>

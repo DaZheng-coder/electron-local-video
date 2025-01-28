@@ -1,4 +1,4 @@
-import { FileApisType } from './../main/FileApis'
+import { FileApisType } from '../main/apis/FileApis'
 import { ElectronAPI } from '@electron-toolkit/preload'
 
 declare global {

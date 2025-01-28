@@ -1,17 +1,18 @@
+import { FileItem } from '../types/file'
+
 const { dialog } = require('electron')
 const fs = require('fs')
 const path = require('path')
 
-export interface FileItem {
-  name: string
-  path: string
-  isDirectory: boolean
-}
-
 const fileApis = {
-  openFolderDialog: async (): Promise<string> => {
+  openFolderDialog: async (): Promise<FileItem | ''> => {
     const res = await dialog.showOpenDialog({ properties: ['openDirectory'] })
-    return res.filePaths[0]
+    if (res.canceled) return ''
+    return {
+      name: path.basename(res.filePaths[0]),
+      path: res.filePaths[0],
+      isDirectory: true
+    }
   },
   getFolderFiles: async (folderPath: string): Promise<FileItem[]> => {
     try {
