@@ -2,7 +2,8 @@ import { app, shell, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import fileApis from './apis/FileApis'
+import fileApis from './apis/fileApis'
+import ffmpegApis from './apis/ffmpegApis'
 
 function createWindow(): void {
   // Create the browser window.
@@ -85,3 +86,4 @@ function registerHandler(apisObject: object) {
 }
 
 registerHandler(fileApis)
+registerHandler(ffmpegApis)
