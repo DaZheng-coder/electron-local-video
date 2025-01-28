@@ -1,11 +1,11 @@
-import useRenderStore from '@renderer/store/useRenderStore'
+import useFolderStore from '@renderer/store/useFolderStore'
 import { List } from 'antd'
 import { FC, useCallback, useEffect, useState } from 'react'
 import { FileItem } from 'src/main/types/file'
 import { videoExtensions } from '@renderer/constants'
 
 const VideoList: FC = () => {
-  const curFolder = useRenderStore((state) => state.curFolder)
+  const curFolder = useFolderStore((state) => state.curFolder)
   const [fileList, setFileList] = useState<FileItem[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 

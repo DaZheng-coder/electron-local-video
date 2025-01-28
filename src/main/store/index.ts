@@ -10,12 +10,12 @@ import('electron-store')
     const store = new Store({
       name: USER_DATA,
       cwd: path.join(app.getPath('userData'), 'electron')
-    })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }) as any
     const storeHandler = {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ['store-get']: (key: string) => (store as any).get(key),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ['store-set']: (key: string, value: unknown) => (store as any).set(key, value)
+      ['store-get']: (key: string) => store.get(key),
+      ['store-set']: (key: string, value: unknown) => store.set(key, value),
+      ['store-clear']: () => store.clear()
     }
     registerHandler(storeHandler)
   })

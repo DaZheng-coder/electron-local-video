@@ -26,6 +26,9 @@ const store = {
   },
   set: async (key: string, value: unknown) => {
     return await ipcRenderer.invoke('store-set', key, value)
+  },
+  clear: async () => {
+    return await ipcRenderer.invoke('store-clear')
   }
 }
 

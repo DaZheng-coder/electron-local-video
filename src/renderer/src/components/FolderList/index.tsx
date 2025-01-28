@@ -1,11 +1,17 @@
 import { Button, List } from 'antd'
-import { FC, useCallback } from 'react'
+import { FC, useCallback, useEffect } from 'react'
 import { FileItem } from 'src/main/types/file'
 import FolderItem from './components/FolderItem'
-import useRenderStore from '@renderer/store/useRenderStore'
+import useFolderStore from '@renderer/store/useFolderStore'
 
 const FolderList: FC = () => {
-  const { curFolder, setCurFolder, folderList, setFolderList } = useRenderStore((state) => state)
+  const { curFolder, setCurFolder, folderList, setFolderList } = useFolderStore((state) => state)
+
+  useEffect(() => {
+    if (!curFolder && folderList.length > 0) {
+      setCurFolder(folderList[0])
+    }
+  }, [folderList, curFolder, setCurFolder])
 
   const handleAddFolder = useCallback(async () => {
     try {
