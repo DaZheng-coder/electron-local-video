@@ -1,21 +1,21 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import fileApis, { FileApisType } from '../main/FileApis'
+
+const getInvokeFromMain = <T extends object>(apiObjects: object): T => {
+  const res = {}
+  if (Object.prototype.toString.call(apiObjects) === '[object Object]') {
+    Object.keys(apiObjects).forEach((key) => {
+      res[key] = async (...args: unknown[]) => {
+        return await ipcRenderer.invoke(key, ...args)
+      }
+    })
+  }
+  return res as T
+}
 
 const api = {
-  fileService: new Proxy(
-    {},
-    {
-      get:
-        (_, methodName) =>
-        async (...args: unknown[]) => {
-          try {
-            return await ipcRenderer.invoke('FileService', methodName, ...args)
-          } catch (error) {
-            console.error(error)
-          }
-        }
-    }
-  )
+  fileApis: getInvokeFromMain<FileApisType>(fileApis)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to

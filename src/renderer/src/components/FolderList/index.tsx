@@ -5,9 +5,9 @@ const FolderList: FC = () => {
   const handleSelectFolder = async () => {
     console.log('*** window.api', window.api)
     try {
-      const folderPath = await window.api.fileService.openFolderDialog()
+      const folderPath = await window.api.fileApis.openFolderDialog()
       if (!folderPath) return
-      const folderFiles = await window.api.fileService.getFolderFiles(folderPath)
+      const folderFiles = await window.api.fileApis.getFolderFiles(folderPath)
       console.log(folderFiles)
     } catch (error) {
       console.error('Error selecting folder:', error)

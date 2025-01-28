@@ -1,19 +1,19 @@
-import BaseMainService from '../core/BaseMainService'
 const { dialog } = require('electron')
 const fs = require('fs')
 const path = require('path')
 
-class FileService extends BaseMainService {
-  constructor() {
-    super()
-  }
+export interface FileItem {
+  name: string
+  path: string
+  isDirectory: boolean
+}
 
-  async openFolderDialog() {
+const fileApis = {
+  openFolderDialog: async (): Promise<string> => {
     const res = await dialog.showOpenDialog({ properties: ['openDirectory'] })
     return res.filePaths[0]
-  }
-
-  async getFolderFiles(folderPath) {
+  },
+  getFolderFiles: async (folderPath: string): Promise<FileItem[]> => {
     try {
       const files = await fs.promises.readdir(folderPath)
       return files.map((file) => ({
@@ -28,6 +28,6 @@ class FileService extends BaseMainService {
   }
 }
 
-export default FileService
+export type FileApisType = typeof fileApis
 
-export type FileServiceType = InstanceType<typeof FileService>
+export default fileApis
