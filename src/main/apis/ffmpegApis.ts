@@ -1,7 +1,6 @@
-const path = require('path')
-const ffmpegPath = require('ffmpeg-static')
-const ffmpeg = require('fluent-ffmpeg')
-const fs = require('fs')
+import path from 'path'
+import ffmpeg from 'fluent-ffmpeg'
+import ffmpegPath from 'ffmpeg-static'
 
 ffmpeg.setFfmpegPath(ffmpegPath)
 

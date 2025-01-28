@@ -1,25 +1,24 @@
 import { Button, List } from 'antd'
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback } from 'react'
 import { FileItem } from 'src/main/types/file'
 import FolderItem from './components/FolderItem'
 import useRenderStore from '@renderer/store/useRenderStore'
 
 const FolderList: FC = () => {
-  const [folderList, setFolderList] = useState<FileItem[]>([])
-  const { curFolder, selectFolder } = useRenderStore((state) => state)
+  const { curFolder, setCurFolder, folderList, setFolderList } = useRenderStore((state) => state)
 
   const handleAddFolder = useCallback(async () => {
     try {
       const folder = await window.api.fileApis.openFolderDialog()
       if (!folder) return
-      setFolderList((pre) => [...pre, folder])
+      setFolderList([...folderList, folder])
       if (!curFolder) {
-        selectFolder(folder)
+        setCurFolder(folder)
       }
     } catch (error) {
       console.error('Error selecting folder:', error)
     }
-  }, [])
+  }, [folderList, curFolder, setFolderList, setCurFolder])
 
   return (
     <div className="flex flex-col flex-1 px-2">
@@ -31,7 +30,7 @@ const FolderList: FC = () => {
         dataSource={folderList}
         renderItem={(folder: FileItem) => (
           <List.Item>
-            <FolderItem folderItem={folder} onClick={selectFolder} />
+            <FolderItem folderItem={folder} onClick={setCurFolder} />
           </List.Item>
         )}
       />

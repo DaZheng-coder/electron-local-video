@@ -19,7 +19,7 @@ const VideoList: FC = () => {
 
   useEffect(() => {
     getVideoFiles()
-  }, [])
+  }, [getVideoFiles])
 
   return (
     <div className="flex flex-col flex-1 p-2">
