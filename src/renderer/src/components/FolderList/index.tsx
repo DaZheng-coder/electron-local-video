@@ -26,6 +26,11 @@ const FolderList: FC = () => {
     }
   }, [folderList, curFolder, setFolderList, setCurFolder])
 
+  const handleClearFolder = useCallback(async () => {
+    setFolderList([])
+    setCurFolder(null)
+  }, [setCurFolder, setFolderList])
+
   return (
     <div className="flex flex-col flex-1 px-2">
       <List
@@ -40,9 +45,16 @@ const FolderList: FC = () => {
           </List.Item>
         )}
       />
-      <Button type="primary" onClick={handleAddFolder}>
-        选择文件夹
-      </Button>
+      <div className="flex flex-col gap-2">
+        <Button type="primary" onClick={handleAddFolder}>
+          添加文件夹
+        </Button>
+        {!!folderList.length && (
+          <Button type="primary" danger onClick={handleClearFolder}>
+            清除
+          </Button>
+        )}
+      </div>
     </div>
   )
 }

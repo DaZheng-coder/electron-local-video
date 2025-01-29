@@ -5,7 +5,7 @@ import { create } from 'zustand'
 export interface RenderStore {
   init: () => void
   curFolder: FileItem | null
-  setCurFolder: (folder: FileItem) => void
+  setCurFolder: (folder: FileItem | null) => void
   folderList: FileItem[]
   setFolderList: (newFolderList: FileItem[]) => void
 }
@@ -20,13 +20,13 @@ const useFolderStore = create<RenderStore>((set) => ({
   },
 
   curFolder: null,
-  setCurFolder: (folder: FileItem) => {
+  setCurFolder: (folder) => {
     set({ curFolder: folder })
     window.store.set(CUR_FOLDER_KEY, folder)
   },
 
   folderList: [],
-  setFolderList: async (newFolderList: FileItem[] = []) => {
+  setFolderList: async (newFolderList = []) => {
     set({ folderList: newFolderList })
     window.store.set(FOLDER_LIST_KEY, newFolderList)
   }

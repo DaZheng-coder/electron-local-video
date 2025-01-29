@@ -10,7 +10,10 @@ const VideoList: FC = () => {
   const [loading, setLoading] = useState<boolean>(false)
 
   const getVideoFiles = useCallback(async () => {
-    if (!curFolder) return
+    if (!curFolder) {
+      setFileList([])
+      return
+    }
     // setLoading(true)
     const files = await window.api.fileApis.getFolderFiles(curFolder.path)
     setFileList(files)
