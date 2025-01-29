@@ -17,7 +17,9 @@ function createWindow(): void {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      // *** todo 是否需要开启 webSecurity nodeIntegration
+      webSecurity: false
     }
   })
 
