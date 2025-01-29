@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, protocol } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -20,6 +20,8 @@ function createWindow(): void {
       sandbox: false
     }
   })
+
+  global.mainWindow = mainWindow
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()

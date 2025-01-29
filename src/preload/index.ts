@@ -22,13 +22,13 @@ const api = {
 
 const store = {
   get: async (key: string) => {
-    return await ipcRenderer.invoke('store-get', key)
+    return await ipcRenderer.invoke('mainStore.get', key)
   },
   set: async (key: string, value: unknown) => {
-    return await ipcRenderer.invoke('store-set', key, value)
+    return await ipcRenderer.invoke('mainStore.set', key, value)
   },
   clear: async () => {
-    return await ipcRenderer.invoke('store-clear')
+    return await ipcRenderer.invoke('mainStore.clear')
   }
 }
 

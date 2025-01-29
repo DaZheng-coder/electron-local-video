@@ -10,7 +10,7 @@ export interface RenderStore {
   setFolderList: (newFolderList: FileItem[]) => void
 }
 
-const useFolderStore = create<RenderStore>((set, get) => ({
+const useFolderStore = create<RenderStore>((set) => ({
   init: async () => {
     const folderList = await window.store.get(FOLDER_LIST_KEY)
     if (folderList) set({ folderList })

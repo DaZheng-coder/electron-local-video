@@ -2,7 +2,7 @@ import useFolderStore from '@renderer/store/useFolderStore'
 import { List } from 'antd'
 import { FC, useCallback, useEffect, useState } from 'react'
 import { FileItem } from 'src/main/types/file'
-import { videoExtensions } from '@renderer/constants'
+import VideoItem from './components/VideoItem'
 
 const VideoList: FC = () => {
   const curFolder = useFolderStore((state) => state.curFolder)
@@ -11,10 +11,10 @@ const VideoList: FC = () => {
 
   const getVideoFiles = useCallback(async () => {
     if (!curFolder) return
-    setLoading(true)
-    const files = await window.api.fileApis.getFolderFiles(curFolder.path, videoExtensions)
+    // setLoading(true)
+    const files = await window.api.fileApis.getFolderFiles(curFolder.path)
     setFileList(files)
-    setLoading(false)
+    // setLoading(false)
   }, [curFolder])
 
   useEffect(() => {
@@ -26,10 +26,16 @@ const VideoList: FC = () => {
       <List
         split={false}
         loading={loading}
-        grid={{ gutter: 16, column: 4 }}
+        grid={{ gutter: 16, column: 3 }}
         itemLayout="horizontal"
         dataSource={fileList}
-        renderItem={(folder: FileItem) => <List.Item>1234214</List.Item>}
+        renderItem={(fileItem: FileItem) => {
+          return (
+            <List.Item>
+              <VideoItem fileItem={fileItem} />
+            </List.Item>
+          )
+        }}
       />
     </div>
   )
