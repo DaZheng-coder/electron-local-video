@@ -1,5 +1,7 @@
+import ClipLayout from './containers/ClipLayout'
+
 function App(): JSX.Element {
-  return <div>1</div>
+  return <ClipLayout />
 }
 
 export default App
