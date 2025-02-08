@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import path, { join } from 'path'
+import { electronApp, optimizer } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
 function createWindow(): void {
@@ -12,10 +12,8 @@ function createWindow(): void {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
-      // *** todo 是否需要开启 webSecurity nodeIntegration
-      webSecurity: false
+      preload: join(__dirname, '../preload/clip.js'),
+      sandbox: false
     }
   })
 
@@ -30,12 +28,10 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+  if (!app.isPackaged && process.env['ELECTRON_RENDERER_URL']) {
+    mainWindow.loadURL(`${process.env['ELECTRON_RENDERER_URL']}/entry/clip.html`)
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/entry/clip/index.html'))
+    mainWindow.loadFile(path.join(__dirname, '../renderer/entry/clip.html'))
   }
 }
 
