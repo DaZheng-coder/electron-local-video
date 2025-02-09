@@ -4,8 +4,10 @@ import BaseWindow from '../BaseWindow'
 
 function CreateClipWindow() {
   const size = screen.getPrimaryDisplay().workAreaSize
-  const screenWidth = size.width
-  const screenHeight = size.height
+  // const screenWidth = size.width
+  // const screenHeight = size.height
+  const screenWidth = 1200
+  const screenHeight = 800
   const options: BaseWindowOptions = {
     name: 'clip',
     title: 'clip',

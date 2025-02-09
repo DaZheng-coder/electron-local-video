@@ -4,7 +4,7 @@ import ResourcePool from './ResourcePool'
 
 const ClipLayout: FC = () => {
   return (
-    <Splitter layout="vertical" className="w-[100vw] h-[100vh] bg-white">
+    <Splitter layout="vertical" style={{ height: '100vh' }} className="h-screen bg-white">
       <Splitter.Panel defaultSize="60%">
         <Splitter layout="horizontal">
           <Splitter.Panel defaultSize="40%">
