@@ -7,6 +7,10 @@ function setup() {
     global.windowCenter = new WindowCenter()
   }
   global.windowCenter.windows.clip.open()
+  global.env = {
+    mode: import.meta.env.MODE // development, production
+  }
+  console.log('mode:', global.env.mode)
 }
 
 app.whenReady().then(() => {

@@ -21,7 +21,11 @@ export default defineConfig({
   renderer: {
     resolve: {
       alias: {
-        '@renderer': resolve('src/renderer')
+        '@renderer': resolve('src/renderer'),
+        '@core': resolve('src/core'),
+        '@main': resolve('src/main'),
+        '@preload': resolve('src/preload'),
+        '@typings': resolve('src/typings')
       }
     },
     plugins: [react(), tailwindcss()],
