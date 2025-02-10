@@ -1,17 +1,6 @@
 import { app, BrowserWindow } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
-import WindowCenter from './windowCenter'
-
-function setup() {
-  if (!global.windowCenter) {
-    global.windowCenter = new WindowCenter()
-  }
-  global.windowCenter.windows.clip.open()
-  global.env = {
-    mode: import.meta.env.MODE // development, production
-  }
-  console.log('mode:', global.env.mode)
-}
+import setup from './setup'
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')

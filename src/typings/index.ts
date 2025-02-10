@@ -43,3 +43,5 @@ export interface IBaseMediaData {
  * 视频素材数据
  */
 export interface IVideoData extends IBaseMediaData {}
+
+export type TMediaData = IVideoData

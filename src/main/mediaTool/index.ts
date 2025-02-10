@@ -17,18 +17,18 @@ class MediaTool {
   static localStaticPath = ''
   static localResourcePath = ''
 
-  static parsePath(filepath: string) {
-    return global.env.mode === 'development'
-      ? path.resolve(filepath.replace('/@fs/', ''))
-      : path.join(__dirname, '../../../dist/render', filepath)
-  }
-
   static config(toolConfig: ToolConfig) {
     ff.setFfmpegPath(this.parsePath(ffmpegPath))
     ff.setFfprobePath(this.parsePath(ffprobePath))
     // this.localStaticPath = toolConfig.localStaticPath
     // ensureDir(this.localStaticPath)
     // this.localResourcePath = toolConfig.localResourcePath ||
+  }
+
+  static parsePath(filepath: string) {
+    return global.env.mode === 'development'
+      ? path.resolve(filepath.replace('/@fs/', ''))
+      : path.join(__dirname, '../../../dist/render', filepath)
   }
 }
 

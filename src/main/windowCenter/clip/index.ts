@@ -1,6 +1,7 @@
 import { screen } from 'electron'
 import { BaseWindowOptions } from '../../types'
 import BaseWindow from '../BaseWindow'
+import path from 'path'
 
 function CreateClipWindow() {
   const size = screen.getPrimaryDisplay().workAreaSize
@@ -12,8 +13,11 @@ function CreateClipWindow() {
     name: 'clip',
     title: 'clip',
     width: screenWidth,
-    height: screenHeight
+    height: screenHeight,
     // resizable: false,
+    webPreferences: {
+      preload: path.join(__dirname, '../preload/clip.js')
+    }
   }
   const clipWindow = new BaseWindow(options)
   return clipWindow

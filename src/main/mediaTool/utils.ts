@@ -23,5 +23,6 @@ export const mkdirSync = (dirname: string) => {
       fs.mkdirSync(dirname)
       return true
     }
+    return false
   }
 }

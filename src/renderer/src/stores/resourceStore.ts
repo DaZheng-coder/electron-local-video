@@ -1,31 +1,28 @@
 import { create } from 'zustand'
-import { IVideoData } from '@typings/index'
+import { EMediaType, IVideoData } from '@typings/index'
+import { EStoreNamespaces } from '@typings/store'
 
 export interface IResourceStore {
   resourceMap: Map<string, IVideoData>
-  addResources: (resources: IVideoData[]) => void
-  deleteResources: (ids: string[]) => void
+  init: () => void
+  addResourceByPath: (filePath: string, type: EMediaType) => void
   clearResources: () => void
 }
 
-const resourceStore = create<IResourceStore>((set, get) => ({
+const resourceStore = create<IResourceStore>((set) => ({
   resourceMap: new Map(),
-  addResources: (resources: IVideoData[]) => {
-    const newResources = new Map(get().resourceMap)
-    resources.forEach((resource) => {
-      newResources.set(resource.id, resource)
-    })
-    set({ resourceMap: newResources })
+  init: async () => {
+    const state = await window.api.store.storeGetAll(EStoreNamespaces.ResourceStore)
+    if (state) {
+      set(state)
+    }
   },
-  deleteResources: (ids: string[]) => {
-    const newResources = new Map(get().resourceMap)
-    ids.forEach((id) => {
-      newResources.delete(id)
-    })
-    set({ resourceMap: newResources })
+  addResourceByPath: (filePath: string, type: EMediaType) => {
+    window.api.resourceStore.addResourceByPath(filePath, type)
   },
   clearResources: () => {
     set({ resourceMap: new Map() })
+    window.api.store.storeSet(EStoreNamespaces.ResourceStore, 'resourceMap', new Map())
   }
 }))
 
