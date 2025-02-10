@@ -37,8 +37,8 @@ const ResourcePool = () => {
         onDragLeave={onDragLeave}
         onDrop={onDrop}
       >
-        <Card title="素材库" className="h-full !bg-transparent">
-          <MediaCard />
+        <Card title="素材库" className="min-h-[100%] !bg-transparent">
+          <MediaCard data={Object.values(resourcesMap)} />
         </Card>
       </div>
     </Flex>
