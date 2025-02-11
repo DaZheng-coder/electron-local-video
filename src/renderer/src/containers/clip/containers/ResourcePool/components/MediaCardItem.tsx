@@ -1,11 +1,6 @@
 import { Card, Image } from 'antd'
 import { FC } from 'react'
-import {
-  DeleteOutlined,
-  EditOutlined,
-  EllipsisOutlined,
-  PlusCircleOutlined
-} from '@ant-design/icons'
+import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { DEFAULT_IMAGE } from '@renderer/src/constants'
 
 const MediaCardItem: FC<{
@@ -17,7 +12,7 @@ const MediaCardItem: FC<{
       cover={<Image src="" fallback={DEFAULT_IMAGE} preview={false} />}
       actions={[<PlusCircleOutlined key="add" />, <DeleteOutlined key="delete" />]}
     >
-      <div style={{ margin: '-12px' }}>{title}</div>
+      <div style={{ margin: '-12px', wordBreak: 'break-all' }}>{title}</div>
     </Card>
   )
 }
