@@ -47,7 +47,10 @@ const ResourcePool = () => {
             </Button>
           }
           className="min-h-[100%] !bg-transparent"
-          classNames={{ header: 'sticky top-0 z-9 !bg-white' }}
+          classNames={{
+            header: 'sticky top-0 z-9 !bg-white !py-1 !px-2 !min-h-auto',
+            body: '!py-2 !px-2'
+          }}
         >
           <MediaCard data={Object.values(resourcesMap)} />
         </Card>
