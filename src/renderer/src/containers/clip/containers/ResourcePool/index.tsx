@@ -25,9 +25,9 @@ const ResourcePool = () => {
     }
   })
 
-  useEffect(() => {
-    console.log('*** useEffect resourcesMap', resourcesMap)
-  }, [resourcesMap])
+  // useEffect(() => {
+  //   console.log('*** useEffect resourcesMap', resourcesMap)
+  // }, [resourcesMap])
 
   return (
     <Flex className="h-full">
