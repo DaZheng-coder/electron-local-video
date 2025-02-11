@@ -14,11 +14,11 @@ export default class BaseStore {
     ipcMain.handle(`${storeName}-get`, (_, key) => {
       return this.get(key)
     })
-    ipcMain.handle(`${storeName}-set`, (e, { key, value }) => {
+    ipcMain.on(`${storeName}-set`, (e, { key, value }) => {
       const sender = BrowserWindow.fromWebContents(e.sender)
       this.set(key, value, sender)
     })
-    ipcMain.handle(`${storeName}-delete`, (e, key) => {
+    ipcMain.on(`${storeName}-delete`, (e, key) => {
       const sender = BrowserWindow.fromWebContents(e.sender)
       this.delete(key, sender)
     })

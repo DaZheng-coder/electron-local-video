@@ -6,8 +6,9 @@ const api = {
   store: {
     storeGetAll: (storeName: string) => ipcRenderer.invoke(`${storeName}-get-all`),
     storeGet: (storeName: string, key: string) => ipcRenderer.invoke(`${storeName}-get`, key),
-    storeSet: (storeName: string, key: string, value: unknown) =>
-      ipcRenderer.send(`${storeName}-set`, { key, value }),
+    storeSet: (storeName: string, key: string, value: unknown) => {
+      ipcRenderer.send(`${storeName}-set`, { key, value })
+    },
     storeDelete: (storeName: string, key: string) => ipcRenderer.send(`${storeName}-delete`, key),
     onStoreDelete: (
       callback: (event: IpcRendererEvent, data: { storeName: string; key: string }) => void

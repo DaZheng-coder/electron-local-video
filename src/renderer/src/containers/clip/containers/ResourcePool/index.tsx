@@ -1,9 +1,10 @@
-import { Card, Flex } from 'antd'
+import { Button, Card, Flex } from 'antd'
 import MediaCard from './components/MediaCard'
 import { useEffect, useRef } from 'react'
 import useDropper from '@renderer/src/hooks/useDropper'
 import resourceStore from '@renderer/src/stores/resourceStore'
 import { EMediaType } from '@typings/index'
+import { DeleteOutlined } from '@ant-design/icons'
 
 const ResourcePool = () => {
   const ref = useRef<HTMLDivElement | null>(null)
@@ -37,7 +38,17 @@ const ResourcePool = () => {
         onDragLeave={onDragLeave}
         onDrop={onDrop}
       >
-        <Card title="素材库" className="min-h-[100%] !bg-transparent">
+        <Card
+          title="素材库"
+          bordered={false}
+          extra={
+            <Button danger type="text" title="清空" onClick={clearResources}>
+              <DeleteOutlined />
+            </Button>
+          }
+          className="min-h-[100%] !bg-transparent"
+          classNames={{ header: 'sticky top-0 z-9 !bg-white' }}
+        >
           <MediaCard data={Object.values(resourcesMap)} />
         </Card>
       </div>
