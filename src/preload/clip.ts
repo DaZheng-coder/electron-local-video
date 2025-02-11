@@ -4,12 +4,17 @@ import { EResourceStoreChannels } from '../typings/store'
 
 const api = {
   store: {
+    // 1. 以 storeName 组装ipc channel，向 window.api 注入某个 store 的增删改查更新方法
+    // 单独事件，每个 store 都会注册一个
     storeGetAll: (storeName: string) => ipcRenderer.invoke(`${storeName}-get-all`),
     storeGet: (storeName: string, key: string) => ipcRenderer.invoke(`${storeName}-get`, key),
     storeSet: (storeName: string, key: string, value: unknown) => {
       ipcRenderer.send(`${storeName}-set`, { key, value })
     },
     storeDelete: (storeName: string, key: string) => ipcRenderer.send(`${storeName}-delete`, key),
+
+    // 2. 监听 store 更新事件，当 store 更新时，向渲染进程广播 store 更新事件
+    // 公共事件，全局只会注册一个
     onStoreDelete: (
       callback: (event: IpcRendererEvent, data: { storeName: string; key: string }) => void
     ) => {
@@ -30,9 +35,6 @@ const api = {
 
 export type API = typeof api
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
