@@ -7,7 +7,7 @@ interface IClipStore {
   isDragging: boolean
   setIsDragging: (isDragging: boolean) => void
   tracks: ITrackData[]
-  pushNewTrack: () => void
+  addNewTrack: (index: number, cellIds?: string[]) => void
   cells: ICellData[]
 }
 
@@ -22,10 +22,11 @@ const clipStore = create<IClipStore>((set, get) => ({
   },
   // *** test
   tracks: [{ trackId: '0', cellIds: ['cell0'] }],
-  pushNewTrack: (cellIds: string[] = []) => {
-    const tracks = get().tracks
+  addNewTrack: (index: number, cellIds: string[] = []) => {
+    const tracks = get().tracks.slice()
     const trackId = tracks.length.toString()
-    set({ tracks: [...tracks, { trackId, cellIds }] })
+    tracks.splice(index, 0, { trackId, cellIds })
+    set({ tracks })
   },
   cells: [{ cellId: 'cell0' }]
 }))

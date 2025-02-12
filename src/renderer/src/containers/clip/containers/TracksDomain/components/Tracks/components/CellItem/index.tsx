@@ -9,7 +9,9 @@ interface ICellItemProps {
 const CellItem: FC<ICellItemProps> = ({ cellId }) => {
   const [{ isDragging }, dragger] = useDrag(() => ({
     type: EDragType.CELL_ITEM,
-    item: {},
+    item: {
+      cellId
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging()
     })
