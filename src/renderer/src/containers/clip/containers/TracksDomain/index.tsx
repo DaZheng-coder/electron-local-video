@@ -1,19 +1,13 @@
-import { useEffect, useState } from 'react'
+import clipStore from '@renderer/src/stores/clipStore'
+import ClipTool from './components/ClipTool'
 import Timeline from './components/Timeline'
 
 const TracksDomain = () => {
-  const [currentTime, setCurrentTime] = useState(0)
-
-  // useEffect(() => {
-  //   // 模拟播放进度
-  //   const interval = setInterval(() => {
-  //     setCurrentTime((prev) => (prev < 3600 ? prev + 1 : 0))
-  //   }, 1000)
-  //   return () => clearInterval(interval)
-  // }, [])
+  const timelineScale = clipStore((state) => state.timelineScale)
   return (
     <div>
-      <Timeline />
+      <ClipTool />
+      <Timeline scale={timelineScale} />
     </div>
   )
 }

@@ -10,7 +10,7 @@ import {
 interface TimelineProps {
   start?: number
   step?: number
-  scale?: number
+  scale?: number // 缩放比例 0 ～ 100
   focusPosition?: {
     start: number
     end: number
