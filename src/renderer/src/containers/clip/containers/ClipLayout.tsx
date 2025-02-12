@@ -4,6 +4,7 @@ import ResourcePool from './ResourcePool'
 import TracksDomain from './TracksDomain'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import CustomDragLayer from './CustomDragLayer'
 
 const ClipLayout: FC = () => {
   return (
@@ -21,6 +22,7 @@ const ClipLayout: FC = () => {
           <TracksDomain />
         </Splitter.Panel>
       </Splitter>
+      <CustomDragLayer />
     </DndProvider>
   )
 }

@@ -1,5 +1,6 @@
 import { ICellData, ITrackData } from '@typings/track'
 import { create } from 'zustand'
+import { v4 as uuid } from 'uuid'
 
 interface IClipStore {
   timelineScale: number
@@ -11,6 +12,14 @@ interface IClipStore {
   cells: ICellData[]
 }
 
+// *** test
+const initCells: ICellData[] = [{ cellId: uuid(), left: 0, width: 100 }]
+const initTracks: ITrackData[] = [
+  { trackId: uuid(), trackLevel: 0, cellIds: initCells.map((cell) => cell.cellId) },
+  { trackId: uuid(), trackLevel: 1, cellIds: initCells.map((cell) => cell.cellId) },
+  { trackId: uuid(), trackLevel: 2, cellIds: initCells.map((cell) => cell.cellId) }
+]
+
 const clipStore = create<IClipStore>((set, get) => ({
   timelineScale: 0,
   setTimelineScale: (scale: number) => {
@@ -20,15 +29,14 @@ const clipStore = create<IClipStore>((set, get) => ({
   setIsDragging: (isDragging: boolean) => {
     set({ isDragging })
   },
-  tracks: [{ trackId: '00', cellIds: ['cell0'] }],
+  tracks: initTracks,
   addNewTrack: (index: number, cellIds: string[] = []) => {
     const tracks = get().tracks.slice()
-    const trackId = '0' + tracks.length.toString()
+    const trackId = uuid()
     tracks.splice(index, 0, { trackId, cellIds })
-    console.log('*** tracks', tracks)
     set({ tracks })
   },
-  cells: [{ cellId: 'cell0' }]
+  cells: initCells
 }))
 
 export default clipStore

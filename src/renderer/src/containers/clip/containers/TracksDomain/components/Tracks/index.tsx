@@ -6,7 +6,7 @@ import {
   getIsInEmptyArea
 } from '@renderer/src/utils/trackUtils'
 import clipStore from '@renderer/src/stores/clipStore'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import TrackDivider from './components/TrackDivider'
 
 const Tracks = () => {
@@ -14,6 +14,8 @@ const Tracks = () => {
   const [isOver, setIsOver] = useState<boolean>(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const tracksWrapRef = useRef<HTMLDivElement>(null)
+
+  const sortedTracks = useMemo(() => tracks.sort((a, b) => b.trackLevel - a.trackLevel), [tracks])
 
   const addNewTrack = clipStore((state) => state.addNewTrack)
 
@@ -35,13 +37,15 @@ const Tracks = () => {
       }
     },
     drop: (item, monitor) => {
-      console.log('*** item', item)
       // 拖拽元素放下时，判断光标是否在当前元素内且不在任何子元素内，这种情况要新增轨道
       const isOverCurrent = monitor.isOver({ shallow: true })
       if (isOverCurrent) {
         const clientOffset = monitor.getClientOffset()
         const insertIndex = getInsertTrackIndexByOffset(clientOffset, tracksWrapRef)
-        addNewTrack(insertIndex, [item.cellId])
+        console.log('*** insertIndex', insertIndex)
+        if (insertIndex !== -1) {
+          addNewTrack(insertIndex, [item.cellId])
+        }
       }
     }
   })
@@ -72,11 +76,15 @@ const Tracks = () => {
       {/* 占位元素，用于占据上下空白空间，使轨道保持居中 */}
       <div className="flex-1" />
       <div ref={tracksWrapRef} className="relative">
-        {tracks.map((track, index) => {
+        {sortedTracks.map((track, index) => {
           return (
             <Fragment key={track.trackId}>
-              <TrackDivider key={index} index={index} />
-              <TrackItem key={track.trackId} trackId={track.trackId} index={index} />
+              <TrackDivider key={index} trackLevel={track.trackLevel} />
+              <TrackItem
+                key={track.trackId}
+                trackId={track.trackId}
+                trackLevel={track.trackLevel}
+              />
             </Fragment>
           )
         })}

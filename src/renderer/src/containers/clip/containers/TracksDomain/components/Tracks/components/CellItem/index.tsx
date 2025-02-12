@@ -1,13 +1,19 @@
+import clipStore from '@renderer/src/stores/clipStore'
 import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/trackUtils'
-import { FC } from 'react'
-import { useDrag } from 'react-dnd'
+import { FC, useEffect, useRef } from 'react'
+import { useDrag, useDrop } from 'react-dnd'
+import { getEmptyImage } from 'react-dnd-html5-backend'
+import CellItemUI from './CellItemUI'
 
 interface ICellItemProps {
   cellId: string
 }
 
 const CellItem: FC<ICellItemProps> = ({ cellId }) => {
-  const [{ isDragging }, dragger] = useDrag(() => ({
+  const cellData = clipStore((state) => state.cells.find((cell) => cell.cellId === cellId))
+  const cellRef = useRef<HTMLDivElement>(null)
+
+  const [{ isDragging }, dragger, preview] = useDrag(() => ({
     type: EDragType.CELL_ITEM,
     item: {
       cellId
@@ -17,13 +23,15 @@ const CellItem: FC<ICellItemProps> = ({ cellId }) => {
     })
   }))
 
+  useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true })
+  }, [preview])
+
+  dragger(cellRef)
+
   return (
-    <div
-      ref={dragger}
-      style={{ height: TRACK_HEIGHT, transform: 'translateZ(0)' }}
-      className={`absolute bg-gray-500 rounded-[6px] ${isDragging ? 'opacity-50' : ''}`}
-    >
-      CellItem123412341234
+    <div ref={cellRef} className={`${isDragging ? 'opacity-50' : ''}`}>
+      <CellItemUI title={cellData?.cellId + ''} />
     </div>
   )
 }

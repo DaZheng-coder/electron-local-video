@@ -5,14 +5,20 @@ import clipStore from '@renderer/src/stores/clipStore'
 
 interface ITrackItemProps {
   trackId: string
-  index: number
+  trackLevel: number
 }
 
-const TrackItem: FC<ITrackItemProps> = ({ trackId, index }) => {
+const TrackItem: FC<ITrackItemProps> = ({ trackId, trackLevel }) => {
   const trackData = clipStore((state) => state.tracks.find((track) => track.trackId === trackId))
 
   return (
-    <div style={{ height: TRACK_HEIGHT }} className="w-full bg-blue-500 rounded-[6px]">
+    <div
+      data-type={EDragType.TRACK_ITEM}
+      data-level={trackLevel}
+      style={{ height: TRACK_HEIGHT }}
+      className="w-full bg-blue-500 rounded-[6px]"
+    >
+      {/* {trackLevel} */}
       {trackData?.cellIds.map((cellId) => <CellItem key={cellId} cellId={cellId} />)}
     </div>
   )

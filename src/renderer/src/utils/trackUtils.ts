@@ -55,53 +55,39 @@ export const getInsertTrackIndexByOffset = (
   parentRef: React.RefObject<HTMLDivElement>
 ) => {
   // 0. 参数容错处理
-  if (!parentRef.current || !clientOffset) return 1
+  if (!parentRef.current || !clientOffset) return -1
 
-  // const parentRect = parentRef.current.getBoundingClientRect()
-  // // 检查是否在父元素内
-  // const inParent =
-  //   clientOffset.x >= parentRect.left &&
-  //   clientOffset.x <= parentRect.right &&
-  //   clientOffset.y >= parentRect.top &&
-  //   clientOffset.y <= parentRect.bottom
-  // if (!inParent) return false
-
-  // 1. 获取所有轨道元素，主轨道的索引为0
-  const dividers = Array.from(parentRef.current.children)
+  // 1. 获取所有轨道元素，主轨道的等级为0
+  const trackItems = Array.from(parentRef.current.children)
     .filter((child) => {
-      return child.getAttribute('data-type') === EDragType.TRACK_DIVIDER
+      return child.getAttribute('data-type') === EDragType.TRACK_ITEM
     })
     .sort(
       (a, b) =>
-        parseInt(a.getAttribute('data-idx') || '0') - parseInt(b.getAttribute('data-idx') || '0')
+        parseInt(a.getAttribute('data-level') || '0') -
+        parseInt(b.getAttribute('data-level') || '0')
     )
-  if (dividers.length === 1) return 1 // 只有分割线，说明只有一个主轨，插入到主轨道后面
 
-  // 2. 获取每个分割线的位置信息
-  const dividerRects: DOMRect[] = []
-  for (let i = 0; i < dividers.length; i++) {
-    const child = dividers[i]
+  // 2. 获取每个轨道的位置信息
+  const trackRects: DOMRect[] = []
+  for (let i = 0; i < trackItems.length; i++) {
+    const child = trackItems[i]
     const childRect = child.getBoundingClientRect()
-    dividerRects.push(childRect)
+    trackRects.push(childRect)
   }
 
   // 3. 计算插入索引
-  let insertIndex = 1
-  // 特判当位于第一条分割线前面（包括自身），则插入到主轨后面（需求要求）
-  if (clientOffset.y > dividerRects[0].top) return insertIndex
+  // 特判是否位于主轨前端的区域，如果是则插入到主轨后面（需求要求）
+  if (clientOffset.y > trackRects[0].bottom) return 1
+  // 特判是否位于最后一个轨道的后面, 如果是则插入到最后一个轨道的后面
+  if (clientOffset.y < trackRects[trackRects.length - 1].top) return trackRects.length
 
-  for (let i = 1; i < dividerRects.length - 1; i++) {
-    // 鼠标位置在当前分割线范围内，则插入到当前分割线后面
-    if (clientOffset.y >= dividerRects[i].top && clientOffset.y <= dividerRects[i].bottom) {
-      insertIndex = i + 1
-      break
+  for (let i = 0; i < trackRects.length - 1; i++) {
+    // 判断要不要插入到当前轨道的后面
+    if (clientOffset.y < trackRects[i].top && clientOffset.y > trackRects[i + 1].bottom) {
+      return i + 1
     }
   }
 
-  // 特判位于最后一个轨道后面（包括自身），则插入到最后一个轨道后面
-  if (clientOffset.y < dividerRects[dividerRects.length - 1].bottom) {
-    insertIndex = dividerRects.length
-  }
-
-  return insertIndex
+  return -1
 }
