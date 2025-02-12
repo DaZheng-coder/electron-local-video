@@ -12,12 +12,7 @@ const TrackItem: FC<ITrackItemProps> = ({ trackId, index }) => {
   const trackData = clipStore((state) => state.tracks.find((track) => track.trackId === trackId))
 
   return (
-    <div
-      data-type={EDragType.TRACK_ITEM}
-      data-idx={index}
-      style={{ height: TRACK_HEIGHT }}
-      className="w-full bg-blue-500 relative rounded-[6px] flex-shrink-0"
-    >
+    <div style={{ height: TRACK_HEIGHT }} className="w-full bg-blue-500 rounded-[6px]">
       {trackData?.cellIds.map((cellId) => <CellItem key={cellId} cellId={cellId} />)}
     </div>
   )

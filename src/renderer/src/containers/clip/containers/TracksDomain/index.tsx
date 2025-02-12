@@ -6,8 +6,8 @@ import Tracks from './components/Tracks'
 const TracksDomain = () => {
   const timelineScale = clipStore((state) => state.timelineScale)
   return (
-    <div className="flex flex-col flex-1">
-      <div className="bg-white">
+    <div className="flex-1 flex flex-col">
+      <div className="bg-white flex-shrink-0">
         <ClipTool />
         <Timeline scale={timelineScale} />
       </div>

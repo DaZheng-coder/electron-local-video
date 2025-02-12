@@ -20,12 +20,12 @@ const clipStore = create<IClipStore>((set, get) => ({
   setIsDragging: (isDragging: boolean) => {
     set({ isDragging })
   },
-  // *** test
-  tracks: [{ trackId: '0', cellIds: ['cell0'] }],
+  tracks: [{ trackId: '00', cellIds: ['cell0'] }],
   addNewTrack: (index: number, cellIds: string[] = []) => {
     const tracks = get().tracks.slice()
-    const trackId = tracks.length.toString()
+    const trackId = '0' + tracks.length.toString()
     tracks.splice(index, 0, { trackId, cellIds })
+    console.log('*** tracks', tracks)
     set({ tracks })
   },
   cells: [{ cellId: 'cell0' }]

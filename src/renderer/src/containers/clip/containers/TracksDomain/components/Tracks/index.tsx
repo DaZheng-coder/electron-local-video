@@ -6,13 +6,14 @@ import {
   getIsInEmptyArea
 } from '@renderer/src/utils/trackUtils'
 import clipStore from '@renderer/src/stores/clipStore'
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import TrackDivider from './components/TrackDivider'
 
 const Tracks = () => {
   const tracks = clipStore((state) => state.tracks)
   const [isOver, setIsOver] = useState<boolean>(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const tracksWrapRef = useRef<HTMLDivElement>(null)
 
   const addNewTrack = clipStore((state) => state.addNewTrack)
 
@@ -27,7 +28,7 @@ const Tracks = () => {
       if (isOverCurrent) {
         const clientOffset = monitor.getClientOffset()
         requestAnimationFrame(() => {
-          const insertIndex = getInsertTrackIndexByOffset(clientOffset, containerRef)
+          const insertIndex = getInsertTrackIndexByOffset(clientOffset, tracksWrapRef)
           // setIsOver(isInEmpty)
           console.log('*** insertIndex', insertIndex)
         })
@@ -39,8 +40,8 @@ const Tracks = () => {
       const isOverCurrent = monitor.isOver({ shallow: true })
       if (isOverCurrent) {
         const clientOffset = monitor.getClientOffset()
-        const insertIndex = getInsertTrackIndexByOffset(clientOffset, containerRef)
-        // addNewTrack([item.cellId], insertIndex)
+        const insertIndex = getInsertTrackIndexByOffset(clientOffset, tracksWrapRef)
+        addNewTrack(insertIndex, [item.cellId])
       }
     }
   })
@@ -66,20 +67,21 @@ const Tracks = () => {
   }, [isOverCurrent])
 
   return (
-    // 轨道定位容器
-    <div className={`flex flex-1 overflow-scroll flex-col justify-center relative }`}>
-      {/* 轨道容器 */}
-      <div ref={containerRef} className="flex flex-col overflow-scroll py-10">
+    // 轨道容器
+    <div ref={containerRef} className="no-scrollbar py-15 flex-1 flex flex-col overflow-scroll">
+      {/* 占位元素，用于占据上下空白空间，使轨道保持居中 */}
+      <div className="flex-1" />
+      <div ref={tracksWrapRef} className="relative">
         {tracks.map((track, index) => {
           return (
-            <>
+            <Fragment key={track.trackId}>
+              <TrackDivider key={index} index={index} />
               <TrackItem key={track.trackId} trackId={track.trackId} index={index} />
-              {/* 分割线，index为插入Track时的索引 */}
-              <TrackDivider key={index + 1} index={index + 1} />
-            </>
+            </Fragment>
           )
         })}
       </div>
+      <div className="flex-1" />
     </div>
   )
 }

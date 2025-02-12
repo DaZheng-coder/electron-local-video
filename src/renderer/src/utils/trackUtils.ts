@@ -4,7 +4,8 @@ export const TRACK_HEIGHT = 60
 
 export enum EDragType {
   CELL_ITEM = 'CELL_ITEM',
-  TRACK_ITEM = 'TRACK_ITEM'
+  TRACK_ITEM = 'TRACK_ITEM',
+  TRACK_DIVIDER = 'TRACK_DIVIDER'
 }
 
 export const getIsInEmptyArea = (
@@ -66,43 +67,41 @@ export const getInsertTrackIndexByOffset = (
   // if (!inParent) return false
 
   // 1. 获取所有轨道元素，主轨道的索引为0
-  const trackItems = Array.from(parentRef.current.children)
+  const dividers = Array.from(parentRef.current.children)
     .filter((child) => {
-      return child.getAttribute('data-type') === EDragType.TRACK_ITEM
+      return child.getAttribute('data-type') === EDragType.TRACK_DIVIDER
     })
     .sort(
       (a, b) =>
         parseInt(a.getAttribute('data-idx') || '0') - parseInt(b.getAttribute('data-idx') || '0')
     )
-  if (trackItems.length === 1) return 1 // 只有主轨道时，插入到主轨道后面
+  if (dividers.length === 1) return 1 // 只有分割线，说明只有一个主轨，插入到主轨道后面
 
-  // 2. 获取每个轨道的位置信息
-  const trackRects: DOMRect[] = []
-  for (let i = 0; i < trackItems.length; i++) {
-    const child = trackItems[i]
+  // 2. 获取每个分割线的位置信息
+  const dividerRects: DOMRect[] = []
+  for (let i = 0; i < dividers.length; i++) {
+    const child = dividers[i]
     const childRect = child.getBoundingClientRect()
-    trackRects.push(childRect)
+    dividerRects.push(childRect)
   }
 
   // 3. 计算插入索引
   let insertIndex = 1
-  // 特判是否位于主轨前端的区域，如果是则插入到主轨后面（需求要求）
-  if (clientOffset.y > trackRects[0].bottom) return 1
+  // 特判当位于第一条分割线前面（包括自身），则插入到主轨后面（需求要求）
+  if (clientOffset.y > dividerRects[0].top) return insertIndex
 
-  for (let i = 0; i < trackRects.length - 1; i++) {
-    // 判断要不要插入到当前轨道的后面
-    if (clientOffset.y < trackRects[i].top && clientOffset.y > trackRects[i + 1].bottom) {
+  for (let i = 1; i < dividerRects.length - 1; i++) {
+    // 鼠标位置在当前分割线范围内，则插入到当前分割线后面
+    if (clientOffset.y >= dividerRects[i].top && clientOffset.y <= dividerRects[i].bottom) {
       insertIndex = i + 1
       break
     }
   }
 
-  // 特判要不要插入到最后一个轨道的后面
-  if (clientOffset.y < trackRects[trackRects.length - 1].top) {
-    insertIndex = trackRects.length
+  // 特判位于最后一个轨道后面（包括自身），则插入到最后一个轨道后面
+  if (clientOffset.y < dividerRects[dividerRects.length - 1].bottom) {
+    insertIndex = dividerRects.length
   }
-
-  console.log('*** insertIndex', insertIndex)
 
   return insertIndex
 }
