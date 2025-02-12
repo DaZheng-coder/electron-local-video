@@ -121,10 +121,7 @@ const Timeline: React.FC<TimelineProps> = ({
   }, [setCanvasRect, setCanvasContext, updateTimeLine])
 
   return (
-    <div
-      ref={canvasContainerRef}
-      className="sticky top-0 left-0 right-0 h-5 text-center leading-5 text-sm z-20"
-    >
+    <div ref={canvasContainerRef} className="h-5 text-center leading-5 text-sm z-20">
       <canvas
         ref={timelineRef}
         style={canvasStyle}
