@@ -1,23 +1,20 @@
 import { useDrop } from 'react-dnd'
 import TrackItem from './components/TrackItem'
-import {
-  EDragType,
-  getInsertTrackIndexByOffset,
-  getIsInEmptyArea
-} from '@renderer/src/utils/trackUtils'
+import { EDragType, getInsertTrackIndexByOffset } from '@renderer/src/utils/trackUtils'
 import clipStore from '@renderer/src/stores/clipStore'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import TrackDivider from './components/TrackDivider'
 
 const Tracks = () => {
+  const [highlightLevel, setHighlightLevel] = useState(-1)
+
   const tracks = clipStore((state) => state.tracks)
-  const [isOver, setIsOver] = useState<boolean>(false)
+  const addNewTrack = clipStore((state) => state.addNewTrack)
+
   const containerRef = useRef<HTMLDivElement>(null)
   const tracksWrapRef = useRef<HTMLDivElement>(null)
 
   const sortedTracks = useMemo(() => tracks.sort((a, b) => b.trackLevel - a.trackLevel), [tracks])
-
-  const addNewTrack = clipStore((state) => state.addNewTrack)
 
   const [{ isOverCurrent }, drop] = useDrop({
     accept: EDragType.CELL_ITEM,
@@ -31,8 +28,8 @@ const Tracks = () => {
         const clientOffset = monitor.getClientOffset()
         requestAnimationFrame(() => {
           const insertIndex = getInsertTrackIndexByOffset(clientOffset, tracksWrapRef)
-          // setIsOver(isInEmpty)
           console.log('*** insertIndex', insertIndex)
+          setHighlightLevel(insertIndex)
         })
       }
     },
@@ -50,23 +47,13 @@ const Tracks = () => {
     }
   })
 
-  /**
-   * 注册拖拽容器
-   */
-  useEffect(() => {
-    if (containerRef.current) {
-      drop(containerRef.current)
-    }
-  }, [drop])
+  // 注册拖拽容器
+  drop(containerRef)
 
-  /**
-   * 处理拖拽元素拖出元素边界情况
-   */
   useEffect(() => {
-    if (isOverCurrent) {
-      requestAnimationFrame(() => setIsOver(true))
-    } else {
-      requestAnimationFrame(() => setIsOver(false))
+    // 拖拽元素移出容器时，取消高亮
+    if (!isOverCurrent) {
+      setHighlightLevel(-1)
     }
   }, [isOverCurrent])
 
@@ -79,7 +66,11 @@ const Tracks = () => {
         {sortedTracks.map((track, index) => {
           return (
             <Fragment key={track.trackId}>
-              <TrackDivider key={index} trackLevel={track.trackLevel} />
+              <TrackDivider
+                key={index}
+                trackLevel={track.trackLevel}
+                hightLight={highlightLevel - 1 === track.trackLevel}
+              />
               <TrackItem
                 key={track.trackId}
                 trackId={track.trackId}

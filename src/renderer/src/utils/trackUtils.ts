@@ -4,45 +4,44 @@ export const TRACK_HEIGHT = 60
 
 export enum EDragType {
   CELL_ITEM = 'CELL_ITEM',
-  TRACK_ITEM = 'TRACK_ITEM',
-  TRACK_DIVIDER = 'TRACK_DIVIDER'
+  TRACK_ITEM = 'TRACK_ITEM'
 }
 
-export const getIsInEmptyArea = (
-  clientOffset: XYCoord | null,
-  parentRef: React.RefObject<HTMLDivElement>
-): boolean => {
-  // 0. 参数容错处理
-  if (!parentRef.current || !clientOffset) return false
+// export const getIsInEmptyArea = (
+//   clientOffset: XYCoord | null,
+//   parentRef: React.RefObject<HTMLDivElement>
+// ): boolean => {
+//   // 0. 参数容错处理
+//   if (!parentRef.current || !clientOffset) return false
 
-  const parentRect = parentRef.current.getBoundingClientRect()
-  // 1. 检查是否在父元素内
-  const inParent =
-    clientOffset.x >= parentRect.left &&
-    clientOffset.x <= parentRect.right &&
-    clientOffset.y >= parentRect.top &&
-    clientOffset.y <= parentRect.bottom
-  if (!inParent) return false
+//   const parentRect = parentRef.current.getBoundingClientRect()
+//   // 1. 检查是否在父元素内
+//   const inParent =
+//     clientOffset.x >= parentRect.left &&
+//     clientOffset.x <= parentRect.right &&
+//     clientOffset.y >= parentRect.top &&
+//     clientOffset.y <= parentRect.bottom
+//   if (!inParent) return false
 
-  // 2. 检查是否在子元素内
-  const children = parentRef.current.children
-  if (!children.length) return true
-  const top = children[0].getBoundingClientRect().top
-  const bottom = children[children.length - 1].getBoundingClientRect().bottom
-  const left = parentRect.left
-  const right = parentRect.right
+//   // 2. 检查是否在子元素内
+//   const children = parentRef.current.children
+//   if (!children.length) return true
+//   const top = children[0].getBoundingClientRect().top
+//   const bottom = children[children.length - 1].getBoundingClientRect().bottom
+//   const left = parentRect.left
+//   const right = parentRect.right
 
-  if (
-    clientOffset.x >= left &&
-    clientOffset.x <= right &&
-    clientOffset.y >= top &&
-    clientOffset.y <= bottom
-  ) {
-    return false
-  }
+//   if (
+//     clientOffset.x >= left &&
+//     clientOffset.x <= right &&
+//     clientOffset.y >= top &&
+//     clientOffset.y <= bottom
+//   ) {
+//     return false
+//   }
 
-  return true
-}
+//   return true
+// }
 
 /**
  * 获取要插入的轨道位置

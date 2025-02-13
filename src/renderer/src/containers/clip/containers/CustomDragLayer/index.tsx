@@ -1,7 +1,6 @@
 // filepath: /Users/zhengjunqin/electron-local-video/src/renderer/src/components/CustomDragLayer.tsx
 import React, { CSSProperties, useCallback } from 'react'
 import { useDragLayer } from 'react-dnd'
-import CellItem from '../TracksDomain/components/Tracks/components/CellItem'
 import { EDragType } from '@renderer/src/utils/trackUtils'
 import CellItemUI from '../TracksDomain/components/Tracks/components/CellItem/CellItemUI'
 

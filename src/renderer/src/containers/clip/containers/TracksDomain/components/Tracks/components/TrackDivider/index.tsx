@@ -1,12 +1,16 @@
-import { EDragType } from '@renderer/src/utils/trackUtils'
 import { FC } from 'react'
 
 interface ITrackDividerProps {
   trackLevel: number
+  hightLight?: boolean
 }
 
-const TrackDivider: FC<ITrackDividerProps> = ({ trackLevel }) => {
-  return <div data-type={EDragType.TRACK_DIVIDER} data-level={trackLevel} className="h-1"></div>
+const TrackDivider: FC<ITrackDividerProps> = ({ trackLevel, hightLight }) => {
+  return (
+    <div data-level={trackLevel} className={`h-1 ${hightLight ? 'bg-amber-300' : ''}`}>
+      {trackLevel}
+    </div>
+  )
 }
 
 export default TrackDivider
