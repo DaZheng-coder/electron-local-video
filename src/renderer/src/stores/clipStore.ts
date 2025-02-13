@@ -16,6 +16,7 @@ interface IClipStore {
   cells: Record<string, ICellData>
   removeCellInTrack: (cellId: string) => void
   addCellInTrack: (cellId: string, trackId: string) => void
+  moveCellToTrack: (cellId: string, targetTrackId: string) => void
   updateCell: (cellId: string, data: Partial<ICellData>) => void
 }
 
@@ -102,6 +103,16 @@ const clipStore = create<IClipStore>((set, get) => ({
     track.cellIds.push(cellId)
 
     set({ cells, tracks })
+  },
+  moveCellToTrack: (cellId: string, targetTrackId: string) => {
+    const cells = get().cells
+    const fromTrackId = cells[cellId].trackId
+    if (fromTrackId === targetTrackId) {
+      return
+    } else {
+      get().removeCellInTrack(cellId)
+      get().addCellInTrack(cellId, targetTrackId)
+    }
   },
   updateCell: (cellId: string, data: Partial<ICellData>) => {
     const cells = { ...get().cells }

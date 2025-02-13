@@ -18,9 +18,8 @@ interface ITrackItemProps {
 
 const TrackItem: FC<ITrackItemProps> = ({ trackId, trackLevel }) => {
   const trackData = clipStore((state) => state.tracks.find((track) => track.trackId === trackId))
-  const removeCellInTrack = clipStore((state) => state.removeCellInTrack)
-  const addCellInTrack = clipStore((state) => state.addCellInTrack)
   const updateCell = clipStore((state) => state.updateCell)
+  const moveCellToTrack = clipStore((state) => state.moveCellToTrack)
   const trackRef = useRef<HTMLDivElement>(null)
 
   const [previewCellData, setPreviewCellData] = useState<ICellData | null>(null)
@@ -46,9 +45,8 @@ const TrackItem: FC<ITrackItemProps> = ({ trackId, trackLevel }) => {
       if (isOverCurrent && trackData) {
         const res = getTrackDragCellResult(monitor, trackRef, item, trackData)
         if (res) {
-          removeCellInTrack(item.cellId)
-          updateCell(item.cellId, { ...item.cellData, left: res.left, trackId })
-          addCellInTrack(item.cellId, trackId)
+          updateCell(item.cellId, { ...item.cellData, left: res.left })
+          moveCellToTrack(item.cellId, trackId)
         }
       }
     }
