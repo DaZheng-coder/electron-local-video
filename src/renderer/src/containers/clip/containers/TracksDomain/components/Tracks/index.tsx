@@ -1,6 +1,11 @@
 import { useDrop } from 'react-dnd'
 import TrackItem from './components/TrackItem'
-import { EDragType, getInsertTrackIndexByOffset } from '@renderer/src/utils/trackUtils'
+import {
+  EDragResultType,
+  EDragType,
+  getDomainDragCellResult,
+  IDragCellItem
+} from '@renderer/src/utils/trackUtils'
 import clipStore from '@renderer/src/stores/clipStore'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import TrackDivider from './components/TrackDivider'
@@ -10,13 +15,15 @@ const Tracks = () => {
 
   const tracks = clipStore((state) => state.tracks)
   const addNewTrack = clipStore((state) => state.addNewTrack)
+  const removeCellInTrack = clipStore((state) => state.removeCellInTrack)
+  const updateCell = clipStore((state) => state.updateCell)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const tracksWrapRef = useRef<HTMLDivElement>(null)
 
   const sortedTracks = useMemo(() => tracks.sort((a, b) => b.trackLevel - a.trackLevel), [tracks])
 
-  const [{ isOverCurrent }, drop] = useDrop({
+  const [{ isOverCurrent }, drop] = useDrop<IDragCellItem, unknown, { isOverCurrent: boolean }>({
     accept: EDragType.CELL_ITEM,
     collect: (monitor) => ({
       isOverCurrent: monitor.isOver({ shallow: true }) // 光标是否在当前元素内
@@ -25,11 +32,15 @@ const Tracks = () => {
       // 拖拽元素在容器内移动时，判断光标是否在当前元素内且不在任何子元素内
       const isOverCurrent = monitor.isOver({ shallow: true })
       if (isOverCurrent) {
-        const clientOffset = monitor.getClientOffset()
         requestAnimationFrame(() => {
-          const insertIndex = getInsertTrackIndexByOffset(clientOffset, tracksWrapRef)
-          console.log('*** insertIndex', insertIndex)
-          setHighlightLevel(insertIndex)
+          const result = getDomainDragCellResult(monitor, tracksWrapRef)
+          if (result) {
+            if (result.type === EDragResultType.NEW_TRACK) {
+              setHighlightLevel(result.insertIndex)
+              return
+            }
+          }
+          setHighlightLevel(-1)
         })
       }
     },
@@ -37,11 +48,16 @@ const Tracks = () => {
       // 拖拽元素放下时，判断光标是否在当前元素内且不在任何子元素内，这种情况要新增轨道
       const isOverCurrent = monitor.isOver({ shallow: true })
       if (isOverCurrent) {
-        const clientOffset = monitor.getClientOffset()
-        const insertIndex = getInsertTrackIndexByOffset(clientOffset, tracksWrapRef)
-        console.log('*** insertIndex', insertIndex)
-        if (insertIndex !== -1) {
-          addNewTrack(insertIndex, [item.cellId])
+        const result = getDomainDragCellResult(monitor, tracksWrapRef)
+        if (result) {
+          if (result.type === EDragResultType.NEW_TRACK) {
+            // TODO *** 考虑多选的情况
+            const left = monitor.getSourceClientOffset()?.x || 0
+            removeCellInTrack(item.cellId)
+            addNewTrack(result.insertIndex, [item.cellId])
+            updateCell(item.cellId, { left })
+            return
+          }
         }
       }
     }

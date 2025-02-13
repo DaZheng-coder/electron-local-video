@@ -1,4 +1,15 @@
-import { XYCoord } from 'react-dnd'
+import { ICellData, ITrackData } from '@typings/track'
+import { DropTargetMonitor } from 'react-dnd'
+import clipStore from '../stores/clipStore'
+
+/**
+ * 拖拽cell过程中传递的数据
+ */
+export interface IDragCellItem {
+  cellId: string
+  cellData: ICellData
+  domRef: React.RefObject<HTMLDivElement>
+}
 
 export const TRACK_HEIGHT = 60
 
@@ -7,54 +18,24 @@ export enum EDragType {
   TRACK_ITEM = 'TRACK_ITEM'
 }
 
-// export const getIsInEmptyArea = (
-//   clientOffset: XYCoord | null,
-//   parentRef: React.RefObject<HTMLDivElement>
-// ): boolean => {
-//   // 0. 参数容错处理
-//   if (!parentRef.current || !clientOffset) return false
-
-//   const parentRect = parentRef.current.getBoundingClientRect()
-//   // 1. 检查是否在父元素内
-//   const inParent =
-//     clientOffset.x >= parentRect.left &&
-//     clientOffset.x <= parentRect.right &&
-//     clientOffset.y >= parentRect.top &&
-//     clientOffset.y <= parentRect.bottom
-//   if (!inParent) return false
-
-//   // 2. 检查是否在子元素内
-//   const children = parentRef.current.children
-//   if (!children.length) return true
-//   const top = children[0].getBoundingClientRect().top
-//   const bottom = children[children.length - 1].getBoundingClientRect().bottom
-//   const left = parentRect.left
-//   const right = parentRect.right
-
-//   if (
-//     clientOffset.x >= left &&
-//     clientOffset.x <= right &&
-//     clientOffset.y >= top &&
-//     clientOffset.y <= bottom
-//   ) {
-//     return false
-//   }
-
-//   return true
-// }
+export enum EDragResultType {
+  NEW_TRACK = 'NEW_TRACK',
+  INSERT_CELL = 'INSERT_CELL'
+}
 
 /**
- * 获取要插入的轨道位置
- * @param clientOffset
+ * 获取拖拽结果
+ * @param monitor
  * @param parentRef
  * @returns
  */
-export const getInsertTrackIndexByOffset = (
-  clientOffset: XYCoord | null,
+export const getDomainDragCellResult = (
+  monitor: DropTargetMonitor,
   parentRef: React.RefObject<HTMLDivElement>
-) => {
+): { type: EDragResultType; insertIndex: number } | null => {
   // 0. 参数容错处理
-  if (!parentRef.current || !clientOffset) return -1
+  const clientOffset = monitor.getClientOffset()
+  if (!parentRef.current || !clientOffset) return null
 
   // 1. 获取所有轨道元素，主轨道的等级为0
   const trackItems = Array.from(parentRef.current.children)
@@ -75,56 +56,98 @@ export const getInsertTrackIndexByOffset = (
     trackRects.push(childRect)
   }
 
-  // 3. 计算插入索引
-  // 特判是否位于主轨前端的区域，如果是则插入到主轨后面（需求要求）
-  if (clientOffset.y > trackRects[0].bottom) return 1
-  // 特判是否位于最后一个轨道的后面, 如果是则插入到最后一个轨道的后面
-  if (clientOffset.y < trackRects[trackRects.length - 1].top) return trackRects.length
-
-  for (let i = 0; i < trackRects.length - 1; i++) {
-    // 判断要不要插入到当前轨道的后面
-    if (clientOffset.y < trackRects[i].top && clientOffset.y > trackRects[i + 1].bottom) {
-      return i + 1
+  // 3. 判断是否位于主轨下方空白区域
+  if (clientOffset.y > trackRects[0].bottom) {
+    return {
+      type: EDragResultType.NEW_TRACK,
+      insertIndex: 1
     }
   }
 
-  return -1
+  // 4. 判断是否位于最后一个轨道的后面
+  if (clientOffset.y < trackRects[trackRects.length - 1].top) {
+    return {
+      type: EDragResultType.NEW_TRACK,
+      insertIndex: trackRects.length
+    }
+  }
+
+  // 5. 判断是否位于轨道中或者轨道之间
+  for (let i = 0; i < trackRects.length - 1; i++) {
+    // // 判断是否位于轨道中
+    // if (clientOffset.y >= trackRects[i].top && clientOffset.y <= trackRects[i].bottom) {
+    //   // TODO 判断是否足够放下该元素
+    //   return null
+    // }
+    // 判断是否位于轨道之间
+    if (clientOffset.y < trackRects[i].top && clientOffset.y > trackRects[i + 1].bottom) {
+      return {
+        type: EDragResultType.NEW_TRACK,
+        insertIndex: i + 1
+      }
+    }
+  }
+
+  return null
 }
 
-// *** test
-export const getInsertCellPositionByOffset = (
-  clientOffset: XYCoord | null,
-  parentRef: React.RefObject<HTMLDivElement>
-) => {
+/**
+ * 获取拖拽cell的结果
+ * @param monitor
+ * @param trackRef
+ * @param item
+ * @param trackData
+ * @returns
+ */
+export const getTrackDragCellResult = (
+  monitor: DropTargetMonitor,
+  trackRef: React.RefObject<HTMLDivElement>,
+  item: IDragCellItem,
+  trackData: ITrackData
+): { left: number } | undefined => {
   // 0. 参数容错处理
-  if (!parentRef.current || !clientOffset) return -1
+  const sourceClientOffset = monitor.getSourceClientOffset()
+  const clientOffset = monitor.getClientOffset()
+  const trackRect = trackRef.current?.getBoundingClientRect()
+  if (!trackRef.current || !clientOffset || !sourceClientOffset || !trackRect) return
 
-  // 1. 获取所有单元元素
-  const cellItems = Array.from(parentRef.current.children)
-    .filter((child) => {
-      return child.getAttribute('data-type') === EDragType.CELL_ITEM
-    })
-    .sort((a, b) => {
-      const aTop = a.getBoundingClientRect().top
-      const bTop = b.getBoundingClientRect().top
-      return aTop - bTop
-    })
+  // 1. 计算拖拽cell的起始位置
+  const startX = sourceClientOffset.x
+  const endX = sourceClientOffset.x + item.cellData.width
 
-  // 2. 获取每个单元的位置信息
-  const cellRects: DOMRect[] = []
-  for (let i = 0; i < cellItems.length; i++) {
-    const child = cellItems[i]
-    const childRect = child.getBoundingClientRect()
-    cellRects.push(childRect)
+  // 2. 获取除自身外,当前轨道的所有cell数据
+  const allCells = clipStore.getState().cells
+  const cells: ICellData[] = []
+  for (const cellId of trackData.cellIds) {
+    if (cellId === item.cellId) continue
+    cells.push(allCells[cellId])
   }
 
-  // 3. 计算插入索引
-  for (let i = 0; i < cellRects.length - 1; i++) {
-    // 判断要不要插入到当前单元的后面
-    if (clientOffset.y < cellRects[i].top && clientOffset.y > cellRects[i + 1].bottom) {
-      return i + 1
+  // 3. 特判当前轨道除自身外，没有其他cell的情况
+  if (cells.length === 0) {
+    return { left: startX }
+  }
+
+  // 4. 计算拖拽cell的位置
+  let left: number | undefined = undefined
+
+  // 5. 特判位于最后面的情况，直接放在最后
+  if (startX > cells[cells.length - 1].left + cells[cells.length - 1].width) {
+    left = startX
+  }
+
+  let pre = trackRect.left
+  for (let i = 0; i < cells.length; i++) {
+    if (startX > pre && endX < cells[i].left) {
+      left = startX
+      break
     }
+    pre = cells[i].left + cells[i].width
   }
 
-  return -1
+  if (left !== undefined) {
+    return { left }
+  }
+
+  return
 }

@@ -53,14 +53,20 @@ const CustomDragLayer: React.FC = () => {
   useEffect(() => {
     if (item && item.domRef) {
       const computedStyle = window.getComputedStyle(item.domRef.current)
-      const style = {
-        fontSize: computedStyle.fontSize,
-        opacity: 1,
-        color: computedStyle.color
+      switch (itemType) {
+        case EDragType.CELL_ITEM:
+          setDraggedElementStyle({
+            width: item.cellData.width,
+            fontSize: computedStyle.fontSize,
+            opacity: 1,
+            color: computedStyle.color
+          })
+          break
+        default:
+          break
       }
-      setDraggedElementStyle(style)
     }
-  }, [item])
+  }, [item, itemType])
 
   const renderDragLayer = useCallback(() => {
     switch (itemType) {

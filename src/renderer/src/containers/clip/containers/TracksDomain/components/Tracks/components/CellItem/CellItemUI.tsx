@@ -4,11 +4,15 @@ import { FC } from 'react'
 export interface ICellItemUIProps {
   title: string
   style?: React.CSSProperties
+  width?: number
 }
 
-const CellItemUI: FC<ICellItemUIProps> = ({ title, style = {} }) => {
+const CellItemUI: FC<ICellItemUIProps> = ({ title, style = {}, width = 'auto' }) => {
   return (
-    <div style={{ ...style, height: TRACK_HEIGHT }} className="absolute bg-gray-500 rounded-[6px] ">
+    <div
+      style={{ height: TRACK_HEIGHT, width, ...style }}
+      className="absolute bg-gray-500 rounded-[6px] overflow-hidden"
+    >
       {title}
     </div>
   )
