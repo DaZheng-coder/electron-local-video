@@ -1,5 +1,5 @@
 // filepath: /Users/zhengjunqin/electron-local-video/src/renderer/src/components/CustomDragLayer.tsx
-import React, { CSSProperties, useCallback } from 'react'
+import React, { CSSProperties, useCallback, useEffect, useState } from 'react'
 import { useDragLayer } from 'react-dnd'
 import { EDragType } from '@renderer/src/utils/trackUtils'
 import CellItemUI from '../TracksDomain/components/Tracks/components/CellItem/CellItemUI'
@@ -48,14 +48,28 @@ const CustomDragLayer: React.FC = () => {
     isDragging: monitor.isDragging()
   }))
 
+  const [draggedElementStyle, setDraggedElementStyle] = useState<React.CSSProperties>({})
+
+  useEffect(() => {
+    if (item && item.domRef) {
+      const computedStyle = window.getComputedStyle(item.domRef.current)
+      const style = {
+        fontSize: computedStyle.fontSize,
+        opacity: 1,
+        color: computedStyle.color
+      }
+      setDraggedElementStyle(style)
+    }
+  }, [item])
+
   const renderDragLayer = useCallback(() => {
     switch (itemType) {
       case EDragType.CELL_ITEM:
-        return <CellItemUI title={item.cellId} />
+        return <CellItemUI style={draggedElementStyle} title={item.cellId} />
       default:
         return null
     }
-  }, [itemType, item])
+  }, [itemType, item, draggedElementStyle])
 
   if (!isDragging || !currentOffset) {
     return null

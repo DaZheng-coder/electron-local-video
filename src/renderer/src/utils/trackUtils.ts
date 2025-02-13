@@ -90,3 +90,41 @@ export const getInsertTrackIndexByOffset = (
 
   return -1
 }
+
+// *** test
+export const getInsertCellPositionByOffset = (
+  clientOffset: XYCoord | null,
+  parentRef: React.RefObject<HTMLDivElement>
+) => {
+  // 0. 参数容错处理
+  if (!parentRef.current || !clientOffset) return -1
+
+  // 1. 获取所有单元元素
+  const cellItems = Array.from(parentRef.current.children)
+    .filter((child) => {
+      return child.getAttribute('data-type') === EDragType.CELL_ITEM
+    })
+    .sort((a, b) => {
+      const aTop = a.getBoundingClientRect().top
+      const bTop = b.getBoundingClientRect().top
+      return aTop - bTop
+    })
+
+  // 2. 获取每个单元的位置信息
+  const cellRects: DOMRect[] = []
+  for (let i = 0; i < cellItems.length; i++) {
+    const child = cellItems[i]
+    const childRect = child.getBoundingClientRect()
+    cellRects.push(childRect)
+  }
+
+  // 3. 计算插入索引
+  for (let i = 0; i < cellRects.length - 1; i++) {
+    // 判断要不要插入到当前单元的后面
+    if (clientOffset.y < cellRects[i].top && clientOffset.y > cellRects[i + 1].bottom) {
+      return i + 1
+    }
+  }
+
+  return -1
+}

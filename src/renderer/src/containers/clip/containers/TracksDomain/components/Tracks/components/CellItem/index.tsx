@@ -16,7 +16,8 @@ const CellItem: FC<ICellItemProps> = ({ cellId }) => {
   const [{ isDragging }, dragger, preview] = useDrag(() => ({
     type: EDragType.CELL_ITEM,
     item: {
-      cellId
+      cellId,
+      domRef: cellRef
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging()
