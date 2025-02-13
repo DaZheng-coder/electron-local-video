@@ -4,7 +4,14 @@ import CellItemUI from '../TracksDomain/components/Tracks/components/CellItem/Ce
 import BaseCustomDragLayer from '@renderer/src/components/BaseCustomDragLayer'
 import { IDragCellItem } from '@renderer/src/utils/trackUtils'
 
-const TracksCustomDragLayer: React.FC = () => {
+/**
+ * 轨道拖拽层
+ * @param param0
+ * @returns
+ */
+const TracksCustomDragLayer: React.FC<{
+  containerRef: React.RefObject<HTMLDivElement>
+}> = ({ containerRef }) => {
   const renderDragLayer = useCallback(({ itemType, item, draggedElementStyle }) => {
     switch (itemType) {
       case EDragType.CELL_ITEM:
@@ -30,6 +37,7 @@ const TracksCustomDragLayer: React.FC = () => {
 
   return (
     <BaseCustomDragLayer<IDragCellItem>
+      containerRef={containerRef}
       renderDragLayer={renderDragLayer}
       getDraggedElementStyle={getDraggedElementStyle}
     />

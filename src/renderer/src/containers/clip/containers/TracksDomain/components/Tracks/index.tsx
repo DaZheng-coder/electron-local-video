@@ -96,9 +96,9 @@ const Tracks = () => {
             </Fragment>
           )
         })}
+        <TracksCustomDragLayer containerRef={containerRef} />
       </div>
       <div className="flex-1" />
-      <TracksCustomDragLayer />
     </div>
   )
 }
