@@ -1,17 +1,17 @@
 import { ICellData, ITrackData } from '@typings/track'
 import { DropTargetMonitor } from 'react-dnd'
 import clipStore from '../stores/clipStore'
+import { IBaseDragItem } from '../types'
 
 /**
  * 拖拽cell过程中传递的数据
  */
-export interface IDragCellItem {
+export interface IDragCellItem extends IBaseDragItem {
   cellId: string
   cellData: ICellData
-  domRef: React.RefObject<HTMLDivElement>
 }
 
-export const TRACK_HEIGHT = 60
+export const TRACK_HEIGHT = 80
 
 export enum EDragType {
   CELL_ITEM = 'CELL_ITEM',

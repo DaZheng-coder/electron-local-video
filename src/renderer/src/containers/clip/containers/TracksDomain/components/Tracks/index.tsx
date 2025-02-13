@@ -9,9 +9,10 @@ import {
 import clipStore from '@renderer/src/stores/clipStore'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import TrackDivider from './components/TrackDivider'
+import TracksCustomDragLayer from '../../../TracksCustomDragLayer'
 
 const Tracks = () => {
-  const [highlightLevel, setHighlightLevel] = useState(-1)
+  const [highlightDivider, setHighlightDivider] = useState(-1)
 
   const tracks = clipStore((state) => state.tracks)
   const addNewTrack = clipStore((state) => state.addNewTrack)
@@ -36,11 +37,11 @@ const Tracks = () => {
           const result = getDomainDragCellResult(monitor, tracksWrapRef)
           if (result) {
             if (result.type === EDragResultType.NEW_TRACK) {
-              setHighlightLevel(result.insertIndex)
+              setHighlightDivider(result.insertIndex)
               return
             }
           }
-          setHighlightLevel(-1)
+          setHighlightDivider(-1)
         })
       }
     },
@@ -69,7 +70,7 @@ const Tracks = () => {
   useEffect(() => {
     // 拖拽元素移出容器时，取消高亮
     if (!isOverCurrent) {
-      setHighlightLevel(-1)
+      setHighlightDivider(-1)
     }
   }, [isOverCurrent])
 
@@ -85,7 +86,7 @@ const Tracks = () => {
               <TrackDivider
                 key={index}
                 trackLevel={track.trackLevel}
-                hightLight={highlightLevel - 1 === track.trackLevel}
+                hightLight={highlightDivider - 1 === track.trackLevel}
               />
               <TrackItem
                 key={track.trackId}
@@ -97,6 +98,7 @@ const Tracks = () => {
         })}
       </div>
       <div className="flex-1" />
+      <TracksCustomDragLayer />
     </div>
   )
 }
