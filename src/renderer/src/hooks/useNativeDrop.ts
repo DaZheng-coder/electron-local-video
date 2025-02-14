@@ -20,22 +20,12 @@ const useNativeDrop = (
   }
 
   const onDragOver = (e: DragEvent) => {
-    if (e.dataTransfer.types.includes('Files')) {
-      e.preventDefault()
-      e.stopPropagation()
-      setOverStyle()
-    }
+    setOverStyle()
   }
 
-  const onDragLeave = (e: DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    removeOverStyle()
-  }
+  const onDragLeave = (e: DragEvent) => {}
 
   const onDrop = (e: DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
     removeOverStyle()
     props.onDrop(e)
   }
