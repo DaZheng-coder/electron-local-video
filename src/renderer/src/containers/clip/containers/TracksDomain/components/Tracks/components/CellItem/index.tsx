@@ -67,7 +67,7 @@ const CellItem: FC<ICellItemProps> = ({ cellId }) => {
         data-type={EDragType.CELL_ITEM}
         data-cell-id={cellId}
         ref={cellRef}
-        className={`${isDragging ? 'opacity-0' : ''}`}
+        className={`${isDragging ? 'opacity-0' : ''} h-full`}
       >
         <CellItemUI title={cellData?.cellId + ''} width={cellData?.width} />
       </div>

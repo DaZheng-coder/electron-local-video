@@ -1,6 +1,12 @@
 import { IBaseMediaData } from '@typings/index'
 import { ICellData } from '@typings/track'
 
+export interface IPreviewCellData {
+  cellId: string
+  width: number
+  left: number
+}
+
 export interface IBaseDragItem {
   domRef?: React.RefObject<HTMLDivElement>
 }
@@ -19,3 +25,5 @@ export interface IDragCellItem extends IBaseDragItem {
 export interface IDragMediaItem extends IBaseDragItem {
   mediaData: IBaseMediaData
 }
+
+export type TGlobalDragItem = IDragCellItem | IDragMediaItem

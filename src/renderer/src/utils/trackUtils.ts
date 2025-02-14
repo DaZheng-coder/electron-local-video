@@ -1,5 +1,5 @@
 import { ICellData, ITrackData } from '@typings/track'
-import { DropTargetMonitor } from 'react-dnd'
+import { DropTargetMonitor, XYCoord } from 'react-dnd'
 import clipStore from '../stores/clipStore'
 import { IDragCellItem } from '../types'
 
@@ -84,6 +84,17 @@ export const getDomainDragCellResult = (
   return null
 }
 
+const getDragStartX = (itemType: EDragType, clientOffset: XYCoord, sourceClientOffset: XYCoord) => {
+  switch (itemType) {
+    case EDragType.CELL_ITEM:
+      return sourceClientOffset.x
+    case EDragType.MEDIA_CARD:
+      return clientOffset.x
+    default:
+      return 0
+  }
+}
+
 /**
  * 获取在轨道间拖拽cell的结果
  * @param monitor
@@ -92,12 +103,14 @@ export const getDomainDragCellResult = (
  * @param trackData
  * @returns
  */
-export const getTrackDragCellResult = (
-  monitor: DropTargetMonitor,
-  trackRef: React.RefObject<HTMLDivElement>,
-  item: IDragCellItem,
-  trackData: ITrackData
-): { left: number } | undefined => {
+export const getTrackDragCellResult = (args: {
+  monitor: DropTargetMonitor
+  trackRef: React.RefObject<HTMLDivElement>
+  trackCellIds: string[]
+  curCellData: { cellId: string; width: number }
+  itemType: EDragType
+}): { left: number } | undefined => {
+  const { monitor, trackRef, trackCellIds, curCellData, itemType } = args
   // 0. 参数容错处理
   const sourceClientOffset = monitor.getSourceClientOffset()
   const clientOffset = monitor.getClientOffset()
@@ -105,14 +118,14 @@ export const getTrackDragCellResult = (
   if (!trackRef.current || !clientOffset || !sourceClientOffset || !trackRect) return
 
   // 1. 计算拖拽cell的起始位置
-  const startX = sourceClientOffset.x
-  const endX = sourceClientOffset.x + item.cellData.width
+  const startX = getDragStartX(itemType, clientOffset, sourceClientOffset)
+  const endX = startX + curCellData.width
 
   // 2. 获取除自身外,当前轨道的所有cell数据
   const allCells = clipStore.getState().cells
   const cells: ICellData[] = []
-  for (const cellId of trackData.cellIds) {
-    if (cellId === item.cellId) continue
+  for (const cellId of trackCellIds) {
+    if (cellId === curCellData.cellId) continue
     cells.push(allCells[cellId])
   }
 

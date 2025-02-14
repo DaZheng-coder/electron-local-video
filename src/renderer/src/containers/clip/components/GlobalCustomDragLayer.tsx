@@ -6,11 +6,9 @@ import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/trackUtils'
 import { CSSProperties, memo, useCallback } from 'react'
 import MediaCardItemUI from '../containers/ResourcePool/components/MediaCardItemUI'
 import dragStore from '@renderer/src/stores/dragStore'
-import { IDragCellItem, IDragMediaItem } from '@renderer/src/types'
+import { IDragCellItem, IDragMediaItem, TGlobalDragItem } from '@renderer/src/types'
 import CellItemUI from '../containers/TracksDomain/components/Tracks/components/CellItem/CellItemUI'
 import { LAYOUT_TOP_Z_INDEX } from '@renderer/src/constants'
-
-type TGlobalDragType = IDragCellItem | IDragMediaItem
 
 const getComputedStyle = (elt: Element, pseudoElt?: string | null) => {
   if (elt) {
@@ -24,18 +22,20 @@ const GlobalCustomDragLayer = () => {
   const tracksDomRef = dragStore((state) => state.tracksDomRef)
 
   const renderCellItemUI = useCallback(
-    (dragData: IDragCellItem, computedStyle: CSSProperties, style: CSSProperties) => (
-      <CellItemUI
-        style={{
-          ...style,
-          width: dragData.cellData.width,
-          fontSize: computedStyle.fontSize,
-          opacity: 1,
-          color: computedStyle.color
-        }}
-        title={dragData.cellId}
-      />
-    ),
+    (dragData: IDragCellItem, computedStyle: CSSProperties, style: CSSProperties) => {
+      return (
+        <CellItemUI
+          style={{
+            ...style,
+            width: dragData.cellData.width,
+            fontSize: computedStyle.fontSize,
+            opacity: 1,
+            color: computedStyle.color
+          }}
+          title={dragData.cellId}
+        />
+      )
+    },
     []
   )
 
@@ -50,7 +50,7 @@ const GlobalCustomDragLayer = () => {
     []
   )
 
-  const renderDragLayer: TRenderDragLayer<TGlobalDragType> = useCallback(
+  const renderDragLayer: TRenderDragLayer<TGlobalDragItem> = useCallback(
     ({ itemType, item, clientOffset, initialOffset, sourceClientOffset }) => {
       if (!initialOffset || !sourceClientOffset) return null
       // 0. 判断拖拽类型，减少不必要的计算
@@ -77,6 +77,7 @@ const GlobalCustomDragLayer = () => {
             renderResult: renderCellItemUI(dragData, computedStyle, style)
           }
         }
+
         case EDragType.MEDIA_CARD: {
           const dragData = item as IDragMediaItem
           const trackDomRect = tracksDomRef?.current?.getBoundingClientRect()
@@ -119,7 +120,7 @@ const GlobalCustomDragLayer = () => {
     [tracksDomRef, renderCellItemUI, renderMediaCardItemUI]
   )
 
-  return <BaseCustomDragLayer<TGlobalDragType> renderDragLayer={renderDragLayer} />
+  return <BaseCustomDragLayer<TGlobalDragItem> renderDragLayer={renderDragLayer} />
 }
 
 export default memo(GlobalCustomDragLayer)

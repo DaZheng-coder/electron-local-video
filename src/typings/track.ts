@@ -1,6 +1,5 @@
 export interface ITrackData {
   trackId: string
-  trackLevel: number
   cellIds: string[]
 }
 export interface ICellData {

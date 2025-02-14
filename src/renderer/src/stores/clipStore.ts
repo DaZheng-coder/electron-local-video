@@ -7,10 +7,11 @@ interface IClipStore {
   setTimelineScale: (scale: number) => void
 
   tracks: ITrackData[]
-  addNewTrack: (index: number, cellIds?: string[]) => void
+  addNewTrack: (index: number, cellIds?: string[]) => ITrackData
   removeTrack: (trackId: string) => void
 
   cells: Record<string, ICellData>
+  createCell: (left: number, width: number, trackId: string) => ICellData
   removeCellInTrack: (cellId: string) => void
   addCellInTrack: (cellId: string, trackId: string) => void
   moveCellToTrack: (cellId: string, targetTrackId: string) => void
@@ -25,7 +26,7 @@ const trackId1 = uuid()
 const initCells: Record<string, ICellData> = {
   [cellId]: { cellId, left: 0, width: 200, trackId: trackId1 }
 }
-const initTracks: ITrackData[] = [{ trackId: trackId1, trackLevel: 0, cellIds: [cellId] }]
+const initTracks: ITrackData[] = [{ trackId: trackId1, cellIds: [cellId] }]
 
 const clipStore = create<IClipStore>((set, get) => ({
   timelineScale: 0,
@@ -40,7 +41,8 @@ const clipStore = create<IClipStore>((set, get) => ({
   addNewTrack: (index: number, cellIds: string[] = []) => {
     const tracks = get().tracks.slice()
     const trackId = uuid()
-    tracks.splice(index, 0, { trackId, trackLevel: index, cellIds })
+    const track = { trackId, cellIds }
+    tracks.splice(index, 0, track)
 
     if (cellIds.length) {
       const cells = { ...get().cells }
@@ -51,12 +53,15 @@ const clipStore = create<IClipStore>((set, get) => ({
     }
 
     set({ tracks })
+
+    return track
   },
   removeTrack: (trackId: string) => {
     const oldTracks = get().tracks
     const newTracks: ITrackData[] = []
-    for (const track of oldTracks) {
-      if (track.trackId !== trackId || track.trackLevel === 0) {
+    for (let i = 0; i < oldTracks.length; i++) {
+      const track = oldTracks[i]
+      if (track.trackId !== trackId || i === 0) {
         newTracks.push(track)
       }
     }
@@ -68,6 +73,17 @@ const clipStore = create<IClipStore>((set, get) => ({
    * 关于cell的操作
    */
   cells: { ...initCells },
+  createCell: (left: number, width: number, trackId: string) => {
+    const id = uuid()
+    const cells = { ...get().cells }
+    const cell = { cellId: id, left, width, trackId }
+    cells[id] = cell
+    set({ cells })
+    if (trackId) {
+      get().addCellInTrack(cell.cellId, trackId)
+    }
+    return cell
+  },
   removeCellInTrack: (cellId: string) => {
     const cells = { ...get().cells }
     const trackId = cells[cellId].trackId
@@ -77,6 +93,8 @@ const clipStore = create<IClipStore>((set, get) => ({
     const track = tracks.find((track) => track.trackId === trackId)
     if (!track) return
     track.cellIds = track.cellIds.filter((id) => id !== cellId)
+
+    console.log('*** removeCellInTrack, tracks', tracks)
 
     set({ cells, tracks })
 
@@ -92,6 +110,7 @@ const clipStore = create<IClipStore>((set, get) => ({
     const tracks = get().tracks.slice()
     const track = tracks.find((track) => track.trackId === trackId)
     if (!track) return
+    if (track.cellIds.includes(cellId)) return
     track.cellIds.push(cellId)
 
     set({ cells, tracks })
