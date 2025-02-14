@@ -1,0 +1,3 @@
+.layout-splitter > .ant-splitter-bar {
+  z-index: 999;
+}
