@@ -37,8 +37,8 @@ export const getDomainDragCellResult = (
     })
     .sort(
       (a, b) =>
-        parseInt(a.getAttribute('data-level') || '0') -
-        parseInt(b.getAttribute('data-level') || '0')
+        parseInt(a.getAttribute('data-index') || '0') -
+        parseInt(b.getAttribute('data-index') || '0')
     )
 
   // 2. 获取每个轨道的位置信息
