@@ -4,7 +4,7 @@ export interface IUseDropperProps {
   onDrop: (e: DragEvent) => void
 }
 
-const useDropper = (
+const useNativeDrop = (
   ref: React.MutableRefObject<HTMLDivElement | null>,
   props: IUseDropperProps
 ) => {
@@ -20,9 +20,11 @@ const useDropper = (
   }
 
   const onDragOver = (e: DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setOverStyle()
+    if (e.dataTransfer.types.includes('Files')) {
+      e.preventDefault()
+      e.stopPropagation()
+      setOverStyle()
+    }
   }
 
   const onDragLeave = (e: DragEvent) => {
@@ -44,4 +46,4 @@ const useDropper = (
     onDrop
   }
 }
-export default useDropper
+export default useNativeDrop

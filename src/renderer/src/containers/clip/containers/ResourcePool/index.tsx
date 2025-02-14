@@ -1,7 +1,7 @@
 import { Button, Card, Flex } from 'antd'
 import MediaCard from './components/MediaCard'
 import { useRef } from 'react'
-import useDropper from '@renderer/src/hooks/useDropper'
+import useNativeDrop from '@renderer/src/hooks/useNativeDrop'
 import resourceStore from '@renderer/src/stores/resourceStore'
 import { EMediaType } from '@typings/index'
 import { DeleteOutlined } from '@ant-design/icons'
@@ -12,7 +12,7 @@ const ResourcePool = () => {
   const addResourceByPath = resourceStore((state) => state.addResourceByPath)
   const clearResources = resourceStore((state) => state.clearResources)
   // *** todo fix，修复拖拽轨道视频块到这个区域会停住的问题
-  const { onDragOver, onDragLeave, onDrop } = useDropper(ref, {
+  const { onDragOver, onDragLeave, onDrop } = useNativeDrop(ref, {
     onDrop: (e) => {
       const files = e.dataTransfer.files
       if (files && files.length > 0) {

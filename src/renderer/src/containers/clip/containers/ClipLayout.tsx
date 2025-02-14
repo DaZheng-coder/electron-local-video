@@ -2,13 +2,18 @@ import { FC } from 'react'
 import { Splitter } from 'antd'
 import ResourcePool from './ResourcePool'
 import TracksDomain from './TracksDomain'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import CustomDragLayer from '../../../components/BaseCustomDragLayer'
+import { useDrop } from 'react-dnd'
+import { EDragType } from '@renderer/src/utils/trackUtils'
 
 const ClipLayout: FC = () => {
+  const [collect, dropper] = useDrop({
+    accept: [EDragType.CELL_ITEM],
+    canDrop: (item, monitor) => {},
+    drop: (item, monitor) => {}
+  })
+
   return (
-    <DndProvider backend={HTML5Backend}>
+    <div ref={dropper}>
       <Splitter layout="vertical" style={{ height: '100vh' }} className="h-screen bg-white">
         <Splitter.Panel defaultSize="40%">
           <Splitter layout="horizontal">
@@ -22,7 +27,7 @@ const ClipLayout: FC = () => {
           <TracksDomain />
         </Splitter.Panel>
       </Splitter>
-    </DndProvider>
+    </div>
   )
 }
 

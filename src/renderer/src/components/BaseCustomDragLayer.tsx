@@ -125,7 +125,10 @@ const BaseCustomDragLayer = <T extends IBaseDragItem>({
    * 解决拖拽图层元素与被拖拽元素样式不一致问题
    */
   useEffect(() => {
-    if (item && item.domRef.current && itemType) {
+    // 特殊处理，阻止响应原生drag事件
+    // @ts-ignore TS2339
+    const isNativeDragging = !!item?.dataTransfer
+    if (!isNativeDragging && item && item.domRef.current && itemType) {
       const computedStyle = window.getComputedStyle(item.domRef.current)
       const style = getDraggedElementStyle({
         item,
