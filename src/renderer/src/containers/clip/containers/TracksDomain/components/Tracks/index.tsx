@@ -9,7 +9,6 @@ import {
 import clipStore from '@renderer/src/stores/clipStore'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import TrackDivider from './components/TrackDivider'
-import TracksCustomDragLayer from '@renderer/src/containers/clip/components/TracksCustomDragLayer'
 import dragStore from '@renderer/src/stores/dragStore'
 
 const Tracks = () => {
@@ -33,6 +32,7 @@ const Tracks = () => {
     hover: (item, monitor) => {
       // 拖拽元素在容器内移动时，判断光标是否在当前元素内且不在任何子元素内
       const isOverCurrent = monitor.isOver({ shallow: true })
+      console.log('*** isOverCurrent', isOverCurrent)
       if (isOverCurrent) {
         requestAnimationFrame(() => {
           const result = getDomainDragCellResult(monitor, tracksWrapRef)
@@ -105,7 +105,6 @@ const Tracks = () => {
             </Fragment>
           )
         })}
-        <TracksCustomDragLayer />
       </div>
       <div className="flex-1" />
     </div>
