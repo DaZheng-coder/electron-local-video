@@ -1,15 +1,11 @@
 import { FC, useEffect, useRef, useState } from 'react'
 import CellItem from '../CellItem'
-import {
-  EDragType,
-  getTrackDragCellResult,
-  IDragCellItem,
-  TRACK_HEIGHT
-} from '@renderer/src/utils/trackUtils'
+import { EDragType, getTrackDragCellResult, TRACK_HEIGHT } from '@renderer/src/utils/trackUtils'
 import clipStore from '@renderer/src/stores/clipStore'
 import { useDrop } from 'react-dnd'
 import CellItemUI from '../CellItem/CellItemUI'
 import { ICellData } from '@typings/track'
+import { IDragCellItem } from '@renderer/src/types'
 
 interface ITrackItemProps {
   trackId: string
@@ -25,7 +21,7 @@ const TrackItem: FC<ITrackItemProps> = ({ trackId, trackLevel }) => {
   const [previewCellData, setPreviewCellData] = useState<ICellData | null>(null)
 
   const [{ isOverCurrent }, dropper] = useDrop<IDragCellItem, unknown, { isOverCurrent: boolean }>({
-    accept: EDragType.CELL_ITEM,
+    accept: [EDragType.CELL_ITEM, EDragType.MEDIA_CARD],
     collect: (monitor) => ({
       isOverCurrent: monitor.isOver({ shallow: true })
     }),

@@ -1,7 +1,21 @@
 import { IBaseMediaData } from '@typings/index'
+import { ICellData } from '@typings/track'
 
 export interface IBaseDragItem {
   domRef?: React.RefObject<HTMLDivElement>
 }
 
-export interface IDragMediaItem extends IBaseDragItem, IBaseMediaData {}
+/**
+ * 拖拽cell过程中传递的数据
+ */
+export interface IDragCellItem extends IBaseDragItem {
+  cellId: string
+  cellData: ICellData
+}
+
+/**
+ * 拖拽媒体卡片过程中传递的数据
+ */
+export interface IDragMediaItem extends IBaseDragItem {
+  mediaData: IBaseMediaData
+}

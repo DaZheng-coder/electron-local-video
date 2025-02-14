@@ -1,10 +1,11 @@
 import clipStore from '@renderer/src/stores/clipStore'
-import { EDragType, IDragCellItem, TRACK_HEIGHT } from '@renderer/src/utils/trackUtils'
+import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/trackUtils'
 import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import { useDrag } from 'react-dnd'
 import { getEmptyImage } from 'react-dnd-html5-backend'
 import CellItemUI from './CellItemUI'
 import ResizableDiv from '@renderer/src/components/ResizableDiv'
+import { IDragCellItem } from '@renderer/src/types'
 
 interface ICellItemProps {
   cellId: string

@@ -1,3 +1,8 @@
+/**
+ * rgb转换成16进制字符串
+ * @param rgb
+ * @returns
+ */
 export const rgbToHex = (rgb: string): string => {
   if (!rgb || rgb.length === 0) {
     return ''

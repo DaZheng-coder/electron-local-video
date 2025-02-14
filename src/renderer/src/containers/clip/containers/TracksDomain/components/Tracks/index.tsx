@@ -1,15 +1,11 @@
 import { useDrop } from 'react-dnd'
 import TrackItem from './components/TrackItem'
-import {
-  EDragResultType,
-  EDragType,
-  getDomainDragCellResult,
-  IDragCellItem
-} from '@renderer/src/utils/trackUtils'
+import { EDragResultType, EDragType, getDomainDragCellResult } from '@renderer/src/utils/trackUtils'
 import clipStore from '@renderer/src/stores/clipStore'
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import TrackDivider from './components/TrackDivider'
 import dragStore from '@renderer/src/stores/dragStore'
+import { IDragCellItem } from '@renderer/src/types'
 
 const Tracks = () => {
   const [highlightDivider, setHighlightDivider] = useState(-1)
@@ -25,7 +21,7 @@ const Tracks = () => {
   const sortedTracks = useMemo(() => tracks.sort((a, b) => b.trackLevel - a.trackLevel), [tracks])
 
   const [{ isOverCurrent }, drop] = useDrop<IDragCellItem, unknown, { isOverCurrent: boolean }>({
-    accept: EDragType.CELL_ITEM,
+    accept: [EDragType.CELL_ITEM, EDragType.MEDIA_CARD],
     collect: (monitor) => ({
       isOverCurrent: monitor.isOver({ shallow: true }) // 光标是否在当前元素内
     }),
