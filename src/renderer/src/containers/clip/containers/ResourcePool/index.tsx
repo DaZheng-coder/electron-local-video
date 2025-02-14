@@ -45,7 +45,7 @@ const ResourcePool = () => {
           }
           className="min-h-[100%] !bg-transparent"
           classNames={{
-            header: 'sticky top-0 z-9 !bg-white !py-1 !px-2 !min-h-auto',
+            header: 'sticky top-0 z-1 !bg-white !py-1 !px-2 !min-h-auto', // 这里的z-1是为了确保header挡住下面的内容
             body: '!py-2 !px-2'
           }}
         >

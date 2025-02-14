@@ -32,7 +32,6 @@ const Tracks = () => {
     hover: (item, monitor) => {
       // 拖拽元素在容器内移动时，判断光标是否在当前元素内且不在任何子元素内
       const isOverCurrent = monitor.isOver({ shallow: true })
-      console.log('*** isOverCurrent', isOverCurrent)
       if (isOverCurrent) {
         requestAnimationFrame(() => {
           const result = getDomainDragCellResult(monitor, tracksWrapRef)

@@ -8,12 +8,13 @@ import MediaCardItemUI from '../containers/ResourcePool/components/MediaCardItem
 import dragStore from '@renderer/src/stores/dragStore'
 import { IDragMediaItem } from '@renderer/src/types'
 import CellItemUI from '../containers/TracksDomain/components/Tracks/components/CellItem/CellItemUI'
+import { LAYOUT_TOP_Z_INDEX } from '@renderer/src/constants'
 
 type TGlobalDragType = IDragCellItem | IDragMediaItem
 
 const getComputedStyle = (elt: Element, pseudoElt?: string | null) => {
   if (elt) {
-    return window.getComputedStyle(elt, pseudoElt)
+    return window.getComputedStyle(elt, pseudoElt) as CSSProperties
   } else {
     return {} as CSSProperties
   }
@@ -21,74 +22,97 @@ const getComputedStyle = (elt: Element, pseudoElt?: string | null) => {
 
 const GlobalCustomDragLayer = () => {
   const tracksDomRef = dragStore((state) => state.tracksDomRef)
+
+  const renderCellItemUI = useCallback(
+    (dragData: IDragCellItem, computedStyle: CSSProperties, style: CSSProperties) => (
+      <CellItemUI
+        style={{
+          ...style,
+          width: dragData.cellData.width,
+          fontSize: computedStyle.fontSize,
+          opacity: 1,
+          color: computedStyle.color
+        }}
+        title={dragData.cellId}
+      />
+    ),
+    []
+  )
+
+  const renderMediaCardItemUI = useCallback(
+    (dragData: IDragMediaItem, style: CSSProperties) => (
+      <MediaCardItemUI style={style} title={dragData.title} thumbnail={dragData.thumbnail} />
+    ),
+    []
+  )
+
   const renderDragLayer: TRenderDragLayer<TGlobalDragType> = useCallback(
     ({ itemType, item, clientOffset, initialOffset, sourceClientOffset }) => {
+      if (!initialOffset || !sourceClientOffset) return null
+      // 0. 判断拖拽类型，减少不必要的计算
       if (itemType && ![EDragType.MEDIA_CARD, EDragType.CELL_ITEM].includes(itemType)) return null
 
+      // 1. 获取偏移样式
       const style = getDragLayerItemStyles({
         initialOffset,
-        sourceClientOffset,
-        containerRef: itemType === EDragType.CELL_ITEM ? tracksDomRef : null
+        sourceClientOffset
+        // containerRef: itemType === EDragType.CELL_ITEM ? tracksDomRef : null
       })
 
       switch (itemType) {
         case EDragType.CELL_ITEM: {
           const dragData = item as IDragCellItem
+          const trackDomRect = tracksDomRef?.current?.getBoundingClientRect()
           const computedStyle = getComputedStyle(dragData.domRef!.current!)
-          return (
-            <CellItemUI
-              style={{
-                ...style,
-                width: dragData.cellData.width,
-                fontSize: computedStyle.fontSize,
-                opacity: 1,
-                color: computedStyle.color
-              }}
-              title={dragData.cellId}
-            />
-          )
+
+          const transform = `translate(${Math.max(sourceClientOffset.x, trackDomRect?.left || 0)}px, ${sourceClientOffset.y}px)`
+          style.transform = transform
+          style.WebkitTransform = transform
+
+          return {
+            renderResult: renderCellItemUI(dragData, computedStyle, style)
+          }
         }
         case EDragType.MEDIA_CARD: {
           const dragData = item as IDragMediaItem
           const trackDomRect = tracksDomRef?.current?.getBoundingClientRect()
-          const overInTracks = trackDomRect && clientOffset && clientOffset?.y > trackDomRect.top
-          const cptType = overInTracks ? 'CellItemUI' : 'MediaCardItemUI'
+          const overInTracks = trackDomRect && clientOffset && clientOffset.y > trackDomRect.top
 
+          // 如果拖拽到轨道上，需要将拖拽元素改为视频单元格，同时偏移到鼠标右边
           if (overInTracks) {
-            style.WebkitTransform = `translate(${clientOffset.x}px, ${clientOffset.y - TRACK_HEIGHT / 2}px)`
+            const limitX = trackDomRect.left
+            const x = Math.max(clientOffset.x, limitX)
+            const y = clientOffset.y - TRACK_HEIGHT / 2
+            const transform = `translate(${x}px, ${y}px)`
+            style.transform = transform
+            style.WebkitTransform = transform
           }
 
-          if (cptType === 'CellItemUI') {
-            return (
-              <CellItemUI
-                style={{
-                  // *** Test
-                  ...style,
-                  width: 200,
-                  // fontSize: computedStyle.fontSize,
-                  opacity: 1
-                  // color: computedStyle.color
-                }}
-                title={dragData.cellId}
-              />
-            )
-          } else if (cptType === 'MediaCardItemUI') {
-            return (
-              <MediaCardItemUI
-                style={style}
-                title={dragData.title}
-                thumbnail={dragData.thumbnail}
-              />
-            )
+          if (overInTracks) {
+            // *** test 转换mediaData为cellData
+            const testData: IDragCellItem = {
+              cellId: 'test',
+              cellData: { width: 200, cellId: 'test', left: 0, trackId: '' }
+            }
+            return {
+              renderResult: renderCellItemUI(
+                testData,
+                getComputedStyle(dragData.domRef!.current!),
+                style
+              )
+            }
           } else {
-            return null
+            return {
+              wrapStyle: { zIndex: LAYOUT_TOP_Z_INDEX },
+              renderResult: renderMediaCardItemUI(dragData, style)
+            }
           }
         }
         default:
           return null
       }
     },
-    [tracksDomRef]
+    [tracksDomRef, renderCellItemUI, renderMediaCardItemUI]
   )
 
   return <BaseCustomDragLayer<TGlobalDragType> renderDragLayer={renderDragLayer} />

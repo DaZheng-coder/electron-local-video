@@ -5,6 +5,8 @@ import TracksDomain from './TracksDomain'
 import { useDrop } from 'react-dnd'
 import { EDragType } from '@renderer/src/utils/trackUtils'
 import GlobalCustomDragLayer from '../components/GlobalCustomDragLayer'
+import { LAYOUT_TOP_Z_INDEX } from '@renderer/src/constants'
+import './index.css'
 
 const ClipLayout: FC = () => {
   const [collect, dropper] = useDrop({
@@ -15,8 +17,18 @@ const ClipLayout: FC = () => {
 
   return (
     <div ref={dropper}>
-      <Splitter layout="vertical" style={{ height: '100vh' }} className="h-screen bg-white">
-        <Splitter.Panel defaultSize="40%">
+      <Splitter
+        layout="vertical"
+        style={{ height: '100vh' }}
+        className="layout-splitter h-screen bg-white"
+      >
+        <Splitter.Panel
+          style={{
+            zIndex: LAYOUT_TOP_Z_INDEX
+          }}
+          defaultSize="40%"
+          className="bg-inherit"
+        >
           <Splitter layout="horizontal">
             <Splitter.Panel defaultSize="40%">
               <ResourcePool />

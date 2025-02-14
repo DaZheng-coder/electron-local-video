@@ -10,37 +10,15 @@ import { IBaseDragItem } from '@renderer/src/types'
  * @param containerRef 容器ref
  * @returns 偏移样式
  */
-export function getDragLayerItemStyles(args: {
-  initialOffset
-  sourceClientOffset
-  containerRef?: React.RefObject<HTMLDivElement> | null
-}): CSSProperties {
-  const { initialOffset, sourceClientOffset, containerRef } = args
+export function getDragLayerItemStyles(args: { initialOffset; sourceClientOffset }): CSSProperties {
+  const { initialOffset, sourceClientOffset } = args
   if (!initialOffset || !sourceClientOffset) {
     return {
       display: 'none'
     }
   }
 
-  let { x, y } = sourceClientOffset
-
-  // 获取容器坐标，计算拖拽边界，限制拖拽范围
-  if (containerRef && containerRef.current) {
-    const containerRect = containerRef.current.getBoundingClientRect()
-
-    if (sourceClientOffset.x < containerRect.left) {
-      x = containerRect.left
-    }
-    if (sourceClientOffset.x > containerRect.right) {
-      x = containerRect.right
-    }
-    if (sourceClientOffset.y < containerRect.top) {
-      y = containerRect.top
-    }
-    if (sourceClientOffset.y > containerRect.bottom) {
-      y = containerRect.bottom
-    }
-  }
+  const { x, y } = sourceClientOffset
 
   const transform = `translate(${x}px, ${y}px)`
 
@@ -54,7 +32,6 @@ export function getDragLayerItemStyles(args: {
 const layerStyles: React.CSSProperties = {
   position: 'fixed',
   pointerEvents: 'none',
-  zIndex: 100,
   left: 0,
   top: 0,
   width: '100%',
@@ -79,9 +56,10 @@ export interface ICustomDragLayerCollect<T extends IBaseDragItem> {
   isDragging: boolean
 }
 
-export type TRenderDragLayer<T extends IBaseDragItem> = (
-  args: ICustomDragLayerCollect<T>
-) => React.ReactNode
+export type TRenderDragLayer<T extends IBaseDragItem> = (args: ICustomDragLayerCollect<T>) => {
+  wrapStyle?: React.CSSProperties
+  renderResult: React.ReactNode
+} | null
 
 /**
  * 自定义拖拽层属性
@@ -89,6 +67,7 @@ export type TRenderDragLayer<T extends IBaseDragItem> = (
 export interface ICustomDragLayerProps<T extends IBaseDragItem> {
   // 渲染拖拽层元素
   renderDragLayer: TRenderDragLayer<T>
+  zIndex?: number | string
 }
 
 /**
@@ -112,8 +91,9 @@ const BaseCustomDragLayer = <T extends IBaseDragItem>({
   if (!isDragging || !sourceClientOffset) {
     return null
   }
+  const { wrapStyle = {}, renderResult = null } = renderDragLayer(collect) || {}
 
-  return <div style={layerStyles}>{renderDragLayer(collect)}</div>
+  return <div style={{ ...layerStyles, ...wrapStyle }}>{renderResult}</div>
 }
 
 export default BaseCustomDragLayer
