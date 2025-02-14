@@ -4,6 +4,4 @@ export interface IBaseDragItem {
   domRef?: React.RefObject<HTMLDivElement>
 }
 
-export interface IDragMediaItem extends IBaseDragItem {
-  mediaData: IBaseMediaData
-}
+export interface IDragMediaItem extends IBaseDragItem, IBaseMediaData {}

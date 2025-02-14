@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect, useState } from 'react'
+import React, { CSSProperties } from 'react'
 import { useDragLayer, XYCoord } from 'react-dnd'
 import { EDragType } from '@renderer/src/utils/trackUtils'
 import { IBaseDragItem } from '@renderer/src/types'
@@ -6,24 +6,23 @@ import { IBaseDragItem } from '@renderer/src/types'
 /**
  * 计算拖拽元素的位置
  * @param initialOffset 初始位置
- * @param currentOffset 当前位置
- * @param sourceClientOffset 源位置
+ * @param sourceClientOffset 当前位置
  * @param containerRef 容器ref
  * @returns 偏移样式
  */
-export function getItemStyles(
-  initialOffset,
-  currentOffset,
-  sourceClientOffset,
-  containerRef?: React.RefObject<HTMLDivElement>
-): CSSProperties {
-  if (!initialOffset || !currentOffset) {
+export function getDragLayerItemStyles(args: {
+  initialOffset
+  sourceClientOffset
+  containerRef?: React.RefObject<HTMLDivElement> | null
+}): CSSProperties {
+  const { initialOffset, sourceClientOffset, containerRef } = args
+  if (!initialOffset || !sourceClientOffset) {
     return {
       display: 'none'
     }
   }
 
-  let { x, y } = currentOffset
+  let { x, y } = sourceClientOffset
 
   // 获取容器坐标，计算拖拽边界，限制拖拽范围
   if (containerRef && containerRef.current) {
@@ -67,7 +66,7 @@ const layerStyles: React.CSSProperties = {
  * @param item 拖拽项
  * @param itemType 拖拽类型
  * @param initialOffset 初始位置
- * @param currentOffset 当前位置
+ * @param sourceClientOffset 当前位置
  * @param sourceClientOffset 源位置
  * @param isDragging 是否拖拽中
  */
@@ -75,27 +74,21 @@ export interface ICustomDragLayerCollect<T extends IBaseDragItem> {
   item: T
   itemType: EDragType | null
   initialOffset: XYCoord | null
-  currentOffset: XYCoord | null
   sourceClientOffset: XYCoord | null
+  clientOffset: XYCoord | null
   isDragging: boolean
 }
+
+export type TRenderDragLayer<T extends IBaseDragItem> = (
+  args: ICustomDragLayerCollect<T>
+) => React.ReactNode
 
 /**
  * 自定义拖拽层属性
  */
 export interface ICustomDragLayerProps<T extends IBaseDragItem> {
-  // 拖拽容器
-  containerRef?: React.RefObject<HTMLDivElement>
   // 渲染拖拽层元素
-  renderDragLayer: (
-    params: ICustomDragLayerCollect<T> & { draggedElementStyle: CSSProperties }
-  ) => React.ReactNode
-  // 获取拖拽元素样式
-  getDraggedElementStyle: (params: {
-    item: T
-    itemType: EDragType
-    computedStyle: CSSStyleDeclaration
-  }) => CSSProperties | null
+  renderDragLayer: TRenderDragLayer<T>
 }
 
 /**
@@ -103,55 +96,24 @@ export interface ICustomDragLayerProps<T extends IBaseDragItem> {
  * @returns
  */
 const BaseCustomDragLayer = <T extends IBaseDragItem>({
-  renderDragLayer,
-  getDraggedElementStyle,
-  containerRef
+  renderDragLayer
 }: ICustomDragLayerProps<T>) => {
   const collect = useDragLayer<ICustomDragLayerCollect<T>, T>((monitor) => ({
     item: monitor.getItem(),
     itemType: monitor.getItemType() as EDragType,
     initialOffset: monitor.getInitialSourceClientOffset(),
-    currentOffset: monitor.getSourceClientOffset(),
     sourceClientOffset: monitor.getSourceClientOffset(),
+    clientOffset: monitor.getClientOffset(),
     isDragging: monitor.isDragging()
   }))
 
-  const { itemType, isDragging, item, initialOffset, currentOffset, sourceClientOffset } = collect
+  const { isDragging, sourceClientOffset } = collect
 
-  const [draggedElementStyle, setDraggedElementStyle] = useState<React.CSSProperties>({})
-
-  /**
-   * 为拖拽层元素设置额外样式
-   * 解决拖拽图层元素与被拖拽元素样式不一致问题
-   */
-  useEffect(() => {
-    // 特殊处理，阻止响应原生drag事件
-    // @ts-ignore TS2339
-    if (item?.domRef?.current && itemType) {
-      const computedStyle = window.getComputedStyle(item.domRef.current)
-      const style = getDraggedElementStyle({
-        item,
-        itemType,
-        computedStyle
-      })
-      !!style && setDraggedElementStyle(style)
-    }
-  }, [item, itemType, getDraggedElementStyle])
-
-  if (!isDragging || !currentOffset) {
+  if (!isDragging || !sourceClientOffset) {
     return null
   }
 
-  return (
-    <div style={layerStyles}>
-      <div style={getItemStyles(initialOffset, currentOffset, sourceClientOffset, containerRef)}>
-        {renderDragLayer({
-          ...collect,
-          draggedElementStyle
-        })}
-      </div>
-    </div>
-  )
+  return <div style={layerStyles}>{renderDragLayer(collect)}</div>
 }
 
 export default BaseCustomDragLayer

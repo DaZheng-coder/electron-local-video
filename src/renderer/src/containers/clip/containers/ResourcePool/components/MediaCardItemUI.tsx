@@ -6,12 +6,20 @@ import { FC } from 'react'
 export interface IMediaCardUIProps {
   title: string
   thumbnail: string
+  className?: string
+  style?: React.CSSProperties
 }
 
-const MediaCardItemUI: FC<IMediaCardUIProps> = ({ title, thumbnail }) => {
+const MediaCardItemUI: FC<IMediaCardUIProps> = ({
+  title,
+  thumbnail,
+  className = '',
+  style = {}
+}) => {
   return (
     <Card
-      className="w-[120px] overflow-hidden"
+      style={style}
+      className={`w-[120px] overflow-hidden ${className}`}
       classNames={{ body: '!py-1 !px-2' }}
       cover={
         <Image

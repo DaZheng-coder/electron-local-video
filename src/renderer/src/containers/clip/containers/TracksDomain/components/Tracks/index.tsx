@@ -10,6 +10,7 @@ import clipStore from '@renderer/src/stores/clipStore'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import TrackDivider from './components/TrackDivider'
 import TracksCustomDragLayer from '@renderer/src/containers/clip/components/TracksCustomDragLayer'
+import dragStore from '@renderer/src/stores/dragStore'
 
 const Tracks = () => {
   const [highlightDivider, setHighlightDivider] = useState(-1)
@@ -74,6 +75,14 @@ const Tracks = () => {
     }
   }, [isOverCurrent])
 
+  useEffect(() => {
+    // 注册轨道容器
+    dragStore.setState({ tracksDomRef: containerRef })
+    return () => {
+      dragStore.setState({ tracksDomRef: null })
+    }
+  }, [])
+
   return (
     // 轨道容器
     <div ref={containerRef} className="no-scrollbar flex-1 flex flex-col overflow-scroll">
@@ -96,7 +105,7 @@ const Tracks = () => {
             </Fragment>
           )
         })}
-        <TracksCustomDragLayer containerRef={containerRef} />
+        <TracksCustomDragLayer />
       </div>
       <div className="flex-1" />
     </div>

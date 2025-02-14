@@ -6,9 +6,6 @@ interface IClipStore {
   timelineScale: number
   setTimelineScale: (scale: number) => void
 
-  isDragging: boolean
-  setIsDragging: (isDragging: boolean) => void
-
   tracks: ITrackData[]
   addNewTrack: (index: number, cellIds?: string[]) => void
   removeTrack: (trackId: string) => void
@@ -34,11 +31,6 @@ const clipStore = create<IClipStore>((set, get) => ({
   timelineScale: 0,
   setTimelineScale: (scale: number) => {
     set({ timelineScale: scale })
-  },
-
-  isDragging: false,
-  setIsDragging: (isDragging: boolean) => {
-    set({ isDragging })
   },
 
   /**

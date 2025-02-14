@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useRef } from 'react'
 import MediaCardItemUI from './MediaCardItemUI'
 import { useDrag } from 'react-dnd'
 import { EDragType } from '@renderer/src/utils/trackUtils'
@@ -8,17 +8,21 @@ const MediaCardItem: FC<{
   title: string
   thumbnail: string
 }> = ({ title, thumbnail }) => {
+  const ref = useRef<HTMLDivElement>(null)
+
   const [collect, dragger, preview] = useDrag(() => ({
     type: EDragType.MEDIA_CARD,
-    item: { title, thumbnail }
+    item: { title, thumbnail, domRef: ref }
   }))
 
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true })
   }, [preview])
 
+  dragger(ref)
+
   return (
-    <div ref={dragger}>
+    <div ref={ref}>
       <MediaCardItemUI title={title} thumbnail={thumbnail} />
     </div>
   )
