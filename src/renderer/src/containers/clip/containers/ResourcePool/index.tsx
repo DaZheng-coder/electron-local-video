@@ -1,6 +1,6 @@
 import { Button, Card, Flex } from 'antd'
 import MediaCard from './components/MediaCard'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import useDropper from '@renderer/src/hooks/useDropper'
 import resourceStore from '@renderer/src/stores/resourceStore'
 import { EMediaType } from '@typings/index'
@@ -11,6 +11,7 @@ const ResourcePool = () => {
   const resourcesMap = resourceStore((state) => state.resourceMap)
   const addResourceByPath = resourceStore((state) => state.addResourceByPath)
   const clearResources = resourceStore((state) => state.clearResources)
+  // *** todo fix，修复拖拽轨道视频块到这个区域会停住的问题
   const { onDragOver, onDragLeave, onDrop } = useDropper(ref, {
     onDrop: (e) => {
       const files = e.dataTransfer.files

@@ -76,7 +76,7 @@ const Tracks = () => {
 
   return (
     // 轨道容器
-    <div ref={containerRef} className="no-scrollbar py-15 flex-1 flex flex-col overflow-scroll">
+    <div ref={containerRef} className="no-scrollbar flex-1 flex flex-col overflow-scroll">
       {/* 占位元素，用于占据上下空白空间，使轨道保持居中 */}
       <div className="flex-1" />
       <div ref={tracksWrapRef} className="relative">

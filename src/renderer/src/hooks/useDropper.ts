@@ -1,5 +1,4 @@
-import { DragEvent, useRef } from 'react'
-import { rgbToHex } from '../utils'
+import { DragEvent } from 'react'
 
 export interface IUseDropperProps {
   onDrop: (e: DragEvent) => void

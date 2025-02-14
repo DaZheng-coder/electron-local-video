@@ -47,7 +47,8 @@ export function getItemStyles(
 
   return {
     transform,
-    WebkitTransform: transform
+    WebkitTransform: transform,
+    userSelect: 'none'
   }
 }
 

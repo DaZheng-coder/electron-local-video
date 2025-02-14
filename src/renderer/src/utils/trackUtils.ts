@@ -24,7 +24,7 @@ export enum EDragResultType {
 }
 
 /**
- * 获取拖拽结果
+ * 获取在整个轨道容器里的拖拽结果
  * @param monitor
  * @param parentRef
  * @returns
@@ -92,7 +92,7 @@ export const getDomainDragCellResult = (
 }
 
 /**
- * 获取拖拽cell的结果
+ * 获取在轨道间拖拽cell的结果
  * @param monitor
  * @param trackRef
  * @param item
