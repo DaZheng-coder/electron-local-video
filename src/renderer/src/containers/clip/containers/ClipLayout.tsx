@@ -4,10 +4,11 @@ import ResourcePool from './ResourcePool'
 import TracksDomain from './TracksDomain'
 import { useDrop } from 'react-dnd'
 import { EDragType } from '@renderer/src/utils/trackUtils'
+import GlobalCustomDragLayer from '../components/GlobalCustomDragLayer'
 
 const ClipLayout: FC = () => {
   const [collect, dropper] = useDrop({
-    accept: [EDragType.CELL_ITEM],
+    accept: [EDragType.CELL_ITEM, EDragType.MEDIA_CARD],
     canDrop: (item, monitor) => {},
     drop: (item, monitor) => {}
   })
@@ -27,6 +28,7 @@ const ClipLayout: FC = () => {
           <TracksDomain />
         </Splitter.Panel>
       </Splitter>
+      <GlobalCustomDragLayer />
     </div>
   )
 }

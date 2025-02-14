@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react'
 import { EDragType } from '@renderer/src/utils/trackUtils'
-import CellItemUI from '../TracksDomain/components/Tracks/components/CellItem/CellItemUI'
 import BaseCustomDragLayer from '@renderer/src/components/BaseCustomDragLayer'
 import { IDragCellItem } from '@renderer/src/utils/trackUtils'
+import CellItemUI from '../containers/TracksDomain/components/Tracks/components/CellItem/CellItemUI'
 
 /**
  * 轨道拖拽层

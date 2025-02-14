@@ -127,8 +127,7 @@ const BaseCustomDragLayer = <T extends IBaseDragItem>({
   useEffect(() => {
     // 特殊处理，阻止响应原生drag事件
     // @ts-ignore TS2339
-    const isNativeDragging = !!item?.dataTransfer
-    if (!isNativeDragging && item && item.domRef.current && itemType) {
+    if (item?.domRef?.current && itemType) {
       const computedStyle = window.getComputedStyle(item.domRef.current)
       const style = getDraggedElementStyle({
         item,

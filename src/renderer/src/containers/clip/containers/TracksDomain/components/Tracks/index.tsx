@@ -9,7 +9,7 @@ import {
 import clipStore from '@renderer/src/stores/clipStore'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import TrackDivider from './components/TrackDivider'
-import TracksCustomDragLayer from '../../../TracksCustomDragLayer'
+import TracksCustomDragLayer from '@renderer/src/containers/clip/components/TracksCustomDragLayer'
 
 const Tracks = () => {
   const [highlightDivider, setHighlightDivider] = useState(-1)

@@ -14,6 +14,7 @@ export interface IDragCellItem extends IBaseDragItem {
 export const TRACK_HEIGHT = 80
 
 export enum EDragType {
+  MEDIA_CARD = 'MEDIA_CARD',
   CELL_ITEM = 'CELL_ITEM',
   TRACK_ITEM = 'TRACK_ITEM'
 }

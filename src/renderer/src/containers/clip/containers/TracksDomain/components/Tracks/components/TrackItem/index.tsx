@@ -74,7 +74,12 @@ const TrackItem: FC<ITrackItemProps> = ({ trackId, trackLevel }) => {
       {trackData?.cellIds.map((cellId) => <CellItem key={cellId} cellId={cellId} />)}
       {!!previewCellData && (
         <CellItemUI
-          style={{ opacity: 0.8, position: 'absolute', left: previewCellData?.left, top: 0 }}
+          style={{
+            opacity: 0.8,
+            position: 'absolute',
+            left: Math.max(previewCellData?.left, 0),
+            top: 0
+          }}
           title={previewCellData.cellId}
           width={previewCellData.width}
         />
