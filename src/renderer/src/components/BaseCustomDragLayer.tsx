@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react'
 import { useDragLayer, XYCoord } from 'react-dnd'
-import { EDragType } from '@renderer/src/utils/trackUtils'
+import { EDragType } from '@renderer/src/utils/dragUtils'
 import { IBaseDragItem } from '@renderer/src/types'
 
 /**

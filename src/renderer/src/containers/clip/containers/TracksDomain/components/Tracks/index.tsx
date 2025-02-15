@@ -1,6 +1,6 @@
 import { useDrop } from 'react-dnd'
 import TrackItem from './components/TrackItem'
-import { EDragResultType, EDragType, getDomainDragCellResult } from '@renderer/src/utils/trackUtils'
+import { EDragResultType, EDragType, getDomainDragCellResult } from '@renderer/src/utils/dragUtils'
 import clipStore from '@renderer/src/stores/clipStore'
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import TrackDivider from './components/TrackDivider'

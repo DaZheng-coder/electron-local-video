@@ -1,4 +1,4 @@
-import { TRACK_HEIGHT } from '@renderer/src/utils/trackUtils'
+import { TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
 import { FC } from 'react'
 
 export interface ICellItemUIProps {

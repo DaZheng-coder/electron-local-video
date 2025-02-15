@@ -1,8 +1,6 @@
 import { ICellData, ITrackData } from '@typings/track'
 import { DropTargetMonitor, XYCoord } from 'react-dnd'
 import clipStore from '../stores/clipStore'
-import { IDragCellItem } from '../types'
-
 export const TRACK_HEIGHT = 80
 
 export enum EDragType {

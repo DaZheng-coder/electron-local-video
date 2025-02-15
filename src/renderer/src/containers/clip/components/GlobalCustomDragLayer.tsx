@@ -2,7 +2,7 @@ import BaseCustomDragLayer, {
   getDragLayerItemStyles,
   TRenderDragLayer
 } from '@renderer/src/components/BaseCustomDragLayer'
-import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/trackUtils'
+import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
 import { CSSProperties, memo, useCallback } from 'react'
 import MediaCardItemUI from '../containers/ResourcePool/components/MediaCardItemUI'
 import dragStore from '@renderer/src/stores/dragStore'

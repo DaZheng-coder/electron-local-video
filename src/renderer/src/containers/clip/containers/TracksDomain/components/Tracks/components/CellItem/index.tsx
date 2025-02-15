@@ -1,5 +1,5 @@
 import clipStore from '@renderer/src/stores/clipStore'
-import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/trackUtils'
+import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
 import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import { useDrag } from 'react-dnd'
 import { getEmptyImage } from 'react-dnd-html5-backend'

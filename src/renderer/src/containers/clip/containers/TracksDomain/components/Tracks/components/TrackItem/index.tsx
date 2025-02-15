@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import CellItem from '../CellItem'
-import { EDragType, getTrackDragCellResult, TRACK_HEIGHT } from '@renderer/src/utils/trackUtils'
+import { EDragType, getTrackDragCellResult, TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
 import clipStore from '@renderer/src/stores/clipStore'
 import { useDrop } from 'react-dnd'
 import CellItemUI from '../CellItem/CellItemUI'

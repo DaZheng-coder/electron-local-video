@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef } from 'react'
 import MediaCardItemUI from './MediaCardItemUI'
 import { useDrag } from 'react-dnd'
-import { EDragType } from '@renderer/src/utils/trackUtils'
+import { EDragType } from '@renderer/src/utils/dragUtils'
 import { getEmptyImage } from 'react-dnd-html5-backend'
 import { IDragMediaItem } from '@renderer/src/types'
 import { IVideoData } from '@typings/index'
