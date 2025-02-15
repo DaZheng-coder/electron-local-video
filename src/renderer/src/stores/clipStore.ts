@@ -94,8 +94,6 @@ const clipStore = create<IClipStore>((set, get) => ({
     if (!track) return
     track.cellIds = track.cellIds.filter((id) => id !== cellId)
 
-    console.log('*** removeCellInTrack, tracks', tracks)
-
     set({ cells, tracks })
 
     // 当前轨道为空时，删掉该轨道

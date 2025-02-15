@@ -19,7 +19,7 @@ const getComputedStyle = (elt: Element, pseudoElt?: string | null) => {
 }
 
 const GlobalCustomDragLayer = () => {
-  const tracksDomRef = dragStore((state) => state.tracksDomRef)
+  const tracksContainerDomRef = dragStore((state) => state.tracksContainerDomRef)
 
   const renderCellItemUI = useCallback(
     (dragData: IDragCellItem, computedStyle: CSSProperties, style: CSSProperties) => {
@@ -60,13 +60,13 @@ const GlobalCustomDragLayer = () => {
       const style = getDragLayerItemStyles({
         initialOffset,
         sourceClientOffset
-        // containerRef: itemType === EDragType.CELL_ITEM ? tracksDomRef : null
+        // containerRef: itemType === EDragType.CELL_ITEM ? tracksContainerDomRef : null
       })
 
       switch (itemType) {
         case EDragType.CELL_ITEM: {
           const dragData = item as IDragCellItem
-          const trackDomRect = tracksDomRef?.current?.getBoundingClientRect()
+          const trackDomRect = tracksContainerDomRef?.current?.getBoundingClientRect()
           const computedStyle = getComputedStyle(dragData.domRef!.current!)
 
           const transform = `translate(${Math.max(sourceClientOffset.x, trackDomRect?.left || 0)}px, ${sourceClientOffset.y}px)`
@@ -80,7 +80,7 @@ const GlobalCustomDragLayer = () => {
 
         case EDragType.MEDIA_CARD: {
           const dragData = item as IDragMediaItem
-          const trackDomRect = tracksDomRef?.current?.getBoundingClientRect()
+          const trackDomRect = tracksContainerDomRef?.current?.getBoundingClientRect()
           const overInTracks = trackDomRect && clientOffset && clientOffset.y > trackDomRect.top
 
           // 如果拖拽到轨道上，需要将拖拽元素改为视频单元格，同时偏移到鼠标右边
@@ -117,7 +117,7 @@ const GlobalCustomDragLayer = () => {
           return null
       }
     },
-    [tracksDomRef, renderCellItemUI, renderMediaCardItemUI]
+    [tracksContainerDomRef, renderCellItemUI, renderMediaCardItemUI]
   )
 
   return <BaseCustomDragLayer<TGlobalDragItem> renderDragLayer={renderDragLayer} />

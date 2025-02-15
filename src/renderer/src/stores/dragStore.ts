@@ -9,15 +9,25 @@ export interface IDragSelectItem {
 interface IDragStore {
   selects: IDragSelectItem[]
   setSelects: (selects: IDragSelectItem[]) => void
-  tracksDomRef: React.RefObject<HTMLDivElement> | null
-  setTracksDomRef: (tracksDomRef: React.RefObject<HTMLDivElement>) => void
+
+  tracksContainerDomRef: React.RefObject<HTMLDivElement> | null
+  setTracksContainerDomRef: (tracksContainerDomRef: React.RefObject<HTMLDivElement>) => void
+
+  tracksWrapDomRef: React.RefObject<HTMLDivElement> | null
+  setTracksWrapDomRef: (tracksWrapDomRef: React.RefObject<HTMLDivElement>) => void
 }
 
 const dragStore = create<IDragStore>((set) => ({
   selects: [],
   setSelects: (selects: IDragSelectItem[]) => set({ selects }),
-  tracksDomRef: null,
-  setTracksDomRef: (tracksDomRef: React.RefObject<HTMLDivElement>) => set({ tracksDomRef })
+
+  tracksContainerDomRef: null,
+  setTracksContainerDomRef: (tracksContainerDomRef: React.RefObject<HTMLDivElement>) =>
+    set({ tracksContainerDomRef }),
+
+  tracksWrapDomRef: null,
+  setTracksWrapDomRef: (tracksWrapDomRef: React.RefObject<HTMLDivElement>) =>
+    set({ tracksWrapDomRef })
 }))
 
 export default dragStore

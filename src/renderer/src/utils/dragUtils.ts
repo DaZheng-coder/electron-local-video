@@ -1,7 +1,10 @@
-import { ICellData, ITrackData } from '@typings/track'
 import { DropTargetMonitor, XYCoord } from 'react-dnd'
 import clipStore from '../stores/clipStore'
+import dragStore from '../stores/dragStore'
+import { IDragCellItem, IDragMediaItem, TGlobalDragItem } from '../types'
+
 export const TRACK_HEIGHT = 80
+export const TRACK_BORDER_TOP_WIDTH = 2
 
 export enum EDragType {
   MEDIA_CARD = 'MEDIA_CARD',
@@ -15,21 +18,152 @@ export enum EDragResultType {
 }
 
 /**
- * 获取在整个轨道容器里的拖拽结果
+ * 获取拖拽单元的偏移量
+ * - 拖拽源是视频单元格，此时起始相对鼠标位置有偏移，取视频块源点
+ * - 拖拽源是视频资源时，此时起始位置是鼠标位置，取鼠标位置
  * @param monitor
- * @param parentRef
  * @returns
  */
-export const getDomainDragCellResult = (
-  monitor: DropTargetMonitor,
-  parentRef: React.RefObject<HTMLDivElement>
-): { type: EDragResultType; insertIndex: number } | null => {
-  // 0. 参数容错处理
+export const getDragCellOffset = (monitor: DropTargetMonitor): XYCoord | null => {
+  const sourceClientOffset = monitor.getSourceClientOffset()
   const clientOffset = monitor.getClientOffset()
-  if (!parentRef.current || !clientOffset) return null
+  switch (monitor.getItemType()) {
+    case EDragType.CELL_ITEM:
+      return {
+        x: sourceClientOffset?.x || 0,
+        y: clientOffset?.y || 0
+      }
+    case EDragType.MEDIA_CARD:
+      return clientOffset
+    default:
+      return null
+  }
+}
 
-  // 1. 获取所有轨道元素，主轨道的等级为0
-  const trackItems = Array.from(parentRef.current.children)
+/**
+ * 通过媒体数据获取拖拽单元数据
+ * @param mediaData
+ * @returns
+ */
+export const getDragCellDataByMediaData = (mediaData: IDragMediaItem): IDragCellItem => {
+  const data: IDragCellItem = {
+    cellId: 'test',
+    cellData: { width: 200, cellId: 'test', left: 0, trackId: '' }
+  }
+  return data
+}
+
+/**
+ * 获取拖拽单元数据
+ * @param monitor
+ * @returns
+ */
+export const getDragCellData = (monitor: DropTargetMonitor): IDragCellItem | null => {
+  const dragData: TGlobalDragItem = monitor.getItem()
+  switch (monitor.getItemType()) {
+    case EDragType.CELL_ITEM:
+      return dragData as IDragCellItem
+    case EDragType.MEDIA_CARD:
+      return getDragCellDataByMediaData(dragData as IDragMediaItem)
+    default:
+      return null
+  }
+}
+
+/**
+ * 是否能插入到当前轨道中
+ * @param cellId
+ * @param draggingCellStart
+ * @param draggingCellEnd
+ * @param trackIndex
+ * @param leftLimit
+ * @returns
+ */
+export const canInsertToTrack = (
+  cellId: string,
+  draggingCellStart: number,
+  draggingCellEnd: number,
+  trackIndex: number,
+  leftLimit: number
+) => {
+  const cells = clipStore.getState().cells
+  const tracks = clipStore.getState().tracks
+  const curTrackCells = tracks[trackIndex].cellIds
+    .filter((id) => id !== cellId)
+    .map((cellId) => cells[cellId])
+    .sort((a, b) => a.left - b.left)
+  let pre = leftLimit
+  for (let j = 0; j < curTrackCells.length; j++) {
+    if (draggingCellStart > pre && draggingCellEnd < curTrackCells[j].left) {
+      // 可以成功插入到当前轨道中
+      return true
+    }
+    pre = curTrackCells[j].left + curTrackCells[j].width
+  }
+  return draggingCellStart > pre
+}
+
+/**
+ * 组装新建轨道的结果
+ * @param index
+ * @param left
+ * @returns
+ */
+const createNewTrackResult = (index: number, left: number) => ({
+  type: EDragResultType.NEW_TRACK,
+  insertTrackIndex: index,
+  left,
+  top: -1
+})
+
+/**
+ * 组装插入视频单元的结果
+ * @param index
+ * @param left
+ * @param top
+ * @returns
+ */
+const createInsertCellResult = (index: number, left: number, top: number) => ({
+  type: EDragResultType.INSERT_CELL,
+  insertTrackIndex: index,
+  left,
+  top
+})
+
+/**
+ * 获取拖拽在轨道中的结果
+ * @param monitor
+ * @returns
+ */
+export const getDraggingInTracksResult = (
+  monitor: DropTargetMonitor
+): {
+  type: EDragResultType
+  left: number
+  top: number
+  insertTrackIndex: number
+} | null => {
+  const tracksWrapDomRef = dragStore.getState().tracksWrapDomRef
+  const tracksWrapRect = tracksWrapDomRef?.current?.getBoundingClientRect()
+  const clientOffset = monitor.getClientOffset() // 鼠标位置
+  const sourceClientOffset = monitor.getSourceClientOffset() // 拖拽源位置
+  const dragOffset = getDragCellOffset(monitor) // 最终拖拽位置
+
+  const cellData = getDragCellData(monitor) // 拖拽的cell数据
+  const tracks = clipStore.getState().tracks // 所有轨道数据
+
+  if (
+    !clientOffset ||
+    !sourceClientOffset ||
+    !dragOffset ||
+    !cellData ||
+    !tracksWrapDomRef ||
+    !tracksWrapRect
+  )
+    return null
+
+  // 1. 获取所有轨道元素及位置信息
+  const trackItems = Array.from(tracksWrapDomRef.current?.children || [])
     .filter((child) => {
       return child.getAttribute('data-type') === EDragType.TRACK_ITEM
     })
@@ -39,119 +173,86 @@ export const getDomainDragCellResult = (
         parseInt(b.getAttribute('data-index') || '0')
     )
 
-  // 2. 获取每个轨道的位置信息
-  const trackRects: DOMRect[] = []
-  for (let i = 0; i < trackItems.length; i++) {
-    const child = trackItems[i]
-    const childRect = child.getBoundingClientRect()
-    trackRects.push(childRect)
-  }
+  const trackRects = trackItems.map((track) => track.getBoundingClientRect())
 
-  // 3. 判断是否位于主轨下方空白区域
-  if (clientOffset.y > trackRects[0].bottom) {
-    return {
-      type: EDragResultType.NEW_TRACK,
-      insertIndex: 1
-    }
-  }
+  const tracksLen = tracks.length
+  const topLimit = tracksWrapRect.top
+  const bottomLimit = tracksWrapRect.bottom
 
-  // 4. 判断是否位于最后一个轨道的后面
-  if (clientOffset.y < trackRects[trackRects.length - 1].top) {
-    return {
-      type: EDragResultType.NEW_TRACK,
-      insertIndex: trackRects.length
-    }
-  }
+  const isWithinTrackBounds = (y: number) => y > topLimit && y < bottomLimit
 
-  // 5. 判断是否位于轨道中或者轨道之间
-  for (let i = 0; i < trackRects.length - 1; i++) {
-    // // 判断是否位于轨道中
-    // if (clientOffset.y >= trackRects[i].top && clientOffset.y <= trackRects[i].bottom) {
-    //   // TODO 判断是否足够放下该元素
-    //   return null
-    // }
-    // 判断是否位于轨道之间
-    if (clientOffset.y < trackRects[i].top && clientOffset.y > trackRects[i + 1].bottom) {
-      return {
-        type: EDragResultType.NEW_TRACK,
-        insertIndex: i + 1
+  // 2. 根据鼠标位置是否在所有轨道内，判断是否需要新增轨道
+  if (isWithinTrackBounds(dragOffset.y)) {
+    // 2.1 找到当前位于哪个轨道、位于哪个轨道分割线
+    for (let curTrackIndex = 0; curTrackIndex < trackRects.length; curTrackIndex++) {
+      const curTrackRect = trackRects[curTrackIndex]
+      if (dragOffset.y > curTrackRect.top && dragOffset.y < curTrackRect.bottom) {
+        if (curTrackIndex === 0) {
+          // 特判：归于主轨，直接插入
+          return createInsertCellResult(
+            curTrackIndex,
+            dragOffset.x,
+            curTrackRect.top - tracksWrapRect.top
+          )
+        }
+
+        const draggingCellStart = dragOffset.x // 拖拽cell的起始位置
+        const draggingCellEnd = dragOffset.x + cellData.cellData.width // 拖拽cell的结束位置
+
+        // 2.1.1 当前轨道有空位置插入
+        if (
+          canInsertToTrack(
+            cellData.cellId,
+            draggingCellStart,
+            draggingCellEnd,
+            curTrackIndex,
+            curTrackRect.left
+          )
+        ) {
+          return createInsertCellResult(
+            curTrackIndex,
+            dragOffset.x,
+            curTrackRect.top - tracksWrapRect.top
+          )
+        }
+
+        // 2.1.2 当前轨道无空位置插入， 从第二个轨道到最后一个轨道找空位置插入
+        for (let j = 1; j < tracksLen; j++) {
+          if (j === curTrackIndex) continue
+          if (
+            canInsertToTrack(
+              cellData.cellId,
+              draggingCellStart,
+              draggingCellEnd,
+              j,
+              trackRects[j].left
+            )
+          ) {
+            return createInsertCellResult(j, dragOffset.x, trackRects[j].top - tracksWrapRect.top)
+          }
+        }
+
+        // 2.1.3 所有轨道都没有空位置插入，新建轨道
+        return createNewTrackResult(curTrackIndex, dragOffset.x)
       }
+
+      // 2.1.4 位于轨道之间，直接新建轨道
+      if (
+        curTrackIndex + 1 < tracksLen &&
+        dragOffset.y < curTrackRect.top &&
+        dragOffset.y > trackRects[curTrackIndex + 1].bottom
+      ) {
+        return createNewTrackResult(curTrackIndex, dragOffset.x)
+      }
+    }
+  } else {
+    // 2.2 位于轨道边界，新建轨道： 位于轨道上边界，插入当前轨道后，位于轨道下边界，插入主轨后
+    if (dragOffset.y < topLimit) {
+      return createNewTrackResult(tracksLen - 1, dragOffset.x)
+    } else if (dragOffset.y > bottomLimit) {
+      return createNewTrackResult(0, dragOffset.x)
     }
   }
 
   return null
-}
-
-const getDragStartX = (itemType: EDragType, clientOffset: XYCoord, sourceClientOffset: XYCoord) => {
-  switch (itemType) {
-    case EDragType.CELL_ITEM:
-      return sourceClientOffset.x
-    case EDragType.MEDIA_CARD:
-      return clientOffset.x
-    default:
-      return 0
-  }
-}
-
-/**
- * 获取在轨道间拖拽cell的结果
- * @param monitor
- * @param trackRef
- * @param item
- * @param trackData
- * @returns
- */
-export const getTrackDragCellResult = (args: {
-  monitor: DropTargetMonitor
-  trackRef: React.RefObject<HTMLDivElement>
-  trackCellIds: string[]
-  curCellData: { cellId: string; width: number }
-  itemType: EDragType
-}): { left: number } | undefined => {
-  const { monitor, trackRef, trackCellIds, curCellData, itemType } = args
-  // 0. 参数容错处理
-  const sourceClientOffset = monitor.getSourceClientOffset()
-  const clientOffset = monitor.getClientOffset()
-  const trackRect = trackRef.current?.getBoundingClientRect()
-  if (!trackRef.current || !clientOffset || !sourceClientOffset || !trackRect) return
-
-  // 1. 计算拖拽cell的起始位置
-  const startX = getDragStartX(itemType, clientOffset, sourceClientOffset)
-  const endX = startX + curCellData.width
-
-  // 2. 获取除自身外,当前轨道的所有cell数据
-  const allCells = clipStore.getState().cells
-  const cells: ICellData[] = []
-  for (const cellId of trackCellIds) {
-    if (cellId === curCellData.cellId) continue
-    cells.push(allCells[cellId])
-  }
-
-  // 3. 特判当前轨道除自身外，没有其他cell的情况
-  if (cells.length === 0) {
-    return { left: startX }
-  }
-
-  // 4. 计算拖拽cell的位置
-  let left: number | undefined = undefined
-
-  // 5. 特判位于最后面的情况，直接放在最后
-  if (startX > cells[cells.length - 1].left + cells[cells.length - 1].width) {
-    left = startX
-  }
-
-  let pre = trackRect.left
-  for (let i = 0; i < cells.length; i++) {
-    if (startX > pre && endX < cells[i].left) {
-      left = startX
-      break
-    }
-    pre = cells[i].left + cells[i].width
-  }
-
-  if (left !== undefined) {
-    return { left }
-  }
-
-  return
 }

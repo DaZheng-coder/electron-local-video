@@ -5,6 +5,7 @@ export interface IPreviewCellData {
   cellId: string
   width: number
   left: number
+  top: number
 }
 
 export interface IBaseDragItem {
