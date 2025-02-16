@@ -1,5 +1,6 @@
 import { BoxPlotTwoTone } from '@ant-design/icons'
 import DZSlider from '@renderer/src/components/DZSlider'
+import { LAYOUT_TOOL_Z_INDEX } from '@renderer/src/constants'
 import clipStore from '@renderer/src/stores/clipStore'
 import configStore from '@renderer/src/stores/configStore'
 import { Tooltip } from 'antd'

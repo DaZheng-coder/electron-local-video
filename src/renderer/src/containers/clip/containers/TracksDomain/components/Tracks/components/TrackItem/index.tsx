@@ -17,7 +17,7 @@ const TrackItem: FC<ITrackItemProps> = ({ trackId, trackIndex }) => {
       data-type={EDragType.TRACK_ITEM}
       data-index={trackIndex}
       style={{ height: TRACK_HEIGHT }}
-      className="w-full bg-blue-500 rounded-[6px] relative"
+      className="w-full bg-[#3B3B3B] rounded-[6px] relative"
     >
       {trackData?.cellIds.map((cellId) => <CellItem key={cellId} cellId={cellId} />)}
     </div>

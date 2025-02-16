@@ -27,7 +27,7 @@ const ResourcePool = () => {
   })
 
   return (
-    <Flex className="h-full">
+    <Flex className="h-full bg-[#303030] rounded-xl">
       <div
         className="flex-1 h-full"
         ref={ref}
@@ -43,9 +43,10 @@ const ResourcePool = () => {
               <DeleteOutlined />
             </Button>
           }
-          className="min-h-[100%] !bg-transparent"
+          className="min-h-[100%] !bg-[#303030]"
           classNames={{
-            header: 'sticky top-0 z-1 !bg-white !py-1 !px-2 !min-h-auto', // 这里的z-1是为了确保header挡住下面的内容
+            header:
+              'sticky top-0 z-1 !bg-[#303030] !border-b-[#141414] !py-1 !px-2 !min-h-auto !text-white', // 这里的z-1是为了确保header挡住下面的内容
             body: '!py-2 !px-2'
           }}
         >

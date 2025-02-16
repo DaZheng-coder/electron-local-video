@@ -20,20 +20,21 @@ const ClipLayout: FC = () => {
       <Splitter
         layout="vertical"
         style={{ height: '100vh' }}
-        className="layout-splitter h-screen bg-white"
+        className="layout-splitter h-screen bg-[#141414] gap-[1px]"
       >
         <Splitter.Panel
           style={{
             zIndex: LAYOUT_TOP_Z_INDEX
           }}
           defaultSize="40%"
-          className="bg-inherit"
         >
           <Splitter layout="horizontal">
             <Splitter.Panel defaultSize="40%">
               <ResourcePool />
             </Splitter.Panel>
-            <Splitter.Panel defaultSize="60%">VideoPlayer</Splitter.Panel>
+            <Splitter.Panel defaultSize="60%">
+              <div className="rounded-xl bg-[#303030] w-full h-full text-white">VideoPlayer</div>
+            </Splitter.Panel>
           </Splitter>
         </Splitter.Panel>
         <Splitter.Panel className="flex" defaultSize="60%">

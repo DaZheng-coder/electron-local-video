@@ -35,9 +35,9 @@ const Timeline: React.FC<TimelineProps> = ({
   })
 
   const canvasConfigs = useMemo(() => {
-    const isDark = false
+    const isDark = true
     return {
-      bgColor: isDark ? '#374151' : '#E5E7EB',
+      bgColor: isDark ? '#303030' : '#E5E7EB',
       ratio: window.devicePixelRatio || 1,
       textSize: 12,
       textScale: 0.83,

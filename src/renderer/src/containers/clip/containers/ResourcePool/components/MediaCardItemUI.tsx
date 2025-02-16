@@ -19,8 +19,11 @@ const MediaCardItemUI: FC<IMediaCardUIProps> = ({
   return (
     <Card
       style={style}
-      className={`w-[120px] overflow-hidden ${className}`}
-      classNames={{ body: '!py-1 !px-2' }}
+      className={`w-[120px] overflow-hidden ${className} !border-none !bg-[#3B3B3B]`}
+      classNames={{
+        body: '!py-1 !px-2 bg-[#3B3B3B',
+        header: 'bg-[#3B3B3B]'
+      }}
       cover={
         <Image
           style={{ objectFit: 'cover' }}
