@@ -1,7 +1,8 @@
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties, useEffect } from 'react'
 import { useDragLayer, XYCoord } from 'react-dnd'
 import { EDragType } from '@renderer/src/utils/dragUtils'
 import { IBaseDragItem } from '@renderer/src/types'
+import dragStore from '../stores/dragStore'
 
 /**
  * 计算拖拽元素的位置
@@ -25,7 +26,8 @@ export function getDragLayerItemStyles(args: { initialOffset; sourceClientOffset
   return {
     transform,
     WebkitTransform: transform,
-    userSelect: 'none'
+    userSelect: 'none',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
   }
 }
 

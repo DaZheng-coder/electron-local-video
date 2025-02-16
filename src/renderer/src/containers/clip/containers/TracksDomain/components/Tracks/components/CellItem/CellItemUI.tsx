@@ -11,7 +11,7 @@ const CellItemUI: FC<ICellItemUIProps> = ({ title, style = {}, width = 'auto' })
   return (
     <div
       style={{ height: TRACK_HEIGHT, width, ...style }}
-      className="absolute bg-gray-500 rounded-[6px] overflow-hidden"
+      className="bg-gray-500 rounded-[6px] overflow-hidden"
     >
       {title}
     </div>

@@ -1,6 +1,7 @@
 import { useDrop } from 'react-dnd'
 import TrackItem from './components/TrackItem'
 import {
+  DRAGGING_PREVIEW_CELL_ID,
   EDragResultType,
   EDragType,
   getDraggingInTracksResult
@@ -45,7 +46,7 @@ const Tracks = () => {
         if (result && result.type === EDragResultType.INSERT_CELL) {
           // TODO 插入cell
           setPreviewCellData({
-            cellId: 'test',
+            cellId: DRAGGING_PREVIEW_CELL_ID,
             left: result.left,
             width: 200,
             top: result.top

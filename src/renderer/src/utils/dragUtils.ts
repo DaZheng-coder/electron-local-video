@@ -5,6 +5,7 @@ import { IDragCellItem, IDragMediaItem, TGlobalDragItem } from '../types'
 
 export const TRACK_HEIGHT = 80
 export const TRACK_BORDER_TOP_WIDTH = 2
+export const DRAGGING_PREVIEW_CELL_ID = 'DRAGGING_PREVIEW_CELL_ID'
 
 export enum EDragType {
   MEDIA_CARD = 'MEDIA_CARD',
@@ -47,8 +48,8 @@ export const getDragCellOffset = (monitor: DropTargetMonitor): XYCoord | null =>
  */
 export const getDragCellDataByMediaData = (mediaData: IDragMediaItem): IDragCellItem => {
   const data: IDragCellItem = {
-    cellId: 'test',
-    cellData: { width: 200, cellId: 'test', left: 0, trackId: '' }
+    cellId: DRAGGING_PREVIEW_CELL_ID,
+    cellData: { width: 200, cellId: DRAGGING_PREVIEW_CELL_ID, left: 0, trackId: '' }
   }
   return data
 }
@@ -123,12 +124,14 @@ const createNewTrackResult = (index: number, left: number) => ({
  * @param top
  * @returns
  */
-const createInsertCellResult = (index: number, left: number, top: number) => ({
-  type: EDragResultType.INSERT_CELL,
-  insertTrackIndex: index,
-  left,
-  top
-})
+const createInsertCellResult = (index: number, left: number, top: number) => {
+  return {
+    type: EDragResultType.INSERT_CELL,
+    insertTrackIndex: index,
+    left,
+    top
+  }
+}
 
 /**
  * 获取拖拽在轨道中的结果

@@ -2,7 +2,7 @@ import BaseCustomDragLayer, {
   getDragLayerItemStyles,
   TRenderDragLayer
 } from '@renderer/src/components/BaseCustomDragLayer'
-import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
+import { DRAGGING_PREVIEW_CELL_ID, EDragType, TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
 import { CSSProperties, memo, useCallback } from 'react'
 import MediaCardItemUI from '../containers/ResourcePool/components/MediaCardItemUI'
 import dragStore from '@renderer/src/stores/dragStore'
@@ -96,8 +96,8 @@ const GlobalCustomDragLayer = () => {
           if (overInTracks) {
             // *** test 转换mediaData为cellData
             const testData: IDragCellItem = {
-              cellId: 'test',
-              cellData: { width: 200, cellId: 'test', left: 0, trackId: '' }
+              cellId: DRAGGING_PREVIEW_CELL_ID,
+              cellData: { width: 200, cellId: DRAGGING_PREVIEW_CELL_ID, left: 0, trackId: '' }
             }
             return {
               renderResult: renderCellItemUI(

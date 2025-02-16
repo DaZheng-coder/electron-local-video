@@ -1,12 +1,14 @@
 import { ICellData, ITrackData } from '@typings/track'
 import { create } from 'zustand'
 import { v4 as uuid } from 'uuid'
+import { sortMainTrackCells } from '../utils/clipUtils'
 
 interface IClipStore {
   timelineScale: number
   setTimelineScale: (scale: number) => void
 
   tracks: ITrackData[]
+  setTracks: (tracks: ITrackData[]) => ITrackData[]
   addNewTrack: (index: number, cellIds?: string[]) => ITrackData
   removeTrack: (trackId: string) => void
 
@@ -38,6 +40,15 @@ const clipStore = create<IClipStore>((set, get) => ({
    * 关于轨道的操作
    */
   tracks: initTracks.slice(),
+  setTracks: (tracks: ITrackData[]) => {
+    console.log('*** setTracks')
+    // 主轨需要贴近处理
+    // const { track, cells } = sortMainTrackCells(tracks[0])
+    // tracks[0] = track
+    // set({ tracks, cells })
+    set({ tracks })
+    return tracks
+  },
   addNewTrack: (index: number, cellIds: string[] = []) => {
     const tracks = get().tracks.slice()
     const trackId = uuid()
@@ -52,7 +63,7 @@ const clipStore = create<IClipStore>((set, get) => ({
       set({ cells })
     }
 
-    set({ tracks })
+    get().setTracks(tracks)
 
     return track
   },
@@ -66,7 +77,7 @@ const clipStore = create<IClipStore>((set, get) => ({
       }
     }
 
-    set({ tracks: newTracks })
+    get().setTracks(newTracks)
   },
 
   /**
@@ -94,7 +105,8 @@ const clipStore = create<IClipStore>((set, get) => ({
     if (!track) return
     track.cellIds = track.cellIds.filter((id) => id !== cellId)
 
-    set({ cells, tracks })
+    set({ cells })
+    get().setTracks(tracks)
 
     // 当前轨道为空时，删掉该轨道
     if (!track.cellIds.length) {
@@ -111,12 +123,13 @@ const clipStore = create<IClipStore>((set, get) => ({
     if (track.cellIds.includes(cellId)) return
     track.cellIds.push(cellId)
 
-    set({ cells, tracks })
+    set({ cells })
+    get().setTracks(tracks)
   },
   moveCellToTrack: (cellId: string, targetTrackId: string) => {
-    const cells = get().cells
+    const cells = { ...get().cells }
     const fromTrackId = cells[cellId].trackId
-    if (fromTrackId === targetTrackId) {
+    if (fromTrackId === targetTrackId && fromTrackId !== get().tracks[0].trackId) {
       return
     } else {
       get().removeCellInTrack(cellId)

@@ -1,4 +1,4 @@
-import { FC, useRef } from 'react'
+import { FC } from 'react'
 import CellItem from '../CellItem'
 import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
 import clipStore from '@renderer/src/stores/clipStore'
@@ -10,12 +10,10 @@ interface ITrackItemProps {
 
 const TrackItem: FC<ITrackItemProps> = ({ trackId, trackIndex }) => {
   const trackData = clipStore((state) => state.tracks.find((track) => track.trackId === trackId))
-  const trackRef = useRef<HTMLDivElement>(null)
 
   return (
     <div
-      ref={trackRef}
-      data-track-id={trackData?.trackId}
+      data-track-id={trackId}
       data-type={EDragType.TRACK_ITEM}
       data-index={trackIndex}
       style={{ height: TRACK_HEIGHT }}
