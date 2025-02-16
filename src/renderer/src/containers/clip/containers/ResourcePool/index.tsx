@@ -27,7 +27,7 @@ const ResourcePool = () => {
   })
 
   return (
-    <Flex className="h-full bg-[#303030] rounded-xl">
+    <Flex className="h-full bg-[#303030] rounded-xl overflow-hidden">
       <div
         className="flex-1 h-full"
         ref={ref}

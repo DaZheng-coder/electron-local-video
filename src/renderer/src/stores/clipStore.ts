@@ -41,7 +41,6 @@ const clipStore = create<IClipStore>((set, get) => ({
    */
   tracks: initTracks.slice(),
   setTracks: (tracks: ITrackData[]) => {
-    console.log('*** setTracks')
     // 主轨需要贴近处理
     // const { track, cells } = sortMainTrackCells(tracks[0])
     // tracks[0] = track

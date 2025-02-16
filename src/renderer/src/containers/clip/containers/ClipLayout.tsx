@@ -20,9 +20,10 @@ const ClipLayout: FC = () => {
       <Splitter
         layout="vertical"
         style={{ height: '100vh' }}
-        className="layout-splitter h-screen bg-[#141414] gap-[1px]"
+        className="layout-splitter h-screen !p-1 bg-[#141414]"
       >
         <Splitter.Panel
+          className="bg-[#141414]"
           style={{
             zIndex: LAYOUT_TOP_Z_INDEX
           }}

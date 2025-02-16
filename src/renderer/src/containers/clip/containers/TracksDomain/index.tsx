@@ -7,7 +7,7 @@ import { LAYOUT_TOOL_Z_INDEX } from '@renderer/src/constants'
 const TracksDomain = () => {
   const timelineScale = clipStore((state) => state.timelineScale)
   return (
-    <div className="flex-1 flex flex-col bg-[#303030] rounded-xl text-white">
+    <div className="flex-1 flex flex-col bg-[#303030] rounded-xl overflow-hidden text-white">
       <div
         style={{
           zIndex: LAYOUT_TOOL_Z_INDEX

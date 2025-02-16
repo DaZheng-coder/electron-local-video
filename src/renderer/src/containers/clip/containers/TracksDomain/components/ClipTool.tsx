@@ -26,7 +26,7 @@ const ClipTool = () => {
   )
 
   return (
-    <div className="h-10 flex py-1 px-4 justify-between">
+    <div className="h-10 flex py-1 px-4 justify-between bg-[#303030]">
       <div>tool area</div>
       <div className="flex gap-2">
         <Tooltip title={mainTrackMagnet ? '关闭主轨磁吸' : '开启主轨磁吸'}>

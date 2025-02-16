@@ -10,7 +10,7 @@ const useNativeDrop = (
 ) => {
   const setOverStyle = () => {
     if (ref.current) {
-      ref.current.style.backgroundColor = '#f0f0f0'
+      ref.current.style.backgroundColor = '#f0f0f0 rounded-xl'
     }
   }
   const removeOverStyle = () => {
