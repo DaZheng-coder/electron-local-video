@@ -25,17 +25,24 @@ export enum EDragResultType {
  * @param monitor
  * @returns
  */
-export const getDragCellOffset = (monitor: DropTargetMonitor): XYCoord | null => {
+export const getDragCellOffset = (
+  monitor: DropTargetMonitor,
+  wrapOffset: DOMRect
+): XYCoord | null => {
   const sourceClientOffset = monitor.getSourceClientOffset()
   const clientOffset = monitor.getClientOffset()
+  console.log('*** wrapOffset.left', wrapOffset.left)
   switch (monitor.getItemType()) {
     case EDragType.CELL_ITEM:
       return {
-        x: sourceClientOffset?.x || 0,
+        x: (sourceClientOffset?.x || 0) - wrapOffset.left,
         y: clientOffset?.y || 0
       }
     case EDragType.MEDIA_CARD:
-      return clientOffset
+      return {
+        x: (clientOffset?.x || 0) - wrapOffset.left,
+        y: clientOffset?.y || 0
+      }
     default:
       return null
   }
@@ -150,7 +157,10 @@ export const getDraggingInTracksResult = (
   const tracksWrapRect = tracksWrapDomRef?.current?.getBoundingClientRect()
   const clientOffset = monitor.getClientOffset() // 鼠标位置
   const sourceClientOffset = monitor.getSourceClientOffset() // 拖拽源位置
-  const dragOffset = getDragCellOffset(monitor) // 最终拖拽位置
+  if (!tracksWrapRect) return null
+  const dragOffset = getDragCellOffset(monitor, tracksWrapRect) // 最终拖拽位置
+
+  console.log('*** tracksWrapRect', tracksWrapRect)
 
   const cellData = getDragCellData(monitor) // 拖拽的cell数据
   const tracks = clipStore.getState().tracks // 所有轨道数据
@@ -214,7 +224,7 @@ export const getDraggingInTracksResult = (
         ) {
           return createInsertCellResult(
             curTrackIndex,
-            dragOffset.x,
+            dragOffset.x - tracksWrapRect.left,
             curTrackRect.top - tracksWrapRect.top
           )
         }
