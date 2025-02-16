@@ -11,3 +11,7 @@ export interface IResourceStoreSchema {
 export enum EResourceStoreChannels {
   AddResourceByPath = 'resourceStore-addResourceByPath'
 }
+
+export enum EMediaToolChannels {
+  GenerateThumbnail = 'mediaTool-generateThumbnail'
+}

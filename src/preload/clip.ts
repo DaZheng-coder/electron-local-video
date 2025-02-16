@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { EResourceStoreChannels } from '../typings/store'
+import { EMediaToolChannels, EResourceStoreChannels } from '../typings/store'
 
 const api = {
   store: {
@@ -30,6 +30,11 @@ const api = {
   resourceStore: {
     addResourceByPath: (filepath: string, type: string) =>
       ipcRenderer.invoke(EResourceStoreChannels.AddResourceByPath, { filepath, type })
+  },
+  mediaTool: {
+    getThumbnail: (mediaData: { inputPath: string }) => {
+      return ipcRenderer.invoke(EMediaToolChannels.GenerateThumbnail, mediaData)
+    }
   }
 }
 

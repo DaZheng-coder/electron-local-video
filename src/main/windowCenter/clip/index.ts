@@ -1,7 +1,10 @@
-import { screen } from 'electron'
+import { ipcMain, screen } from 'electron'
 import { BaseWindowOptions } from '../../types'
 import BaseWindow from '../BaseWindow'
 import path from 'path'
+import { EMediaToolChannels } from '../../../typings/store'
+import MediaTool from '../../mediaTool'
+import { staticPath } from '../../staticPath'
 
 function CreateClipWindow() {
   const size = screen.getPrimaryDisplay().workAreaSize
@@ -20,6 +23,12 @@ function CreateClipWindow() {
     }
   }
   const clipWindow = new BaseWindow(options)
+
+  MediaTool.config({ localStaticPath: staticPath })
+  ipcMain.handle(EMediaToolChannels.GenerateThumbnail, async (_, inputPath) => {
+    console.log(' ipcMaininputPath:', inputPath)
+    return await MediaTool.generateThumbnail(inputPath)
+  })
   return clipWindow
 }
 

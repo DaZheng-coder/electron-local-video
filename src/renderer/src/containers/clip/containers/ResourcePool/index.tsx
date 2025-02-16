@@ -19,7 +19,10 @@ const ResourcePool = () => {
         // TODO 考虑过滤MP4格式的视频
         for (const file of files) {
           if (file.type === 'video/mp4') {
-            addResourceByPath(file.path, EMediaType.Video)
+            window.api.mediaTool.getThumbnail({ inputPath: file.path }).then((thumbnail) => {
+              console.log('*** thumbnail:', thumbnail)
+            })
+            // addResourceByPath(file.path, EMediaType.Video)
           }
         }
       }
