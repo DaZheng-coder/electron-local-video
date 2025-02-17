@@ -9,8 +9,11 @@ interface IClipStore {
   timelineScale: number
   setTimelineScale: (scale: number) => void
 
+  frameCount: number
+
   tracks: ITrackData[]
   setTracks: (tracks: ITrackData[]) => ITrackData[]
+  setCells: (cells: Record<string, ICellData>) => void
   addNewTrack: (index: number, cellIds?: string[]) => ITrackData
   removeTrack: (trackId: string) => void
 
@@ -37,6 +40,8 @@ const clipStore = create<IClipStore>((set, get) => ({
     set({ timelineScale: scale })
   },
 
+  frameCount: 0,
+
   /**
    * 关于轨道的操作
    */
@@ -45,9 +50,20 @@ const clipStore = create<IClipStore>((set, get) => ({
     // 主轨需要贴近处理
     const { track, cells } = sortMainTrackCells(tracks[0])
     tracks[0] = track
-    set({ tracks, cells })
     set({ tracks })
+    get().setCells(cells)
     return tracks
+  },
+  setCells: (cells: Record<string, ICellData>) => {
+    let maxFrameCount = 0
+    for (const cellId in cells) {
+      const cell = cells[cellId]
+      const frameCount = cell.startFrame + cell.frameCount
+      if (frameCount > maxFrameCount) {
+        maxFrameCount = frameCount
+      }
+    }
+    set({ frameCount: maxFrameCount, cells })
   },
   addNewTrack: (index: number, cellIds: string[] = []) => {
     const tracks = get().tracks.slice()
@@ -60,7 +76,7 @@ const clipStore = create<IClipStore>((set, get) => ({
       for (const cellId of cellIds) {
         cells[cellId].trackId = trackId
       }
-      set({ cells })
+      get().setCells(cells)
     }
 
     get().setTracks(tracks)
@@ -89,7 +105,7 @@ const clipStore = create<IClipStore>((set, get) => ({
     const cells = { ...get().cells }
     const cell: ICellData = { ...cellData, cellId: id }
     cells[id] = cell
-    set({ cells })
+    get().setCells(cells)
     if (trackId) {
       get().addCellInTrack(cell.cellId, trackId)
     }
@@ -105,7 +121,7 @@ const clipStore = create<IClipStore>((set, get) => ({
     if (!track) return
     track.cellIds = track.cellIds.filter((id) => id !== cellId)
 
-    set({ cells })
+    get().setCells(cells)
     get().setTracks(tracks)
 
     // 当前轨道为空时，删掉该轨道
@@ -123,7 +139,7 @@ const clipStore = create<IClipStore>((set, get) => ({
     if (track.cellIds.includes(cellId)) return
     track.cellIds.push(cellId)
 
-    set({ cells })
+    get().setCells(cells)
     get().setTracks(tracks)
   },
   moveCellToTrack: (cellId: string, targetTrackId: string) => {
@@ -141,7 +157,7 @@ const clipStore = create<IClipStore>((set, get) => ({
     const oldCell = cells[cellId]
     const newCell = { ...oldCell, ...data }
     cells[cellId] = newCell
-    set({ cells })
+    get().setCells(cells)
   }
 }))
 

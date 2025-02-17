@@ -19,8 +19,10 @@ import { IVideoData } from '@typings/index'
 const Tracks = () => {
   const [highlightDivider, setHighlightDivider] = useState(-1)
   const [previewCellData, setPreviewCellData] = useState<IPreviewCellData | null>(null)
-  const timelineScale = clipStore((state) => state.timelineScale)
+  const [tracksWidth, setTracksWidth] = useState<number>(0)
 
+  const timelineScale = clipStore((state) => state.timelineScale)
+  const frameCount = clipStore((state) => state.frameCount)
   const tracks = clipStore((state) => state.tracks)
   const addNewTrack = clipStore((state) => state.addNewTrack)
   const removeCellInTrack = clipStore((state) => state.removeCellInTrack)
@@ -43,8 +45,7 @@ const Tracks = () => {
         const result = getDraggingInTracksResult(monitor)
         if (result && result.type === EDragResultType.NEW_TRACK) {
           setHighlightDivider(result.insertTrackIndex)
-        } else {
-          setHighlightDivider(-1)
+          return
         }
 
         if (result && result.type === EDragResultType.INSERT_CELL) {
@@ -55,9 +56,11 @@ const Tracks = () => {
             frameCount: result.frameCount,
             top: result.top
           })
-        } else {
-          setPreviewCellData(null)
+          return
         }
+
+        setPreviewCellData(null)
+        setHighlightDivider(-1)
       })
     },
     drop: (item, monitor) => {
@@ -116,9 +119,17 @@ const Tracks = () => {
   drop(containerRef)
 
   useEffect(() => {
-    // 拖拽元素移出容器时，取消高亮
+    if (!containerRef.current) return
+    const pixelWidth = getGridPixel(timelineScale, frameCount)
+    const minWidth = containerRef.current.clientWidth || 0
+    setTracksWidth(Math.max(pixelWidth, minWidth))
+  }, [timelineScale, frameCount])
+
+  useEffect(() => {
+    // 拖拽元素移出容器时，取消高亮，取消预览
     if (!isOverCurrent) {
       setHighlightDivider(-1)
+      setPreviewCellData(null)
     }
   }, [isOverCurrent])
 
@@ -148,7 +159,7 @@ const Tracks = () => {
     <div ref={containerRef} className="no-scrollbar flex-1 flex flex-col overflow-scroll">
       {/* 占位元素，用于占据上下空白空间，使轨道保持居中 */}
       <div className="flex-1 min-h-10" />
-      <div ref={tracksWrapRef} className="relative">
+      <div ref={tracksWrapRef} className="relative" style={{ width: tracksWidth }}>
         {renderTracks()}
         {!!previewCellData && (
           <CellItemUI
