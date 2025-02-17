@@ -11,6 +11,10 @@ interface IClipStore {
 
   frameCount: number
 
+  selectedCellIds: string[]
+  setSelectedCellIds: (cellIds: string[]) => void
+  addSelectedId: (cellId: string) => void
+
   tracks: ITrackData[]
   setTracks: (tracks: ITrackData[]) => ITrackData[]
   setCells: (cells: Record<string, ICellData>) => void
@@ -41,6 +45,15 @@ const clipStore = create<IClipStore>((set, get) => ({
   },
 
   frameCount: 0,
+
+  selectedCellIds: [],
+  setSelectedCellIds: (cellIds: string[]) => {
+    set({ selectedCellIds: cellIds })
+  },
+  addSelectedId: (cellId: string) => {
+    if (get().selectedCellIds.includes(cellId)) return
+    set({ selectedCellIds: [...get().selectedCellIds, cellId] })
+  },
 
   /**
    * 关于轨道的操作

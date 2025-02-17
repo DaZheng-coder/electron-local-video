@@ -20,6 +20,9 @@ const CellItem: FC<ICellItemProps> = ({ cellId }) => {
   const timelineScale = clipStore((state) => state.timelineScale)
   const getResource = resourceStore((state) => state.getResource)
   const resource = getResource(cellData?.resourceId)
+  const selectedCellIds = clipStore((state) => state.selectedCellIds)
+  const addSelectedId = clipStore((state) => state.addSelectedId)
+  const isSelected = selectedCellIds.includes(cellId)
 
   const [{ isDragging }, dragger, preview] = useDrag<IDragItem, unknown, { isDragging: boolean }>(
     () => ({
@@ -48,6 +51,14 @@ const CellItem: FC<ICellItemProps> = ({ cellId }) => {
       }
     },
     [cellId, updateCell, timelineScale, resource]
+  )
+
+  const handleSelect = useCallback(
+    (e) => {
+      e.stopPropagation()
+      addSelectedId(cellId)
+    },
+    [addSelectedId, cellId]
   )
 
   useEffect(() => {
@@ -79,8 +90,9 @@ const CellItem: FC<ICellItemProps> = ({ cellId }) => {
         data-cell-id={cellId}
         ref={cellRef}
         className={`${isDragging ? 'opacity-0' : ''} h-full`}
+        onClick={handleSelect}
       >
-        <CellItemUI title={cellData?.cellId + ''} width={width} />
+        <CellItemUI title={cellData?.cellId + ''} width={width} focus={isSelected} />
       </div>
     </ResizableDiv>
   )

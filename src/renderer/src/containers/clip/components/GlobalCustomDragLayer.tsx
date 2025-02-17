@@ -40,6 +40,7 @@ const GlobalCustomDragLayer = () => {
             color: computedStyle.color
           }}
           title={cellData.cellId}
+          focus={true}
         />
       )
     },
