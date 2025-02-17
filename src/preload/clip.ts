@@ -29,7 +29,10 @@ const api = {
   },
   resourceStore: {
     addResourceByPath: (filepath: string, type: string) =>
-      ipcRenderer.invoke(EResourceStoreChannels.AddResourceByPath, { filepath, type })
+      ipcRenderer.invoke(EResourceStoreChannels.AddResourceByPath, { filepath, type }),
+    getBase64Image: (relativePath: string) => {
+      return ipcRenderer.invoke(EResourceStoreChannels.getBase64Image, relativePath)
+    }
   },
   mediaTool: {
     getThumbnail: (mediaData: { inputPath: string }) => {

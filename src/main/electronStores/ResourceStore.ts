@@ -5,6 +5,7 @@ import { EMediaType, IBaseMediaData } from '../../typings'
 import { v4 as uuidV4 } from 'uuid'
 import fs from 'fs'
 import path from 'path'
+import MediaTool from '../mediaTool'
 
 /**
  * 资源池 store，用于管理所有的资源
@@ -16,6 +17,9 @@ class ResourceStore extends BaseStore {
     ipcMain.handle(EResourceStoreChannels.AddResourceByPath, (_, { filepath, type }) => {
       return this.addResourceByPath({ filepath, type })
     })
+    ipcMain.handle(EResourceStoreChannels.getBase64Image, (_, relativePath: string) => {
+      return this.getBase64Image(relativePath)
+    })
   }
 
   /**
@@ -23,7 +27,7 @@ class ResourceStore extends BaseStore {
    * TODO：后面考虑添加网络资源
    * @param param0
    */
-  public addResourceByPath({ filepath, type }: { filepath: string; type: EMediaType }) {
+  public async addResourceByPath({ filepath, type }: { filepath: string; type: EMediaType }) {
     if (!fs.existsSync(filepath)) {
       throw new Error('文件不存在')
     }
@@ -36,7 +40,10 @@ class ResourceStore extends BaseStore {
     const title = path.basename(filepath)
     const baseResourceData: IBaseMediaData = {
       id,
-      thumbnail: '',
+      thumbnail: {
+        path: '',
+        base64: ''
+      },
       title,
       path: filepath,
       size: fileData.size,
@@ -44,10 +51,24 @@ class ResourceStore extends BaseStore {
       mediaType: type
     }
 
+    // 1.1 如果是视频资源，生成缩略图
+    if (type === EMediaType.Video) {
+      const imagePath = await MediaTool.generateThumbnail({ inputPath: filepath })
+      baseResourceData.thumbnail = {
+        path: imagePath,
+        base64: this.getBase64Image(imagePath)
+      }
+    }
+
     // 2. 添加资源
     const resourceMap = this.get('resourceMap') || {}
     resourceMap[id] = baseResourceData
     this.set('resourceMap', resourceMap)
+  }
+
+  public getBase64Image(imagePath: string) {
+    const imageData = fs.readFileSync(imagePath).toString('base64')
+    return `data:image/png;base64,${imageData}`
   }
 
   // private _getThumbnail(mediaData: IBaseMediaData) {

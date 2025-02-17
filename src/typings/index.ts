@@ -5,6 +5,11 @@ export enum EMediaType {
   Video = 'video'
 }
 
+export interface IThumbnail {
+  path: string
+  base64: string
+}
+
 /**
  * 基础素材数据
  */
@@ -16,7 +21,7 @@ export interface IBaseMediaData {
   /**
    * 缩略图
    */
-  thumbnail: string
+  thumbnail: IThumbnail
   /**
    * 标题
    */

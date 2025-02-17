@@ -9,7 +9,8 @@ export interface IResourceStoreSchema {
 }
 
 export enum EResourceStoreChannels {
-  AddResourceByPath = 'resourceStore-addResourceByPath'
+  AddResourceByPath = 'resourceStore-addResourceByPath',
+  getBase64Image = 'resourceStore-getBase64Image'
 }
 
 export enum EMediaToolChannels {

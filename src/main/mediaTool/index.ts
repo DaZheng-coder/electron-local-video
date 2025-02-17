@@ -20,7 +20,13 @@ class MediaTool {
       : path.join(__dirname, '../../../dist/render', filepath)
   }
 
-  static generateThumbnail({ inputPath, size = '240x240' }: { inputPath: string; size?: string }) {
+  static async generateThumbnail({
+    inputPath,
+    size = '240x240'
+  }: {
+    inputPath: string
+    size?: string
+  }): Promise<string> {
     const fileId = getHash(JSON.stringify({ inputPath, size }))
     const folderThumbnail = path.join(this.localStaticPath, 'thumbnail')
 

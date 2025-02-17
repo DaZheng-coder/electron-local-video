@@ -1,11 +1,12 @@
 import { DEFAULT_IMAGE } from '@renderer/src/constants'
+import { IThumbnail } from '@typings/index'
 import { Card, Image } from 'antd'
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 // import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons'
 
 export interface IMediaCardUIProps {
   title: string
-  thumbnail: string
+  thumbnail: IThumbnail
   className?: string
   style?: React.CSSProperties
 }
@@ -27,7 +28,7 @@ const MediaCardItemUI: FC<IMediaCardUIProps> = ({
       cover={
         <Image
           style={{ objectFit: 'cover' }}
-          src=""
+          src={thumbnail.base64}
           width={120}
           height={80}
           fallback={DEFAULT_IMAGE}
