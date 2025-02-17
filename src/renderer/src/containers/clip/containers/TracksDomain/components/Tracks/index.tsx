@@ -45,9 +45,9 @@ const Tracks = () => {
         const result = getDraggingInTracksResult(monitor)
         if (result && result.type === EDragResultType.NEW_TRACK) {
           setHighlightDivider(result.insertTrackIndex)
-          return
+        } else {
+          setHighlightDivider(-1)
         }
-
         if (result && result.type === EDragResultType.INSERT_CELL) {
           // TODO 插入cell
           setPreviewCellData({
@@ -56,11 +56,9 @@ const Tracks = () => {
             frameCount: result.frameCount,
             top: result.top
           })
-          return
+        } else {
+          setPreviewCellData(null)
         }
-
-        setPreviewCellData(null)
-        setHighlightDivider(-1)
       })
     },
     drop: (item, monitor) => {

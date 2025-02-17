@@ -39,10 +39,13 @@ const CellItem: FC<ICellItemProps> = ({ cellId }) => {
     ({ width, left }) => {
       // TODO
       const maxFrameCount = resource?.frameCount || 0
-      updateCell(cellId, {
-        startFrame: getGridFrame(timelineScale, left),
-        frameCount: Math.max(getGridFrame(timelineScale, width), maxFrameCount)
-      })
+      const frameCount = getGridFrame(timelineScale, width)
+      if (0 <= frameCount && frameCount <= maxFrameCount) {
+        updateCell(cellId, {
+          startFrame: getGridFrame(timelineScale, left),
+          frameCount
+        })
+      }
     },
     [cellId, updateCell, timelineScale, resource]
   )
@@ -61,7 +64,6 @@ const CellItem: FC<ICellItemProps> = ({ cellId }) => {
       options={{
         width,
         height: TRACK_HEIGHT,
-        maxWidth: getGridPixel(timelineScale, resource?.frameCount || 0),
         left,
         disableHeightResize: true,
         style: {

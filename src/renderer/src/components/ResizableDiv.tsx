@@ -14,9 +14,6 @@ export interface IResizableOptions {
   width: number
   height: number
   left: number
-  minWidth?: number
-  minHeight?: number
-  maxWidth?: number
   disableWithResize?: boolean // 禁用宽度调整
   disableHeightResize?: boolean // 禁用高度调整
   style?: React.CSSProperties
@@ -56,13 +53,7 @@ function ResizableDiv({ children, options, onResize }: IResizableDivProps) {
       if (!isResizing) return
 
       const { width: startWidth, height: startHeight, left: startLeft } = startDim
-      const {
-        minWidth = HANDLER_WIDTH * 2,
-        minHeight = HANDLER_HEIGHT * 2,
-        disableWithResize,
-        disableHeightResize,
-        height
-      } = options
+      const { disableWithResize, disableHeightResize, height } = options
       const offsetX = e.clientX - startPos.x
       const offsetY = e.clientY - startPos.y
 
@@ -72,17 +63,16 @@ function ResizableDiv({ children, options, onResize }: IResizableDivProps) {
 
       // 根据触发的手柄类型，计算新的尺寸
       if (trigger === 'right') {
-        newWidth = Math.max(minWidth, startWidth + offsetX)
+        newWidth = startWidth + offsetX
       } else if (trigger === 'left') {
         // 手柄在左侧，调整宽度的同时调整left，同时限制left的最小值
-        newWidth = Math.max(minWidth, startWidth - offsetX)
-        newLeft = Math.min(startLeft + offsetX, startLeft + startWidth - minWidth)
+        newWidth = startWidth - offsetX
+        // TODO 修复newLeft取值问题
+        newLeft = startLeft + offsetX
       } else {
-        newWidth = disableWithResize ? options.width : Math.max(minWidth, startWidth + offsetX)
-        newHeight = disableHeightResize ? height : Math.max(minHeight, startHeight + offsetY)
+        newWidth = disableWithResize ? options.width : startWidth + offsetX
+        newHeight = disableHeightResize ? height : startHeight + offsetY
       }
-
-      newWidth = Math.min(newWidth, options.maxWidth || Infinity)
 
       const res: IDimensions = {
         width: newWidth,

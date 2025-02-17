@@ -157,7 +157,13 @@ const clipStore = create<IClipStore>((set, get) => ({
     const oldCell = cells[cellId]
     const newCell = { ...oldCell, ...data }
     cells[cellId] = newCell
-    get().setCells(cells)
+    // 如果调整的是主轨的宽度，需要重新排序
+    if (newCell.trackId === get().tracks[0].trackId && data.frameCount) {
+      const { cells: newCells } = sortMainTrackCells(get().tracks[0], cells)
+      get().setCells(newCells)
+    } else {
+      get().setCells(cells)
+    }
   }
 }))
 
