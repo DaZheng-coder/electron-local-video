@@ -1,9 +1,10 @@
 import { ICellData, ITrackData } from '@typings/track'
 import { create } from 'zustand'
 import { v4 as uuid } from 'uuid'
-import { sortMainTrackCells } from '../utils/clipUtils'
 
 interface IClipStore {
+  init: () => void
+
   timelineScale: number
   setTimelineScale: (scale: number) => void
 
@@ -20,17 +21,16 @@ interface IClipStore {
   updateCell: (cellId: string, data: Partial<ICellData>) => void
 }
 
-const cellId = uuid()
-
-const trackId1 = uuid()
-
-// *** test
-const initCells: Record<string, ICellData> = {
-  [cellId]: { cellId, left: 0, width: 200, trackId: trackId1 }
-}
-const initTracks: ITrackData[] = [{ trackId: trackId1, cellIds: [cellId] }]
-
 const clipStore = create<IClipStore>((set, get) => ({
+  init() {
+    // TODO 拉取本地配置，初始化tracks
+    const mainTrack = {
+      trackId: uuid(),
+      cellIds: []
+    }
+    get().setTracks([mainTrack])
+  },
+
   timelineScale: 0,
   setTimelineScale: (scale: number) => {
     set({ timelineScale: scale })
@@ -39,7 +39,7 @@ const clipStore = create<IClipStore>((set, get) => ({
   /**
    * 关于轨道的操作
    */
-  tracks: initTracks.slice(),
+  tracks: [],
   setTracks: (tracks: ITrackData[]) => {
     // 主轨需要贴近处理
     // const { track, cells } = sortMainTrackCells(tracks[0])
@@ -82,7 +82,7 @@ const clipStore = create<IClipStore>((set, get) => ({
   /**
    * 关于cell的操作
    */
-  cells: { ...initCells },
+  cells: {},
   createCell: (left: number, width: number, trackId: string) => {
     const id = uuid()
     const cells = { ...get().cells }

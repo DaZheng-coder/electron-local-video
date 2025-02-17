@@ -1,11 +1,12 @@
 import { app, ipcMain } from 'electron'
 import BaseStore from './BaseStore'
 import { EResourceStoreChannels, EStoreNamespaces } from '../../typings/store'
-import { EMediaType, IBaseMediaData } from '../../typings'
+import { EMediaType, IBaseMediaData, IVideoData } from '../../typings'
 import { v4 as uuidV4 } from 'uuid'
 import fs from 'fs'
 import path from 'path'
 import MediaTool from '../mediaTool'
+import { merge } from 'lodash'
 
 /**
  * 资源池 store，用于管理所有的资源
@@ -38,7 +39,7 @@ class ResourceStore extends BaseStore {
     // TODO: 获取文件的mimeType
     const mimeType = ''
     const title = path.basename(filepath)
-    const baseResourceData: IBaseMediaData = {
+    let resourceData: IBaseMediaData = {
       id,
       thumbnail: {
         path: '',
@@ -51,18 +52,22 @@ class ResourceStore extends BaseStore {
       mediaType: type
     }
 
-    // 1.1 如果是视频资源，生成缩略图
+    // 1.1 如果是视频资源
     if (type === EMediaType.Video) {
+      const metaData = await MediaTool.getVideoMetadata({ inputPath: filepath })
       const imagePath = await MediaTool.generateThumbnail({ inputPath: filepath })
-      baseResourceData.thumbnail = {
-        path: imagePath,
-        base64: this.getBase64Image(imagePath)
-      }
+
+      resourceData = merge(resourceData, metaData, {
+        thumbnail: {
+          path: imagePath,
+          base64: this.getBase64Image(imagePath)
+        }
+      })
     }
 
     // 2. 添加资源
     const resourceMap = this.get('resourceMap') || {}
-    resourceMap[id] = baseResourceData
+    resourceMap[id] = resourceData
     this.set('resourceMap', resourceMap)
   }
 

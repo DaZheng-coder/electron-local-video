@@ -5,7 +5,7 @@ import { EStoreNamespaces } from '@typings/store'
 export interface IResourceStore {
   resourceMap: Map<string, IVideoData>
   init: () => void
-  addResourceByPath: (filePath: string, type: EMediaType) => void
+  addResourceByPath: (filePath: string, type: EMediaType) => Promise<IVideoData>
   clearResources: () => void
 }
 
@@ -18,7 +18,7 @@ const resourceStore = create<IResourceStore>((set) => ({
     }
   },
   addResourceByPath: (filePath: string, type: EMediaType) => {
-    window.api.resourceStore.addResourceByPath(filePath, type)
+    return window.api.resourceStore.addResourceByPath(filePath, type)
   },
   clearResources: () => {
     set({ resourceMap: new Map() })
