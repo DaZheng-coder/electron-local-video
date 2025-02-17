@@ -3,14 +3,15 @@ import { EMediaType, IVideoData } from '@typings/index'
 import { EStoreNamespaces } from '@typings/store'
 
 export interface IResourceStore {
-  resourceMap: Map<string, IVideoData>
+  resourceMap: Record<string, IVideoData>
   init: () => void
   addResourceByPath: (filePath: string, type: EMediaType) => Promise<IVideoData>
   clearResources: () => void
+  getResource: (resourceId: string) => IVideoData | undefined
 }
 
-const resourceStore = create<IResourceStore>((set) => ({
-  resourceMap: new Map(),
+const resourceStore = create<IResourceStore>((set, get) => ({
+  resourceMap: {},
   init: async () => {
     const state = await window.api.store.storeGetAll(EStoreNamespaces.ResourceStore)
     if (state) {
@@ -21,8 +22,11 @@ const resourceStore = create<IResourceStore>((set) => ({
     return window.api.resourceStore.addResourceByPath(filePath, type)
   },
   clearResources: () => {
-    set({ resourceMap: new Map() })
-    window.api.store.storeSet(EStoreNamespaces.ResourceStore, 'resourceMap', new Map())
+    set({ resourceMap: {} })
+    window.api.store.storeSet(EStoreNamespaces.ResourceStore, 'resourceMap', {})
+  },
+  getResource: (resourceId: string) => {
+    return get().resourceMap[resourceId]
   }
 }))
 

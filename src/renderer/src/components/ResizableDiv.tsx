@@ -16,6 +16,7 @@ export interface IResizableOptions {
   left: number
   minWidth?: number
   minHeight?: number
+  maxWidth?: number
   disableWithResize?: boolean // 禁用宽度调整
   disableHeightResize?: boolean // 禁用高度调整
   style?: React.CSSProperties
@@ -80,6 +81,8 @@ function ResizableDiv({ children, options, onResize }: IResizableDivProps) {
         newWidth = disableWithResize ? options.width : Math.max(minWidth, startWidth + offsetX)
         newHeight = disableHeightResize ? height : Math.max(minHeight, startHeight + offsetY)
       }
+
+      newWidth = Math.min(newWidth, options.maxWidth || Infinity)
 
       const res: IDimensions = {
         width: newWidth,

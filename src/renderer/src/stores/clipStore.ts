@@ -1,6 +1,7 @@
 import { ICellData, ITrackData } from '@typings/track'
 import { create } from 'zustand'
 import { v4 as uuid } from 'uuid'
+import { sortMainTrackCells } from '../utils/clipUtils'
 
 interface IClipStore {
   init: () => void
@@ -14,7 +15,7 @@ interface IClipStore {
   removeTrack: (trackId: string) => void
 
   cells: Record<string, ICellData>
-  createCell: (left: number, width: number, trackId: string) => ICellData
+  createCell: (data: Omit<ICellData, 'cellId'>, trackId?: string) => ICellData
   removeCellInTrack: (cellId: string) => void
   addCellInTrack: (cellId: string, trackId: string) => void
   moveCellToTrack: (cellId: string, targetTrackId: string) => void
@@ -42,9 +43,9 @@ const clipStore = create<IClipStore>((set, get) => ({
   tracks: [],
   setTracks: (tracks: ITrackData[]) => {
     // 主轨需要贴近处理
-    // const { track, cells } = sortMainTrackCells(tracks[0])
-    // tracks[0] = track
-    // set({ tracks, cells })
+    const { track, cells } = sortMainTrackCells(tracks[0])
+    tracks[0] = track
+    set({ tracks, cells })
     set({ tracks })
     return tracks
   },
@@ -83,10 +84,10 @@ const clipStore = create<IClipStore>((set, get) => ({
    * 关于cell的操作
    */
   cells: {},
-  createCell: (left: number, width: number, trackId: string) => {
+  createCell: (cellData, trackId) => {
     const id = uuid()
     const cells = { ...get().cells }
-    const cell = { cellId: id, left, width, trackId }
+    const cell: ICellData = { ...cellData, cellId: id }
     cells[id] = cell
     set({ cells })
     if (trackId) {

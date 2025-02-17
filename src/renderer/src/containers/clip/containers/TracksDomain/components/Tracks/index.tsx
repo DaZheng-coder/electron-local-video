@@ -10,12 +10,16 @@ import clipStore from '@renderer/src/stores/clipStore'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import TrackDivider from './components/TrackDivider'
 import dragStore from '@renderer/src/stores/dragStore'
-import { IDragCellItem, IPreviewCellData } from '@renderer/src/types'
+import { IDragItem, IPreviewCellData } from '@renderer/src/types'
 import CellItemUI from './components/CellItem/CellItemUI'
+import { getGridPixel } from '@renderer/src/utils/timelineUtils'
+import { ICellData } from '@typings/track'
+import { IVideoData } from '@typings/index'
 
 const Tracks = () => {
   const [highlightDivider, setHighlightDivider] = useState(-1)
   const [previewCellData, setPreviewCellData] = useState<IPreviewCellData | null>(null)
+  const timelineScale = clipStore((state) => state.timelineScale)
 
   const tracks = clipStore((state) => state.tracks)
   const addNewTrack = clipStore((state) => state.addNewTrack)
@@ -27,12 +31,12 @@ const Tracks = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const tracksWrapRef = useRef<HTMLDivElement>(null)
 
-  const [{ isOverCurrent }, drop] = useDrop<IDragCellItem, unknown, { isOverCurrent: boolean }>({
+  const [{ isOverCurrent }, drop] = useDrop<IDragItem, unknown, { isOverCurrent: boolean }>({
     accept: [EDragType.CELL_ITEM, EDragType.MEDIA_CARD],
     collect: (monitor) => ({
       isOverCurrent: monitor.isOver({ shallow: true }) // 光标是否在当前元素内
     }),
-    hover: (item, monitor) => {
+    hover: (_, monitor) => {
       // 拖拽元素在容器内移动时，判断光标是否在当前元素内且不在任何子元素内
       if (!monitor.isOver({ shallow: true })) return
       requestAnimationFrame(() => {
@@ -47,8 +51,8 @@ const Tracks = () => {
           // TODO 插入cell
           setPreviewCellData({
             cellId: DRAGGING_PREVIEW_CELL_ID,
-            left: result.left,
-            width: 200,
+            startFrame: result.startFrame,
+            frameCount: result.frameCount,
             top: result.top
           })
         } else {
@@ -63,27 +67,44 @@ const Tracks = () => {
       if (result.type === EDragResultType.NEW_TRACK) {
         switch (monitor.getItemType()) {
           case EDragType.CELL_ITEM: {
-            removeCellInTrack(item.cellId)
-            addNewTrack(result.insertTrackIndex + 1, [item.cellId])
-            updateCell(item.cellId, { left: result.left })
+            const dragData = item.data as ICellData
+            removeCellInTrack(dragData.cellId)
+            addNewTrack(result.insertTrackIndex + 1, [dragData.cellId])
+            updateCell(dragData.cellId, { startFrame: result.startFrame })
             break
           }
           case EDragType.MEDIA_CARD: {
-            const newTrack = addNewTrack(result.left)
-            createCell(result.left, 200, newTrack.trackId)
+            const newTrack = addNewTrack(result.insertTrackIndex + 1)
+            createCell(
+              {
+                startFrame: result.startFrame,
+                frameCount: result.frameCount,
+                trackId: newTrack.trackId,
+                resourceId: (item.data as IVideoData).id
+              },
+              newTrack.trackId
+            )
             break
           }
         }
       } else if (result.type === EDragResultType.INSERT_CELL) {
         switch (monitor.getItemType()) {
           case EDragType.CELL_ITEM: {
-            const cellId = item.cellId
-            updateCell(cellId, { left: result.left })
+            const cellId = (item.data as ICellData).cellId
+            updateCell(cellId, { startFrame: result.startFrame })
             moveCellToTrack(cellId, tracks[result.insertTrackIndex].trackId)
             break
           }
           case EDragType.MEDIA_CARD: {
-            createCell(result.left, 200, tracks[result.insertTrackIndex].trackId)
+            createCell(
+              {
+                startFrame: result.startFrame,
+                frameCount: result.frameCount,
+                trackId: tracks[result.insertTrackIndex].trackId,
+                resourceId: (item.data as IVideoData).id
+              },
+              tracks[result.insertTrackIndex].trackId
+            )
             break
           }
         }
@@ -134,11 +155,11 @@ const Tracks = () => {
             style={{
               opacity: 0.8,
               position: 'absolute',
-              left: Math.max(previewCellData?.left, 0),
+              left: Math.max(getGridPixel(timelineScale, previewCellData?.startFrame), 0),
               top: previewCellData.top
             }}
             title={previewCellData.cellId}
-            width={previewCellData.width}
+            width={getGridPixel(timelineScale, previewCellData.frameCount)}
           />
         )}
       </div>

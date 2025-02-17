@@ -1,7 +1,11 @@
 import { DropTargetMonitor, XYCoord } from 'react-dnd'
 import clipStore from '../stores/clipStore'
 import dragStore from '../stores/dragStore'
-import { IDragCellItem, IDragMediaItem, TGlobalDragItem } from '../types'
+import { getGridFrame } from './timelineUtils'
+import { IDragItem } from '../types'
+import { getCellDataByVideoData } from './clipUtils'
+import { IVideoData } from '@typings/index'
+import { ICellData } from '@typings/track'
 
 export const TRACK_HEIGHT = 80
 export const TRACK_BORDER_TOP_WIDTH = 2
@@ -47,31 +51,34 @@ export const getDragCellOffset = (
   }
 }
 
-/**
- * 通过媒体数据获取拖拽单元数据
- * @param mediaData
- * @returns
- */
-export const getDragCellDataByMediaData = (mediaData: IDragMediaItem): IDragCellItem => {
-  const data: IDragCellItem = {
-    cellId: DRAGGING_PREVIEW_CELL_ID,
-    cellData: { width: 200, cellId: DRAGGING_PREVIEW_CELL_ID, left: 0, trackId: '' }
-  }
-  return data
-}
+// /**
+//  * 通过媒体数据获取拖拽单元数据
+//  * @param mediaData
+//  * @returns
+//  */
+// export const getDragCellDataByMediaData = (mediaData: IDragMediaItem): IDragCellItem => {
+//   const data: IDragCellItem = {
+//     cellId: DRAGGING_PREVIEW_CELL_ID,
+//     cellData: { width: 200, cellId: DRAGGING_PREVIEW_CELL_ID, left: 0, trackId: '' }
+//   }
+//   return data
+// }
 
 /**
  * 获取拖拽单元数据
  * @param monitor
  * @returns
  */
-export const getDragCellData = (monitor: DropTargetMonitor): IDragCellItem | null => {
-  const dragData: TGlobalDragItem = monitor.getItem()
+export const getDragCellData = (monitor: DropTargetMonitor<IDragItem>): IDragItem | null => {
+  const item = monitor.getItem()
   switch (monitor.getItemType()) {
     case EDragType.CELL_ITEM:
-      return dragData as IDragCellItem
+      return item
     case EDragType.MEDIA_CARD:
-      return getDragCellDataByMediaData(dragData as IDragMediaItem)
+      return {
+        ...item,
+        data: getCellDataByVideoData(item.data as IVideoData)
+      }
     default:
       return null
   }
@@ -88,26 +95,26 @@ export const getDragCellData = (monitor: DropTargetMonitor): IDragCellItem | nul
  */
 export const canInsertToTrack = (
   cellId: string,
-  draggingCellStart: number,
-  draggingCellEnd: number,
-  trackIndex: number,
-  leftLimit: number
+  startFrame: number,
+  frameCount: number,
+  trackIndex: number
 ) => {
+  const endFrame = startFrame + frameCount
   const cells = clipStore.getState().cells
   const tracks = clipStore.getState().tracks
   const curTrackCells = tracks[trackIndex].cellIds
     .filter((id) => id !== cellId)
     .map((cellId) => cells[cellId])
-    .sort((a, b) => a.left - b.left)
-  let pre = leftLimit
+    .sort((a, b) => a.startFrame - b.startFrame)
+  let pre = 0
   for (let j = 0; j < curTrackCells.length; j++) {
-    if (draggingCellStart > pre && draggingCellEnd < curTrackCells[j].left) {
+    if (startFrame > pre && endFrame < curTrackCells[j].startFrame) {
       // 可以成功插入到当前轨道中
       return true
     }
-    pre = curTrackCells[j].left + curTrackCells[j].width
+    pre = curTrackCells[j].startFrame + curTrackCells[j].frameCount
   }
-  return draggingCellStart > pre
+  return startFrame > pre
 }
 
 /**
@@ -116,10 +123,11 @@ export const canInsertToTrack = (
  * @param left
  * @returns
  */
-const createNewTrackResult = (index: number, left: number) => ({
+const createNewTrackResult = (index: number, startFrame: number, frameCount: number) => ({
   type: EDragResultType.NEW_TRACK,
   insertTrackIndex: index,
-  left,
+  startFrame,
+  frameCount,
   top: -1
 })
 
@@ -130,11 +138,17 @@ const createNewTrackResult = (index: number, left: number) => ({
  * @param top
  * @returns
  */
-const createInsertCellResult = (index: number, left: number, top: number) => {
+const createInsertCellResult = (
+  index: number,
+  startFrame: number,
+  frameCount: number,
+  top: number
+) => {
   return {
     type: EDragResultType.INSERT_CELL,
     insertTrackIndex: index,
-    left,
+    startFrame,
+    frameCount,
     top
   }
 }
@@ -148,29 +162,21 @@ export const getDraggingInTracksResult = (
   monitor: DropTargetMonitor
 ): {
   type: EDragResultType
-  left: number
+  startFrame: number
+  frameCount: number
   top: number
   insertTrackIndex: number
 } | null => {
   const tracksWrapDomRef = dragStore.getState().tracksWrapDomRef
+  const timelineScale = clipStore.getState().timelineScale
   const tracksWrapRect = tracksWrapDomRef?.current?.getBoundingClientRect()
-  const clientOffset = monitor.getClientOffset() // 鼠标位置
-  const sourceClientOffset = monitor.getSourceClientOffset() // 拖拽源位置
   if (!tracksWrapRect) return null
   const dragOffset = getDragCellOffset(monitor, tracksWrapRect) // 最终拖拽位置
 
-  const cellData = getDragCellData(monitor) // 拖拽的cell数据
+  const cellData = getDragCellData(monitor)?.data as ICellData // 拖拽的cell数据
   const tracks = clipStore.getState().tracks // 所有轨道数据
 
-  if (
-    !clientOffset ||
-    !sourceClientOffset ||
-    !dragOffset ||
-    !cellData ||
-    !tracksWrapDomRef ||
-    !tracksWrapRect
-  )
-    return null
+  if (!dragOffset || !cellData || !tracksWrapDomRef || !tracksWrapRect) return null
 
   // 1. 获取所有轨道元素及位置信息
   const trackItems = Array.from(tracksWrapDomRef.current?.children || [])
@@ -189,6 +195,10 @@ export const getDraggingInTracksResult = (
   const topLimit = tracksWrapRect.top
   const bottomLimit = tracksWrapRect.bottom
 
+  const startFrame = getGridFrame(timelineScale, dragOffset.x) // 拖拽cell的起始位置
+  const cellId = cellData.cellId
+  const frameCount = cellData.frameCount
+
   const isWithinTrackBounds = (y: number) => y > topLimit && y < bottomLimit
 
   // 2. 根据鼠标位置是否在所有轨道内，判断是否需要新增轨道
@@ -201,27 +211,18 @@ export const getDraggingInTracksResult = (
           // 特判：归于主轨，直接插入
           return createInsertCellResult(
             curTrackIndex,
-            dragOffset.x,
+            startFrame,
+            frameCount,
             curTrackRect.top - tracksWrapRect.top
           )
         }
 
-        const draggingCellStart = dragOffset.x // 拖拽cell的起始位置
-        const draggingCellEnd = dragOffset.x + cellData.cellData.width // 拖拽cell的结束位置
-
         // 2.1.1 当前轨道有空位置插入
-        if (
-          canInsertToTrack(
-            cellData.cellId,
-            draggingCellStart,
-            draggingCellEnd,
-            curTrackIndex,
-            curTrackRect.left
-          )
-        ) {
+        if (canInsertToTrack(cellId, startFrame, frameCount, curTrackIndex)) {
           return createInsertCellResult(
             curTrackIndex,
-            dragOffset.x - tracksWrapRect.left,
+            startFrame,
+            frameCount,
             curTrackRect.top - tracksWrapRect.top
           )
         }
@@ -229,21 +230,18 @@ export const getDraggingInTracksResult = (
         // 2.1.2 当前轨道无空位置插入， 从第二个轨道到最后一个轨道找空位置插入
         for (let j = 1; j < tracksLen; j++) {
           if (j === curTrackIndex) continue
-          if (
-            canInsertToTrack(
-              cellData.cellId,
-              draggingCellStart,
-              draggingCellEnd,
+          if (canInsertToTrack(cellId, startFrame, frameCount, j)) {
+            return createInsertCellResult(
               j,
-              trackRects[j].left
+              startFrame,
+              frameCount,
+              trackRects[j].top - tracksWrapRect.top
             )
-          ) {
-            return createInsertCellResult(j, dragOffset.x, trackRects[j].top - tracksWrapRect.top)
           }
         }
 
         // 2.1.3 所有轨道都没有空位置插入，新建轨道
-        return createNewTrackResult(curTrackIndex, dragOffset.x)
+        return createNewTrackResult(curTrackIndex, startFrame, frameCount)
       }
 
       // 2.1.4 位于轨道之间，直接新建轨道
@@ -252,15 +250,15 @@ export const getDraggingInTracksResult = (
         dragOffset.y < curTrackRect.top &&
         dragOffset.y > trackRects[curTrackIndex + 1].bottom
       ) {
-        return createNewTrackResult(curTrackIndex, dragOffset.x)
+        return createNewTrackResult(curTrackIndex, startFrame, frameCount)
       }
     }
   } else {
     // 2.2 位于轨道边界，新建轨道： 位于轨道上边界，插入当前轨道后，位于轨道下边界，插入主轨后
     if (dragOffset.y < topLimit) {
-      return createNewTrackResult(tracksLen - 1, dragOffset.x)
+      return createNewTrackResult(tracksLen - 1, startFrame, frameCount)
     } else if (dragOffset.y > bottomLimit) {
-      return createNewTrackResult(0, dragOffset.x)
+      return createNewTrackResult(0, startFrame, frameCount)
     }
   }
 

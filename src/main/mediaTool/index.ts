@@ -93,7 +93,6 @@ class MediaTool {
           resolve(outputPath)
         })
         .on('error', (error) => {
-          console.log('*** error', error)
           reject(error)
         })
     })

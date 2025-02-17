@@ -2,13 +2,18 @@ import BaseCustomDragLayer, {
   getDragLayerItemStyles,
   TRenderDragLayer
 } from '@renderer/src/components/BaseCustomDragLayer'
-import { DRAGGING_PREVIEW_CELL_ID, EDragType, TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
+import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
 import { CSSProperties, memo, useCallback } from 'react'
 import MediaCardItemUI from '../containers/ResourcePool/components/MediaCardItemUI'
 import dragStore from '@renderer/src/stores/dragStore'
-import { IDragCellItem, IDragMediaItem, TGlobalDragItem } from '@renderer/src/types'
+import { IDragItem } from '@renderer/src/types'
 import CellItemUI from '../containers/TracksDomain/components/Tracks/components/CellItem/CellItemUI'
 import { LAYOUT_TOP_Z_INDEX } from '@renderer/src/constants'
+import { getGridPixel } from '@renderer/src/utils/timelineUtils'
+import clipStore from '@renderer/src/stores/clipStore'
+import { ICellData } from '@typings/track'
+import { IVideoData } from '@typings/index'
+import { getCellDataByVideoData } from '@renderer/src/utils/clipUtils'
 
 const getComputedStyle = (elt: Element, pseudoElt?: string | null) => {
   if (elt) {
@@ -20,37 +25,35 @@ const getComputedStyle = (elt: Element, pseudoElt?: string | null) => {
 
 const GlobalCustomDragLayer = () => {
   const tracksContainerDomRef = dragStore((state) => state.tracksContainerDomRef)
+  const timelineScale = clipStore((state) => state.timelineScale)
 
   const renderCellItemUI = useCallback(
-    (dragData: IDragCellItem, computedStyle: CSSProperties, style: CSSProperties) => {
+    (cellData: ICellData, computedStyle: CSSProperties, style: CSSProperties) => {
+      const width = getGridPixel(timelineScale, cellData.frameCount)
       return (
         <CellItemUI
           style={{
             ...style,
-            width: dragData.cellData.width,
+            width,
             fontSize: computedStyle.fontSize,
             opacity: 1,
             color: computedStyle.color
           }}
-          title={dragData.cellId}
+          title={cellData.cellId}
         />
       )
     },
-    []
+    [timelineScale]
   )
 
   const renderMediaCardItemUI = useCallback(
-    (dragData: IDragMediaItem, style: CSSProperties) => (
-      <MediaCardItemUI
-        style={style}
-        title={dragData.mediaData.title}
-        thumbnail={dragData.mediaData.thumbnail}
-      />
+    (videoData: IVideoData, style: CSSProperties) => (
+      <MediaCardItemUI style={style} title={videoData.title} thumbnail={videoData.thumbnail} />
     ),
     []
   )
 
-  const renderDragLayer: TRenderDragLayer<TGlobalDragItem> = useCallback(
+  const renderDragLayer: TRenderDragLayer<IDragItem> = useCallback(
     ({ itemType, item, clientOffset, initialOffset, sourceClientOffset }) => {
       if (!initialOffset || !sourceClientOffset) return null
       // 0. 判断拖拽类型，减少不必要的计算
@@ -65,21 +68,19 @@ const GlobalCustomDragLayer = () => {
 
       switch (itemType) {
         case EDragType.CELL_ITEM: {
-          const dragData = item as IDragCellItem
           const trackDomRect = tracksContainerDomRef?.current?.getBoundingClientRect()
-          const computedStyle = getComputedStyle(dragData.domRef!.current!)
+          const computedStyle = getComputedStyle(item.domRef!.current!)
 
           const transform = `translate(${Math.max(sourceClientOffset.x, trackDomRect?.left || 0)}px, ${sourceClientOffset.y}px)`
           style.transform = transform
           style.WebkitTransform = transform
 
           return {
-            renderResult: renderCellItemUI(dragData, computedStyle, style)
+            renderResult: renderCellItemUI(item.data as ICellData, computedStyle, style)
           }
         }
 
         case EDragType.MEDIA_CARD: {
-          const dragData = item as IDragMediaItem
           const trackDomRect = tracksContainerDomRef?.current?.getBoundingClientRect()
           const overInTracks = trackDomRect && clientOffset && clientOffset.y > trackDomRect.top
 
@@ -95,21 +96,18 @@ const GlobalCustomDragLayer = () => {
 
           if (overInTracks) {
             // *** test 转换mediaData为cellData
-            const testData: IDragCellItem = {
-              cellId: DRAGGING_PREVIEW_CELL_ID,
-              cellData: { width: 200, cellId: DRAGGING_PREVIEW_CELL_ID, left: 0, trackId: '' }
-            }
+            const cellData = getCellDataByVideoData(item.data as IVideoData)
             return {
               renderResult: renderCellItemUI(
-                testData,
-                getComputedStyle(dragData.domRef!.current!),
+                cellData,
+                getComputedStyle(item.domRef!.current!),
                 style
               )
             }
           } else {
             return {
               wrapStyle: { zIndex: LAYOUT_TOP_Z_INDEX },
-              renderResult: renderMediaCardItemUI(dragData, style)
+              renderResult: renderMediaCardItemUI(item.data as IVideoData, style)
             }
           }
         }
@@ -120,7 +118,7 @@ const GlobalCustomDragLayer = () => {
     [tracksContainerDomRef, renderCellItemUI, renderMediaCardItemUI]
   )
 
-  return <BaseCustomDragLayer<TGlobalDragItem> renderDragLayer={renderDragLayer} />
+  return <BaseCustomDragLayer<IDragItem> renderDragLayer={renderDragLayer} />
 }
 
 export default memo(GlobalCustomDragLayer)

@@ -4,7 +4,8 @@ export interface ITrackData {
 }
 export interface ICellData {
   cellId: string
-  left: number
-  width: number
-  trackId: string
+  trackId: string // 轨道id
+  startFrame: number // 起始帧数
+  frameCount: number // 当前总帧数
+  resourceId: string // 资源id
 }

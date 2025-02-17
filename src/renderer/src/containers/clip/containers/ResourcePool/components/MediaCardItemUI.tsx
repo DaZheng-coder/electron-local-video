@@ -1,7 +1,7 @@
 import { DEFAULT_IMAGE } from '@renderer/src/constants'
 import { IThumbnail } from '@typings/index'
 import { Card, Image } from 'antd'
-import { FC, useEffect, useState } from 'react'
+import { FC } from 'react'
 // import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons'
 
 export interface IMediaCardUIProps {

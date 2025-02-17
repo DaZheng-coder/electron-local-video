@@ -83,6 +83,21 @@ export const getGridPixel = (scale: number, frameCount: number) => {
   }
   return trackWidth
 }
+// 获取当前scale下的单元格帧数
+export const getGridFrame = (scale: number, width: number) => {
+  let frameCount = width
+  if (scale < 70) {
+    // 1秒一格
+    frameCount = frameCount * 30
+  }
+  if (scale < 30) {
+    // 6秒一格
+    frameCount = frameCount * 6
+  }
+  const gridPixel = getGridSize(scale)
+  frameCount = Math.floor(frameCount / gridPixel)
+  return frameCount
+}
 // 根据缩放比调整 step
 const getStep = (scale: number, frameStep: number): number => {
   return scale > 60 ? frameStep : 10
