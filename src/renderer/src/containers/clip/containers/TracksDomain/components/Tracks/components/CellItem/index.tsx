@@ -1,5 +1,5 @@
 import clipStore from '@renderer/src/stores/clipStore'
-import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
+import { EDragType } from '@renderer/src/utils/dragUtils'
 import { FC, useCallback, useEffect, useRef } from 'react'
 import { useDrag } from 'react-dnd'
 import { getEmptyImage } from 'react-dnd-html5-backend'
@@ -8,6 +8,7 @@ import ResizableDiv from '@renderer/src/components/ResizableDiv'
 import { IDragItem } from '@renderer/src/types'
 import { getGridFrame, getGridPixel } from '@renderer/src/utils/timelineUtils'
 import resourceStore from '@renderer/src/stores/resourceStore'
+import { TRACK_HEIGHT } from '@renderer/src/constants'
 
 interface ICellItemProps {
   cellId: string

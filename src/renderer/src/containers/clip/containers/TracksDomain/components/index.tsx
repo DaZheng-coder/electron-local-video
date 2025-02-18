@@ -1,5 +1,5 @@
 import { useDrop } from 'react-dnd'
-import TrackItem from './components/TrackItem'
+import TrackItem from './Tracks/components/TrackItem'
 import {
   EDragResultType,
   EDragType,
@@ -7,10 +7,10 @@ import {
 } from '@renderer/src/utils/dragUtils'
 import clipStore from '@renderer/src/stores/clipStore'
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
-import TrackDivider from './components/TrackDivider'
+import TrackDivider from './Tracks/components/TrackDivider'
 import dragStore from '@renderer/src/stores/dragStore'
 import { IDragItem, IPreviewCellData } from '@renderer/src/types'
-import CellItemUI from './components/CellItem/CellItemUI'
+import CellItemUI from './Tracks/components/CellItem/CellItemUI'
 import { getGridPixel } from '@renderer/src/utils/timelineUtils'
 import { ICellData } from '@typings/track'
 import { IVideoData } from '@typings/index'
@@ -120,7 +120,6 @@ const Tracks = () => {
     if (!containerRef.current) return
     const pixelWidth = getGridPixel(timelineScale, frameCount)
     const minWidth = containerRef.current.clientWidth || 0
-    console.log('*** pixelWidth', pixelWidth, timelineScale)
     setTracksWidth(Math.max(pixelWidth, minWidth))
   }, [timelineScale, frameCount])
 
@@ -155,7 +154,7 @@ const Tracks = () => {
 
   return (
     // 轨道容器
-    <div ref={containerRef} className="scrollbar-y-only flex-1 flex flex-col overflow-scroll">
+    <div ref={containerRef} className="no-scrollbar flex-1 flex flex-col overflow-scroll">
       {/* 占位元素，用于占据上下空白空间，使轨道保持居中 */}
       <div className="flex-1 min-h-10" />
       <div ref={tracksWrapRef} className="relative" style={{ width: tracksWidth }}>

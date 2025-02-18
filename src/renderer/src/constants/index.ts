@@ -12,3 +12,19 @@ export const LAYOUT_TOOL_Z_INDEX = 999
 
 // 拖拽视频单元块的预览层级，!!!修改这个记得修改containers/index.css 里的分割线层级，保持两者同步!!!
 export const LAYOUT_DRAGGER_CELL_INDEX = 998
+
+// 轨道单轨高度
+export const TRACK_HEIGHT = 80
+
+// 预览单元格ID
+export const DRAGGING_PREVIEW_CELL_ID = 'DRAGGING_PREVIEW_CELL_ID'
+
+// 时间轴高度
+export const TIMELINE_HEIGHT = 20
+
+// 时间轴锚点高度
+export const TIMELINE_ANCHOR_HEIGHT = 13
+export const TIMELINE_ANCHOR_WIDTH = 10
+
+// 时间轴锚点偏移量(轨道左侧区域)
+export const PAGE_PADDING = 4

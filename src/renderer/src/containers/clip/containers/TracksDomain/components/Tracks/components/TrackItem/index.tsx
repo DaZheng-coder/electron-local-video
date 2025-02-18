@@ -1,7 +1,8 @@
 import { FC } from 'react'
 import CellItem from '../CellItem'
-import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
+import { EDragType } from '@renderer/src/utils/dragUtils'
 import clipStore from '@renderer/src/stores/clipStore'
+import { TRACK_HEIGHT } from '@renderer/src/constants'
 
 interface ITrackItemProps {
   trackId: string

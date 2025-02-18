@@ -3,6 +3,7 @@ import ClipTool from './components/ClipTool'
 import Timeline from './components/Timeline'
 import Tracks from './components/Tracks'
 import { LAYOUT_TOOL_Z_INDEX } from '@renderer/src/constants'
+// import TimelineAnchor from './components/TimelineAnchor'
 
 const TracksDomain = () => {
   const timelineScale = clipStore((state) => state.timelineScale)
@@ -16,6 +17,7 @@ const TracksDomain = () => {
       >
         <ClipTool />
         <Timeline scale={timelineScale} />
+        {/* <TimelineAnchor /> */}
       </div>
       <Tracks />
     </div>

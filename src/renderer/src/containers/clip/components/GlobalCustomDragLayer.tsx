@@ -2,13 +2,13 @@ import BaseCustomDragLayer, {
   getDragLayerItemStyles,
   TRenderDragLayer
 } from '@renderer/src/components/BaseCustomDragLayer'
-import { EDragType, TRACK_HEIGHT } from '@renderer/src/utils/dragUtils'
+import { EDragType } from '@renderer/src/utils/dragUtils'
 import { CSSProperties, memo, useCallback } from 'react'
 import MediaCardItemUI from '../containers/ResourcePool/components/MediaCardItemUI'
 import dragStore from '@renderer/src/stores/dragStore'
 import { IDragItem } from '@renderer/src/types'
 import CellItemUI from '../containers/TracksDomain/components/Tracks/components/CellItem/CellItemUI'
-import { LAYOUT_TOP_Z_INDEX } from '@renderer/src/constants'
+import { LAYOUT_TOP_Z_INDEX, TRACK_HEIGHT } from '@renderer/src/constants'
 import { getGridPixel } from '@renderer/src/utils/timelineUtils'
 import clipStore from '@renderer/src/stores/clipStore'
 import { ICellData } from '@typings/track'

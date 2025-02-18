@@ -6,6 +6,7 @@ import {
   UserConfig,
   CanvasConfig
 } from '@renderer/src/utils/timelineUtils'
+import { TIMELINE_HEIGHT } from '@renderer/src/constants'
 
 interface TimelineProps {
   start?: number
@@ -121,7 +122,11 @@ const Timeline: React.FC<TimelineProps> = ({
   }, [setCanvasRect, setCanvasContext, updateTimeLine])
 
   return (
-    <div ref={canvasContainerRef} className="h-5 text-center leading-5 text-sm">
+    <div
+      ref={canvasContainerRef}
+      style={{ height: TIMELINE_HEIGHT }}
+      className="text-center leading-5 text-sm"
+    >
       <canvas
         ref={timelineRef}
         style={canvasStyle}

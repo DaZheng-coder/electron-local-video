@@ -7,10 +7,6 @@ import { getCellDataByVideoData } from './clipUtils'
 import { IVideoData } from '@typings/index'
 import { ICellData } from '@typings/track'
 
-export const TRACK_HEIGHT = 80
-export const TRACK_BORDER_TOP_WIDTH = 2
-export const DRAGGING_PREVIEW_CELL_ID = 'DRAGGING_PREVIEW_CELL_ID'
-
 export enum EDragType {
   MEDIA_CARD = 'MEDIA_CARD',
   CELL_ITEM = 'CELL_ITEM',
