@@ -40,3 +40,8 @@ export const getHash = (str: string): string => {
   }
   return hash.toString(16)
 }
+
+export const clearDir = (folderPath: string) => {
+  fs.rmdirSync(folderPath, { recursive: true })
+  ensureDir(folderPath)
+}

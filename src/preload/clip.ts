@@ -37,6 +37,9 @@ const api = {
   mediaTool: {
     getThumbnail: (mediaData: { inputPath: string }) => {
       return ipcRenderer.invoke(EMediaToolChannels.GenerateThumbnail, mediaData)
+    },
+    getVideoThumbnails: (inputPath: string, options: IGetVideoThumbnailOptions) => {
+      return ipcRenderer.invoke(EMediaToolChannels.GenerateVideoThumbnails, inputPath, options)
     }
   }
 }

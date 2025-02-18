@@ -1,7 +1,9 @@
 import path from 'path'
-import { ensureDir, getHash } from './utils'
+import { clearDir, ensureDir, getHash } from './utils'
 import { find } from 'lodash'
 import { IVideoMetadata } from '../../typings'
+import { ipcMain } from 'electron'
+import { EMediaToolChannels } from '../../typings/store'
 
 const ffmpeg = require('fluent-ffmpeg')
 ffmpeg.setFfmpegPath(require('@ffmpeg-installer/ffmpeg').path)
@@ -15,6 +17,19 @@ class MediaTool {
     this.localStaticPath = toolConfig.localStaticPath
     ensureDir(this.localStaticPath)
     this.localResourcePath = toolConfig.localStaticPath
+
+    this.listen()
+  }
+
+  static listen() {
+    ipcMain.handle(EMediaToolChannels.GenerateThumbnail, async (_, inputPath) => {
+      console.log(' ipcMaininputPath:', inputPath)
+      return await MediaTool.generateThumbnail(inputPath)
+    })
+
+    ipcMain.handle(EMediaToolChannels.GenerateVideoThumbnails, async (_, inputPath, options) => {
+      return await MediaTool.generateVideoThumbnails(inputPath, options)
+    })
   }
 
   static parsePath(filepath: string) {
@@ -23,6 +38,11 @@ class MediaTool {
       : path.join(__dirname, '../../../dist/render', filepath)
   }
 
+  /**
+   * 获取视频元信息
+   * @param param0
+   * @returns
+   */
   static getVideoMetadata = async ({
     inputPath
   }: {
@@ -65,6 +85,11 @@ class MediaTool {
     })
   }
 
+  /**
+   * 生成缩略图
+   * @param param0
+   * @returns
+   */
   static async generateThumbnail({
     inputPath,
     size = '240x240'
@@ -95,6 +120,55 @@ class MediaTool {
         .on('error', (error) => {
           reject(error)
         })
+    })
+  }
+
+  static async generateVideoThumbnails(inputPath: string, size = '240x240') {
+    const fileId = getHash(JSON.stringify({ inputPath, size }))
+    const folderThumbnail = path.join(this.localStaticPath, 'thumbnail')
+    const outputPath = path.join(folderThumbnail, fileId)
+
+    // 配置参数
+    const config = {
+      inputVideo: inputPath, // 输入视频路径
+      outputDir: outputPath, // 输出目录 (需要以/结尾)
+      filename: 'frame%04d.png', // 文件名格式
+      frameRate: 1 // 提取帧率 (保持原速)
+    }
+
+    ensureDir(folderThumbnail)
+    clearDir(outputPath)
+
+    return new Promise((resolve, reject) => {
+      ffmpeg(config.inputVideo)
+        .output(path.join(config.outputDir, config.filename))
+        .outputOptions([
+          '-f image2', // 指定输出为图像序列
+          '-r',
+          config.frameRate, // 设置帧率
+          '-vsync',
+          'vfr', // 保持可变帧率
+          '-qscale:v',
+          '31' // 图像质量 (1-31, 越小越好),
+          // '-ss 00:00:05', // 从第5秒开始提取,
+          // '-t 10', // 只处理10秒
+          // '-vf "select=eq(pict_type\,I)"', // 只提取关键帧
+          // '-threads 4', // 使用多线程
+          // '-preset fast' // 加速处理
+        ])
+        .on('start', (cmd) => console.log(`执行命令: ${cmd}`))
+        .on('error', (err) => {
+          console.error('错误:', err)
+          reject(err)
+        })
+        .on('end', () => {
+          console.log(`帧已保存至 ${path.resolve(config.outputDir)}`)
+          resolve(config.outputDir)
+        })
+        .on('progress', (progress) => {
+          console.log(`处理中: ${Math.floor(progress.percent)}% 完成`)
+        })
+        .run()
     })
   }
 }

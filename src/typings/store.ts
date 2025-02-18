@@ -14,5 +14,6 @@ export enum EResourceStoreChannels {
 }
 
 export enum EMediaToolChannels {
-  GenerateThumbnail = 'mediaTool-generateThumbnail'
+  GenerateThumbnail = 'mediaTool-generateThumbnail',
+  GenerateVideoThumbnails = 'mediaTool-generateVideoThumbnails'
 }

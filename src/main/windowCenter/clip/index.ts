@@ -25,10 +25,7 @@ function CreateClipWindow() {
   const clipWindow = new BaseWindow(options)
 
   MediaTool.config({ localStaticPath: staticPath })
-  ipcMain.handle(EMediaToolChannels.GenerateThumbnail, async (_, inputPath) => {
-    console.log(' ipcMaininputPath:', inputPath)
-    return await MediaTool.generateThumbnail(inputPath)
-  })
+
   return clipWindow
 }
 

@@ -18,9 +18,9 @@ const ResourcePool = () => {
       if (files && files.length > 0) {
         // TODO 考虑过滤MP4格式的视频
         for (const file of files) {
-          if (file.type === 'video/mp4') {
-            addResourceByPath(file.path, EMediaType.Video)
-          }
+          // if (file.type === 'video/mp4') {
+          addResourceByPath(file.path, EMediaType.Video)
+          // }
         }
       }
     }
