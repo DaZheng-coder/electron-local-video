@@ -71,6 +71,11 @@ const getGridSize = (scale: number): number => {
   ])
   return scaleNum.get(scale) || 100
 }
+
+// 根据时间获取帧数,目前默认是30fps
+export const getFrameCountByDuration = (duration: number, fps: number = 30): number => {
+  return Math.floor(duration * fps)
+}
 // 获取当前scale下的单元格像素
 export const getGridPixel = (scale: number, frameCount: number) => {
   const gridPixel = getGridSize(scale)

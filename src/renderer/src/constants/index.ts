@@ -24,7 +24,10 @@ export const TIMELINE_HEIGHT = 20
 
 // 时间轴锚点高度
 export const TIMELINE_ANCHOR_HEIGHT = 13
-export const TIMELINE_ANCHOR_WIDTH = 10
+export const TIMELINE_ANCHOR_WIDTH = 11 // 尽量奇数
 
 // 时间轴锚点偏移量(轨道左侧区域)
 export const PAGE_PADDING = 4
+
+// 工具栏高度
+export const TOOLBAR_HEIGHT = 40

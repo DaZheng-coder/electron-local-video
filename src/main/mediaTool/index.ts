@@ -60,8 +60,9 @@ class MediaTool {
           const audioInfo = find(streams, { codec_type: 'audio' })
 
           // 计算实际帧率
-          const [numerator, denominator] = videoInfo.r_frame_rate.split('/')
-          const fps = denominator ? numerator / denominator : Number(numerator)
+          // const [numerator, denominator] = videoInfo.r_frame_rate.split('/')
+          // const fps = denominator ? numerator / denominator : Number(numerator)
+          const fps = 30 // 目前默认采用30fps
 
           // 获取时长
           const duration = Number(metadata.format.duration) || videoInfo.duration

@@ -1,29 +1,22 @@
-import { useState, useEffect, useCallback } from 'react'
-import { XYCoord } from 'react-dnd'
-
-type TDragConstraint = 'both' | 'horizontal' | 'vertical'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 type TDragBoundary = {
   minX?: number
   maxX?: number
-  minY?: number
-  maxY?: number
 }
 
 interface IUseNativeDrag {
   ref: React.RefObject<HTMLDivElement>
-  constraint?: TDragConstraint
-  initPosition?: XYCoord
+  initPosition?: { x: number }
   boundary?: TDragBoundary
   onDragStart?: () => void
-  onDragging?: (position: XYCoord) => void
-  onDragEnd?: (position: XYCoord) => void
+  onDragging?: (position: { x: number }) => void
+  onDragEnd?: (position: { x: number }) => void
 }
 
-const useNativeDrag = ({
+const useAnchorDrag = ({
   ref,
-  constraint = 'both',
-  initPosition = { x: 0, y: 0 },
+  initPosition = { x: 0 },
   boundary,
   onDragStart,
   onDragging,
@@ -31,24 +24,23 @@ const useNativeDrag = ({
 }: IUseNativeDrag) => {
   const [position, setPosition] = useState(initPosition)
   const [isDragging, setIsDragging] = useState(false)
-
+  const startXRef = useRef<number>(0)
   // 边界约束计算
   const applyBoundary = useCallback(
-    (x: number, y: number) => {
-      if (!boundary) return { x, y }
-      const { minX = -Infinity, maxX = Infinity, minY = -Infinity, maxY = Infinity } = boundary
+    (x: number) => {
+      if (!boundary) return { x }
+      const { minX = -Infinity, maxX = Infinity } = boundary
 
       return {
-        x: Math.max(minX, Math.min(x, maxX)),
-        y: Math.max(minY, Math.min(y, maxY))
+        x: Math.max(minX, Math.min(x, maxX))
       }
     },
     [boundary]
   )
 
   const updatePosition = useCallback(
-    (x: number, y: number) => {
-      const constrained = applyBoundary(x, y)
+    (x: number) => {
+      const constrained = applyBoundary(x)
       setPosition(constrained)
       onDragging?.(constrained)
     },
@@ -59,13 +51,10 @@ const useNativeDrag = ({
     if (!ref.current) return
 
     const element = ref.current
-    let startX = 0
-    let startY = 0
 
     const handleMouseDown = (e: MouseEvent) => {
       setIsDragging(true)
-      startX = e.clientX - position.x
-      startY = e.clientY - position.y
+      startXRef.current = e.clientX - position.x
 
       // 防止文本选中
       document.body.style.userSelect = 'none'
@@ -76,17 +65,9 @@ const useNativeDrag = ({
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging) return
 
-      let newX = position.x
-      let newY = position.y
+      const newX = e.clientX - startXRef.current
 
-      if (constraint !== 'vertical') {
-        newX = e.clientX - startX
-      }
-
-      if (constraint !== 'horizontal') {
-        newY = e.clientY - startY
-      }
-      updatePosition(newX, newY)
+      updatePosition(newX)
     }
 
     const handleMouseUp = () => {
@@ -105,15 +86,15 @@ const useNativeDrag = ({
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [isDragging, position, ref, constraint, updatePosition, onDragStart, onDragEnd])
+  }, [isDragging, position, ref, updatePosition, onDragStart, onDragEnd])
 
   return {
     style: {
-      transform: `translate(${position.x}px, ${position.y}px)`,
+      transform: `translate(${position.x}px)`,
       cursor: 'grab'
     },
     isDragging
   }
 }
 
-export default useNativeDrag
+export default useAnchorDrag

@@ -1,35 +1,38 @@
-import { TIMELINE_ANCHOR_HEIGHT, TIMELINE_ANCHOR_WIDTH } from '@renderer/src/constants'
-import useNativeDrag from '@renderer/src/hooks/useNativeDrag'
+import {
+  TIMELINE_ANCHOR_HEIGHT,
+  TIMELINE_ANCHOR_WIDTH,
+  TOOLBAR_HEIGHT
+} from '@renderer/src/constants'
+import useAnchorDrag from '@renderer/src/hooks/useAnchorDrag'
 import clipStore from '@renderer/src/stores/clipStore'
 import { getGridFrame, getGridPixel } from '@renderer/src/utils/timelineUtils'
-import { useMemo, useRef } from 'react'
+import { useRef } from 'react'
 
 const TimelineAnchor = () => {
   const timelineScale = clipStore((state) => state.timelineScale)
   const currentFrame = clipStore((state) => state.currentFrame)
+  const frameCount = clipStore((state) => state.frameCount)
   const setCurrentFrame = clipStore((state) => state.setCurrentFrame)
   const anchorRef = useRef<HTMLDivElement>(null)
 
-  const { style: draggingStyle } = useNativeDrag({
+  const { style: draggingStyle } = useAnchorDrag({
     ref: anchorRef,
-    constraint: 'horizontal',
-    initPosition: { x: getGridPixel(timelineScale, currentFrame), y: 0 },
+    boundary: { minX: 0, maxX: getGridPixel(timelineScale, frameCount) },
+    initPosition: {
+      x: getGridPixel(timelineScale, currentFrame)
+    },
     onDragEnd(position) {
-      // setCurrentFrame(getGridFrame(timelineScale, position.x))
+      const newCurFrame = getGridFrame(timelineScale, position.x)
+      setCurrentFrame(newCurFrame)
     }
   })
-
-  const style = useMemo(() => {
-    return {
-      left: getGridPixel(timelineScale, currentFrame)
-    }
-  }, [currentFrame, timelineScale])
 
   return (
     <div
       ref={anchorRef}
       style={{
-        ...style,
+        top: TOOLBAR_HEIGHT,
+        left: -Math.floor(TIMELINE_ANCHOR_WIDTH / 2), // 以竖线为基准，所以需要向左偏移一半
         ...draggingStyle
       }}
       className="absolute h-full z-[9999] flex flex-col items-center"
