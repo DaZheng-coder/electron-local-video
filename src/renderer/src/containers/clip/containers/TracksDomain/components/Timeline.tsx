@@ -7,6 +7,7 @@ import {
   CanvasConfig
 } from '@renderer/src/utils/timelineUtils'
 import { TIMELINE_HEIGHT } from '@renderer/src/constants'
+import clipStore from '@renderer/src/stores/clipStore'
 
 interface TimelineProps {
   start?: number
@@ -34,6 +35,7 @@ const Timeline: React.FC<TimelineProps> = ({
     width: 0,
     height: 0
   })
+  const visible = clipStore((state) => state.frameCount > 0)
 
   const canvasConfigs = useMemo(() => {
     const isDark = true
@@ -121,11 +123,14 @@ const Timeline: React.FC<TimelineProps> = ({
     }
   }, [setCanvasRect, setCanvasContext, updateTimeLine])
 
+  const handleSeek = useCallback(() => {}, [])
+
   return (
     <div
       ref={canvasContainerRef}
-      style={{ height: TIMELINE_HEIGHT }}
+      style={{ height: TIMELINE_HEIGHT, visibility: visible ? 'visible' : 'hidden' }}
       className="text-center leading-5 text-sm"
+      onClick={handleSeek}
     >
       <canvas
         ref={timelineRef}

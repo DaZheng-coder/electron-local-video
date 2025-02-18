@@ -12,6 +12,7 @@ const TimelineAnchor = () => {
   const timelineScale = clipStore((state) => state.timelineScale)
   const currentFrame = clipStore((state) => state.currentFrame)
   const frameCount = clipStore((state) => state.frameCount)
+  const visible = clipStore((state) => state.frameCount > 0)
   const setCurrentFrame = clipStore((state) => state.setCurrentFrame)
   const anchorRef = useRef<HTMLDivElement>(null)
 
@@ -33,6 +34,7 @@ const TimelineAnchor = () => {
       style={{
         top: TOOLBAR_HEIGHT,
         left: -Math.floor(TIMELINE_ANCHOR_WIDTH / 2), // 以竖线为基准，所以需要向左偏移一半
+        visibility: visible ? 'visible' : 'hidden',
         ...draggingStyle
       }}
       className="absolute h-full z-[9999] flex flex-col items-center"
