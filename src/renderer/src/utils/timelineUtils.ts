@@ -1,4 +1,6 @@
 import { formatTime } from './index'
+import { Decimal } from 'decimal.js'
+
 export const getTimelineCanvasConfig = (isDark: boolean = false): CanvasConfig => {
   return {
     width: 0, // 画布宽度
@@ -72,31 +74,31 @@ const getGridSize = (scale: number): number => {
 // 获取当前scale下的单元格像素
 export const getGridPixel = (scale: number, frameCount: number) => {
   const gridPixel = getGridSize(scale)
-  let trackWidth = gridPixel * frameCount
+  let trackWidth = new Decimal(gridPixel).times(frameCount)
   if (scale < 70) {
     // 1秒一格
-    trackWidth = trackWidth / 30
+    trackWidth = trackWidth.dividedBy(30)
   }
   if (scale < 30) {
     // 6秒一格
-    trackWidth = trackWidth / 6
+    trackWidth = trackWidth.dividedBy(6)
   }
-  return trackWidth
+  return trackWidth.toNumber()
 }
 // 获取当前scale下的单元格帧数
 export const getGridFrame = (scale: number, width: number) => {
-  let frameCount = width
+  const gridPixel = new Decimal(getGridSize(scale))
+  let factor = new Decimal(1)
+
+  // 逆向还原除法操作
   if (scale < 70) {
-    // 1秒一格
-    frameCount = frameCount * 30
+    factor = factor.times(30)
   }
   if (scale < 30) {
-    // 6秒一格
-    frameCount = frameCount * 6
+    factor = factor.times(6)
   }
-  const gridPixel = getGridSize(scale)
-  frameCount = Math.floor(frameCount / gridPixel)
-  return frameCount
+
+  return new Decimal(width).times(factor).dividedBy(gridPixel).toNumber()
 }
 // 根据缩放比调整 step
 const getStep = (scale: number, frameStep: number): number => {

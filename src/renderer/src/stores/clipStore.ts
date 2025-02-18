@@ -11,6 +11,9 @@ interface IClipStore {
 
   frameCount: number
 
+  currentFrame: number
+  setCurrentFrame: (time: number) => void
+
   selectedCellIds: string[]
   setSelectedCellIds: (cellIds: string[]) => void
   addSelectedId: (cellId: string) => void
@@ -45,6 +48,11 @@ const clipStore = create<IClipStore>((set, get) => ({
   },
 
   frameCount: 0,
+
+  currentFrame: 100,
+  setCurrentFrame: (time: number) => {
+    set({ currentFrame: time })
+  },
 
   selectedCellIds: [],
   setSelectedCellIds: (cellIds: string[]) => {

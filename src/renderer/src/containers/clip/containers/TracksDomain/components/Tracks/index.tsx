@@ -120,7 +120,6 @@ const Tracks = () => {
     if (!containerRef.current) return
     const pixelWidth = getGridPixel(timelineScale, frameCount)
     const minWidth = containerRef.current.clientWidth || 0
-    console.log('*** pixelWidth', pixelWidth, timelineScale)
     setTracksWidth(Math.max(pixelWidth, minWidth))
   }, [timelineScale, frameCount])
 
