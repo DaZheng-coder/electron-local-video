@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import clipStore from '../stores/clipStore'
 import { getGridFrame, getGridPixel } from '../utils/timelineUtils'
+import dragStore from '../stores/dragStore'
 
 type TDragBoundary = {
   minX?: number
@@ -18,6 +19,7 @@ const useAnchorDrag = ({ ref, onDragStart, onDragging, onDragEnd }: IUseNativeDr
   const currentFrame = clipStore((state) => state.currentFrame)
   const frameCount = clipStore((state) => state.frameCount)
   const timelineScale = clipStore((state) => state.timelineScale)
+  const tracksScrollLeft = dragStore((state) => state.tracksScrollLeft)
 
   const [position, setPosition] = useState<{ x: number }>({ x: 0 })
   const [isDragging, setIsDragging] = useState(false)
@@ -49,16 +51,24 @@ const useAnchorDrag = ({ ref, onDragStart, onDragging, onDragEnd }: IUseNativeDr
     [applyBoundary, onDragging]
   )
 
-  // 根据总帧数变化，更新边界
+  // 根据总帧数变化，更新锚点边界
   useEffect(() => {
     setBoundary({ minX: 0, maxX: getGridPixel(timelineScale, frameCount) })
   }, [frameCount, timelineScale])
 
-  // 根据当前帧数变化，更新位置
+  // 根据当前帧数变化，更新锚点位置
   useEffect(() => {
     setPosition({ x: getGridPixel(timelineScale, currentFrame) })
   }, [currentFrame, timelineScale])
 
+  // 根据滚动条变化，更新锚点位置
+  useEffect(() => {
+    setPosition({
+      x: getGridPixel(timelineScale, currentFrame) - tracksScrollLeft
+    })
+  }, [tracksScrollLeft, currentFrame, timelineScale])
+
+  // 锚点跟随鼠标移动
   useEffect(() => {
     if (!ref.current) return
 
