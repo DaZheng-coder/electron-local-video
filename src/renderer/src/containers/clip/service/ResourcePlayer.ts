@@ -20,7 +20,7 @@ class ResourcePlayer {
       name: 'ResourcePlayer',
       url: '',
       autoplay: false, // 自动播放
-      controls: true, // 控制条
+      controls: false, // 控制条
       loop: false, // 循环播放
       keyShortcut: false, // 关闭快捷键
       closeVideoClick: true, // 关闭视频点击

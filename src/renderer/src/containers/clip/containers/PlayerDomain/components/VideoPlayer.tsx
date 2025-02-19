@@ -4,6 +4,9 @@ import { getResourcePath } from '@renderer/src/utils/common'
 
 const test2 = getResourcePath('/Users/zhengjunqin/Downloads/7691d7440d16836d310d5bd78a3d3583.mp4')
 const test1 = getResourcePath('/Users/zhengjunqin/Downloads/飞书20250128-160020.mp4')
+
+const videoCls = 'absolute left-1/2 top-0 bg-black transform -translate-x-1/2'
+
 const VideoPlayer = () => {
   // 16:9 0.5625
   const [activeIndex, setActiveIndex] = useState<number>(0)
@@ -90,18 +93,12 @@ const VideoPlayer = () => {
 
   return (
     <div style={{ paddingBottom: '56.25%' }} className="relative">
-      <div
-        id="player0"
-        ref={player0Dom}
-        style={{ visibility: activeIndex === 0 ? 'visible' : 'hidden' }}
-        className="w-full h-full absolute left-0 top-0 bg-black"
-      />
-      <div
-        id="player1"
-        ref={player1Dom}
-        style={{ visibility: activeIndex === 1 ? 'visible' : 'hidden' }}
-        className="w-full h-full absolute left-0 top-0 bg-white"
-      />
+      <div style={{ opacity: 1 }} className={videoCls}>
+        <div id="player0" ref={player0Dom} />
+      </div>
+      <div style={{ opacity: 0 }} className={videoCls}>
+        <div id="player1" ref={player1Dom} />
+      </div>
     </div>
   )
 }
