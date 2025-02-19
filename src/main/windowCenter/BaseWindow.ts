@@ -77,6 +77,14 @@ class BaseWindow {
   minimize() {
     this._instance?.minimize()
   }
+
+  openDevTools() {
+    this._instance?.webContents.openDevTools()
+  }
+
+  getInstance() {
+    return this._instance
+  }
 }
 
 export default BaseWindow

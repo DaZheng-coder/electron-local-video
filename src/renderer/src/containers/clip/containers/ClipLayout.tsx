@@ -5,7 +5,13 @@ import TracksDomain from './TracksDomain'
 // import { useDrop } from 'react-dnd'
 // import { EDragType } from '@renderer/src/utils/dragUtils'
 import GlobalCustomDragLayer from '../components/GlobalCustomDragLayer'
-import { LAYOUT_TOP_Z_INDEX } from '@renderer/src/constants'
+import {
+  LAYOUT_BOTTOM_AREA_DEFAULT_SIZE,
+  LAYOUT_RESOURCE_POOL_DEFAULT_SIZE,
+  LAYOUT_TOP_AREA_DEFAULT_SIZE,
+  LAYOUT_TOP_Z_INDEX,
+  LAYOUT_VIDEO_PLAYER_DEFAULT_SIZE
+} from '@renderer/src/constants'
 import './index.css'
 import clipStore from '@renderer/src/stores/clipStore'
 
@@ -34,18 +40,18 @@ const ClipLayout: FC = () => {
           style={{
             zIndex: LAYOUT_TOP_Z_INDEX
           }}
-          defaultSize="40%"
+          defaultSize={`${LAYOUT_TOP_AREA_DEFAULT_SIZE}%`}
         >
           <Splitter layout="horizontal">
-            <Splitter.Panel defaultSize="40%">
+            <Splitter.Panel defaultSize={`${LAYOUT_RESOURCE_POOL_DEFAULT_SIZE}%`}>
               <ResourcePool />
             </Splitter.Panel>
-            <Splitter.Panel defaultSize="60%">
+            <Splitter.Panel defaultSize={`${LAYOUT_VIDEO_PLAYER_DEFAULT_SIZE}%`}>
               <div className="rounded-xl bg-[#303030] w-full h-full text-white">VideoPlayer</div>
             </Splitter.Panel>
           </Splitter>
         </Splitter.Panel>
-        <Splitter.Panel className="flex" defaultSize="60%">
+        <Splitter.Panel className="flex" defaultSize={`${LAYOUT_BOTTOM_AREA_DEFAULT_SIZE}%`}>
           <TracksDomain />
         </Splitter.Panel>
       </Splitter>
