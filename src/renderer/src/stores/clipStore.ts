@@ -9,7 +9,7 @@ interface IClipStore {
   timelineScale: number
   setTimelineScale: (scale: number) => void
 
-  frameCount: number
+  frameCount: number // 实际总帧数
 
   currentFrame: number
   setCurrentFrame: (time: number) => void
@@ -81,7 +81,7 @@ const clipStore = create<IClipStore>((set, get) => ({
       const cell = cells[cellId]
       const frameCount = cell.startFrame + cell.frameCount
       if (frameCount > maxFrameCount) {
-        maxFrameCount = frameCount * 1.5 // 插入/更新cell时，更新最大帧数，最大帧数为当前实际帧数的1.5倍
+        maxFrameCount = frameCount // 插入/更新cell时，更新最大帧数
       }
     }
     set({ frameCount: maxFrameCount, cells })

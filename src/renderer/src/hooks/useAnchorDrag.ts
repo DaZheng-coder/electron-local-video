@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import clipStore from '../stores/clipStore'
+import { getGridFrame, getGridPixel } from '../utils/timelineUtils'
 
 type TDragBoundary = {
   minX?: number
@@ -7,24 +9,24 @@ type TDragBoundary = {
 
 interface IUseNativeDrag {
   ref: React.RefObject<HTMLDivElement>
-  initPosition?: { x: number }
-  boundary?: TDragBoundary
   onDragStart?: () => void
   onDragging?: (position: { x: number }) => void
   onDragEnd?: (position: { x: number }) => void
 }
 
-const useAnchorDrag = ({
-  ref,
-  initPosition = { x: 0 },
-  boundary,
-  onDragStart,
-  onDragging,
-  onDragEnd
-}: IUseNativeDrag) => {
-  const [position, setPosition] = useState(initPosition)
+const useAnchorDrag = ({ ref, onDragStart, onDragging, onDragEnd }: IUseNativeDrag) => {
+  const currentFrame = clipStore((state) => state.currentFrame)
+  const frameCount = clipStore((state) => state.frameCount)
+  const timelineScale = clipStore((state) => state.timelineScale)
+
+  const [position, setPosition] = useState<{ x: number }>({ x: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const startXRef = useRef<number>(0)
+  const [boundary, setBoundary] = useState<TDragBoundary>({
+    minX: -Infinity,
+    maxX: Infinity
+  })
+
   // 边界约束计算
   const applyBoundary = useCallback(
     (x: number) => {
@@ -46,6 +48,16 @@ const useAnchorDrag = ({
     },
     [applyBoundary, onDragging]
   )
+
+  // 根据总帧数变化，更新边界
+  useEffect(() => {
+    setBoundary({ minX: 0, maxX: getGridPixel(timelineScale, frameCount) })
+  }, [frameCount, timelineScale])
+
+  // 根据当前帧数变化，更新位置
+  useEffect(() => {
+    setPosition({ x: getGridPixel(timelineScale, currentFrame) })
+  }, [currentFrame, timelineScale])
 
   useEffect(() => {
     if (!ref.current) return

@@ -14,7 +14,7 @@ import CellItemUI from './components/CellItem/CellItemUI'
 import { getGridPixel } from '@renderer/src/utils/timelineUtils'
 import { ICellData } from '@typings/track'
 import { IVideoData } from '@typings/index'
-import { DRAGGING_PREVIEW_CELL_ID } from '@renderer/src/constants'
+import { DRAGGING_PREVIEW_CELL_ID, TRACK_EXCESS_SPACE_MULTIPLES } from '@renderer/src/constants'
 
 const Tracks = () => {
   const [highlightDivider, setHighlightDivider] = useState(-1)
@@ -118,7 +118,7 @@ const Tracks = () => {
 
   useEffect(() => {
     if (!containerRef.current) return
-    const pixelWidth = getGridPixel(timelineScale, frameCount)
+    const pixelWidth = getGridPixel(timelineScale, frameCount * TRACK_EXCESS_SPACE_MULTIPLES) // 预留多0.5倍的空间预览
     const minWidth = containerRef.current.clientWidth || 0
     setTracksWidth(Math.max(pixelWidth, minWidth))
   }, [timelineScale, frameCount])

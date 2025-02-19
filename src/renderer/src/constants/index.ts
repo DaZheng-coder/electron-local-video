@@ -31,3 +31,6 @@ export const PAGE_PADDING = 4
 
 // 工具栏高度
 export const TOOLBAR_HEIGHT = 40
+
+// 轨道多余空间倍数，用于用户预览操作
+export const TRACK_EXCESS_SPACE_MULTIPLES = 1.5

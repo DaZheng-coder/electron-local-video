@@ -5,23 +5,17 @@ import {
 } from '@renderer/src/constants'
 import useAnchorDrag from '@renderer/src/hooks/useAnchorDrag'
 import clipStore from '@renderer/src/stores/clipStore'
-import { getGridFrame, getGridPixel } from '@renderer/src/utils/timelineUtils'
-import { useEffect, useRef } from 'react'
+import { getGridFrame } from '@renderer/src/utils/timelineUtils'
+import { useRef } from 'react'
 
 const TimelineAnchor = () => {
   const timelineScale = clipStore((state) => state.timelineScale)
-  const currentFrame = clipStore((state) => state.currentFrame)
-  const frameCount = clipStore((state) => state.frameCount)
   const visible = clipStore((state) => state.frameCount > 0)
   const setCurrentFrame = clipStore((state) => state.setCurrentFrame)
   const anchorRef = useRef<HTMLDivElement>(null)
 
   const { style: draggingStyle } = useAnchorDrag({
     ref: anchorRef,
-    boundary: { minX: 0, maxX: getGridPixel(timelineScale, frameCount) },
-    initPosition: {
-      x: getGridPixel(timelineScale, currentFrame)
-    },
     onDragEnd(position) {
       const newCurFrame = getGridFrame(timelineScale, position.x)
       setCurrentFrame(newCurFrame)

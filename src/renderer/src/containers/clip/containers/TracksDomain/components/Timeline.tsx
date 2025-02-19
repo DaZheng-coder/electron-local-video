@@ -4,7 +4,8 @@ import {
   drawTimeLine,
   getSelectFrame,
   UserConfig,
-  CanvasConfig
+  CanvasConfig,
+  getGridFrame
 } from '@renderer/src/utils/timelineUtils'
 import { TIMELINE_HEIGHT } from '@renderer/src/constants'
 import clipStore from '@renderer/src/stores/clipStore'
@@ -124,7 +125,17 @@ const Timeline: React.FC<TimelineProps> = ({
     }
   }, [setCanvasRect, setCanvasContext, updateTimeLine])
 
-  const handleSeek = useCallback(() => {}, [])
+  const handleSeek = useCallback(
+    (e) => {
+      const offset = e.nativeEvent.offsetX
+      clipStore.setState({ currentFrame: getGridFrame(scale, start + offset) })
+      // const frameIndex = getSelectFrame(start + offset, scale, step)
+      // if (onSelectFrame) {
+      //   onSelectFrame(frameIndex)
+      // }
+    },
+    [scale, start]
+  )
 
   return (
     <div
