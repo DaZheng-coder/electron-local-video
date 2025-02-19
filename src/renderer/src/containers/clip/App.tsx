@@ -4,6 +4,7 @@ import RenderStoresCenter from '@renderer/src/stores/renderStoresCenter'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import clipStore from '@renderer/src/stores/clipStore'
+import { ConfigProvider } from 'antd'
 
 function App(): JSX.Element {
   useEffect(() => {
@@ -13,7 +14,17 @@ function App(): JSX.Element {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <ClipLayout />
+      <ConfigProvider
+        theme={{
+          components: {
+            Splitter: {
+              splitTriggerSize: 4
+            }
+          }
+        }}
+      >
+        <ClipLayout />
+      </ConfigProvider>
     </DndProvider>
   )
 }

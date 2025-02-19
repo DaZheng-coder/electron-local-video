@@ -14,6 +14,7 @@ import {
 } from '@renderer/src/constants'
 import './index.css'
 import clipStore from '@renderer/src/stores/clipStore'
+import PlayerDomain from './PlayerDomain'
 
 const ClipLayout: FC = () => {
   const setSelectedCellIds = clipStore((state) => state.setSelectedCellIds)
@@ -33,25 +34,31 @@ const ClipLayout: FC = () => {
       <Splitter
         layout="vertical"
         style={{ height: '100vh' }}
-        className="layout-splitter h-screen !p-1 bg-[#141414]"
+        className="layout-splitter !p-1 bg-[#141414]"
       >
         <Splitter.Panel
-          className="bg-[#141414]"
+          className="bg-[#141414] !pb-[2px]"
           style={{
             zIndex: LAYOUT_TOP_Z_INDEX
           }}
           defaultSize={`${LAYOUT_TOP_AREA_DEFAULT_SIZE}%`}
         >
           <Splitter layout="horizontal">
-            <Splitter.Panel defaultSize={`${LAYOUT_RESOURCE_POOL_DEFAULT_SIZE}%`}>
+            <Splitter.Panel
+              className="!pr-[2px]"
+              defaultSize={`${LAYOUT_RESOURCE_POOL_DEFAULT_SIZE}%`}
+            >
               <ResourcePool />
             </Splitter.Panel>
-            <Splitter.Panel defaultSize={`${LAYOUT_VIDEO_PLAYER_DEFAULT_SIZE}%`}>
-              <div className="rounded-xl bg-[#303030] w-full h-full text-white">VideoPlayer</div>
+            <Splitter.Panel
+              className="!pl-[2px]"
+              defaultSize={`${LAYOUT_VIDEO_PLAYER_DEFAULT_SIZE}%`}
+            >
+              <PlayerDomain />
             </Splitter.Panel>
           </Splitter>
         </Splitter.Panel>
-        <Splitter.Panel className="flex" defaultSize={`${LAYOUT_BOTTOM_AREA_DEFAULT_SIZE}%`}>
+        <Splitter.Panel className="!pt-[2px]" defaultSize={`${LAYOUT_BOTTOM_AREA_DEFAULT_SIZE}%`}>
           <TracksDomain />
         </Splitter.Panel>
       </Splitter>

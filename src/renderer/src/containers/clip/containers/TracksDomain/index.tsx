@@ -6,7 +6,7 @@ import TimelineAnchor from './components/TimelineAnchor'
 
 const TracksDomain = () => {
   return (
-    <div className="relative flex-1 flex flex-col bg-[#303030] rounded-xl overflow-hidden text-white">
+    <div className="relative h-full flex flex-col bg-[#303030] rounded-xl overflow-hidden text-white">
       <div
         style={{
           zIndex: LAYOUT_TOOL_Z_INDEX
