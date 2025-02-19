@@ -1,4 +1,3 @@
-import clipStore from '@renderer/src/stores/clipStore'
 import ClipTool from './components/ClipTool'
 import Timeline from './components/Timeline'
 import Tracks from './components/Tracks'

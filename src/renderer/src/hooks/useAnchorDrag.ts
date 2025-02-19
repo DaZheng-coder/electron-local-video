@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import clipStore from '../stores/clipStore'
-import { getGridFrame, getGridPixel } from '../utils/timelineUtils'
+import { getGridPixel } from '../utils/timelineUtils'
 import dragStore from '../stores/dragStore'
 
 type TDragBoundary = {

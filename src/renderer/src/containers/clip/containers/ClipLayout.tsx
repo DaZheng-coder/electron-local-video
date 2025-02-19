@@ -2,8 +2,8 @@ import { FC, useCallback } from 'react'
 import { Splitter } from 'antd'
 import ResourcePool from './ResourcePool'
 import TracksDomain from './TracksDomain'
-import { useDrop } from 'react-dnd'
-import { EDragType } from '@renderer/src/utils/dragUtils'
+// import { useDrop } from 'react-dnd'
+// import { EDragType } from '@renderer/src/utils/dragUtils'
 import GlobalCustomDragLayer from '../components/GlobalCustomDragLayer'
 import { LAYOUT_TOP_Z_INDEX } from '@renderer/src/constants'
 import './index.css'
@@ -12,18 +12,18 @@ import clipStore from '@renderer/src/stores/clipStore'
 const ClipLayout: FC = () => {
   const setSelectedCellIds = clipStore((state) => state.setSelectedCellIds)
 
-  const [collect, dropper] = useDrop({
-    accept: [EDragType.CELL_ITEM, EDragType.MEDIA_CARD],
-    canDrop: (item, monitor) => {},
-    drop: (item, monitor) => {}
-  })
+  // const [collect, dropper] = useDrop({
+  //   accept: [EDragType.CELL_ITEM, EDragType.MEDIA_CARD],
+  //   canDrop: (item, monitor) => {},
+  //   drop: (item, monitor) => {}
+  // })
 
   const clearSelected = useCallback(() => {
     setSelectedCellIds([])
   }, [setSelectedCellIds])
 
   return (
-    <div ref={dropper} onClick={clearSelected}>
+    <div onClick={clearSelected}>
       <Splitter
         layout="vertical"
         style={{ height: '100vh' }}
