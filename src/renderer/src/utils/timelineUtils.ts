@@ -53,23 +53,45 @@ export interface UserConfig {
 }
 // 标尺中每小格代表的宽度(根据scale的不同实时变化)
 const getGridSize = (scale: number): number => {
-  const scaleNum = new Map([
+  const ScaleNum = [
     // 切换比例：最小单位为帧
     [100, 100],
     [90, 50],
     [80, 20],
     [70, 10],
     // 切换比例：最小单位为秒
+    [69, 119],
     [60, 80],
     [50, 40],
     [40, 20],
     [30, 10],
     // 切换比例：最小单位为6秒 一大格为 1分钟
+    [29, 55],
     [20, 40],
     [10, 25],
     [0, 10]
-  ])
-  return scaleNum.get(scale) || 100
+  ]
+
+  // 边界处理
+  if (scale >= ScaleNum[0][0]) return ScaleNum[0][1]
+  if (scale <= ScaleNum[ScaleNum.length - 1][0]) return ScaleNum[ScaleNum.length - 1][1]
+
+  // 查找相邻刻度点
+  let prevIndex = 0
+  for (let i = 0; i < ScaleNum.length - 1; i++) {
+    if (scale <= ScaleNum[i][0] && scale > ScaleNum[i + 1][0]) {
+      prevIndex = i
+      break
+    }
+  }
+
+  // 获取相邻两个刻度点
+  const [x0, y0] = ScaleNum[prevIndex]
+  const [x1, y1] = ScaleNum[prevIndex + 1]
+
+  // 线性插值计算
+  const ratio = (x0 - scale) / (x0 - x1)
+  return y0 + (y1 - y0) * ratio
 }
 
 // 根据时间获取帧数,目前默认是30fps

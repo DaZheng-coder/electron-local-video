@@ -26,14 +26,14 @@ const DZSlider: FC<IDZSliderProps> = (props) => {
         type="text"
         icon={<MinusCircleTwoTone disabled={props.value === props.min} />}
         onClick={onSub}
-        disabled={props.value === props.min}
+        // disabled={props.value === props.min}
       />
       <Slider {...props} />
       <Button
         type="text"
         icon={<PlusCircleTwoTone disabled={props.value === props.max} />}
         onClick={onAdd}
-        disabled={props.value === props.max}
+        // disabled={props.value === props.max}
       />
     </div>
   )
