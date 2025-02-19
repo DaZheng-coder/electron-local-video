@@ -29,7 +29,7 @@ const ResourcePool = () => {
   return (
     <Flex className="h-full bg-[#303030] rounded-xl overflow-hidden">
       <div
-        className="flex-1 h-full"
+        className="flex-1 h-full overflow-scroll"
         ref={ref}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}

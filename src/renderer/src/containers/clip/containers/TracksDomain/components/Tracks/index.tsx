@@ -139,6 +139,10 @@ const Tracks = () => {
     }
   }, [])
 
+  const handleScroll = useCallback((e) => {
+    dragStore.setState({ tracksScrollLeft: e.target.scrollLeft })
+  }, [])
+
   const renderTracks = () => {
     const len = tracks.length
     return tracks.toReversed().map((track, idx) => {
@@ -154,7 +158,11 @@ const Tracks = () => {
 
   return (
     // 轨道容器
-    <div ref={containerRef} className="scrollbar-x-only flex-1 flex flex-col overflow-scroll">
+    <div
+      ref={containerRef}
+      onScroll={handleScroll}
+      className="scrollbar-x-only flex-1 flex flex-col overflow-scroll"
+    >
       {/* 占位元素，用于占据上下空白空间，使轨道保持居中 */}
       <div className="flex-1 min-h-10" />
       <div ref={tracksWrapRef} className="relative" style={{ width: tracksWidth }}>

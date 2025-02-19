@@ -6,7 +6,7 @@ import {
 import useAnchorDrag from '@renderer/src/hooks/useAnchorDrag'
 import clipStore from '@renderer/src/stores/clipStore'
 import { getGridFrame, getGridPixel } from '@renderer/src/utils/timelineUtils'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 const TimelineAnchor = () => {
   const timelineScale = clipStore((state) => state.timelineScale)

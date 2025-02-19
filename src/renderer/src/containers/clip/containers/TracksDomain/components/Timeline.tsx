@@ -8,11 +8,11 @@ import {
 } from '@renderer/src/utils/timelineUtils'
 import { TIMELINE_HEIGHT } from '@renderer/src/constants'
 import clipStore from '@renderer/src/stores/clipStore'
+import dragStore from '@renderer/src/stores/dragStore'
 
 interface TimelineProps {
   start?: number
   step?: number
-  scale?: number // 缩放比例 0 ～ 100
   focusPosition?: {
     start: number
     end: number
@@ -21,12 +21,13 @@ interface TimelineProps {
 }
 
 const Timeline: React.FC<TimelineProps> = ({
-  start = 0,
   step = 30,
-  scale = 0,
   focusPosition = { start: 0, end: 0 },
   onSelectFrame
 }) => {
+  const scale = clipStore((state) => state.timelineScale) // 缩放比例 0 ～ 100
+  const start = dragStore((state) => state.tracksScrollLeft)
+
   const canvasContainerRef = useRef<HTMLDivElement>(null)
   const timelineRef = useRef<HTMLCanvasElement>(null)
   const canvasContextRef = useRef<CanvasRenderingContext2D | null>(null)

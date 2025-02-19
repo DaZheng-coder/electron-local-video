@@ -10,6 +10,9 @@ interface IDragStore {
   selects: IDragSelectItem[]
   setSelects: (selects: IDragSelectItem[]) => void
 
+  tracksScrollLeft: number
+  setTracksScrollLeft: (tracksScrollLeft: number) => void
+
   tracksContainerDomRef: React.RefObject<HTMLDivElement> | null
   setTracksContainerDomRef: (tracksContainerDomRef: React.RefObject<HTMLDivElement>) => void
 
@@ -20,6 +23,9 @@ interface IDragStore {
 const dragStore = create<IDragStore>((set) => ({
   selects: [],
   setSelects: (selects: IDragSelectItem[]) => set({ selects }),
+
+  tracksScrollLeft: 0,
+  setTracksScrollLeft: (tracksScrollLeft: number) => set({ tracksScrollLeft }),
 
   tracksContainerDomRef: null,
   setTracksContainerDomRef: (tracksContainerDomRef: React.RefObject<HTMLDivElement>) =>

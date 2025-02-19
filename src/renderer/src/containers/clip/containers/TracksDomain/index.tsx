@@ -6,8 +6,6 @@ import { LAYOUT_TOOL_Z_INDEX } from '@renderer/src/constants'
 import TimelineAnchor from './components/TimelineAnchor'
 
 const TracksDomain = () => {
-  const timelineScale = clipStore((state) => state.timelineScale)
-
   return (
     <div className="relative flex-1 flex flex-col bg-[#303030] rounded-xl overflow-hidden text-white">
       <div
@@ -17,7 +15,7 @@ const TracksDomain = () => {
         className="flex-shrink-0"
       >
         <ClipTool />
-        <Timeline scale={timelineScale} />
+        <Timeline />
       </div>
       <Tracks />
       <TimelineAnchor />
