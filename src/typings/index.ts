@@ -7,7 +7,7 @@ export enum EMediaType {
 
 export interface IThumbnail {
   path: string
-  base64: string
+  // base64: string
 }
 
 /**

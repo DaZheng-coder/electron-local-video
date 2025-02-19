@@ -3,6 +3,7 @@ import { IThumbnail } from '@typings/index'
 import { Card, Image } from 'antd'
 import { FC } from 'react'
 // import { DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons'
+import { getResourcePath } from '@renderer/src/utils/common'
 
 export interface IMediaCardUIProps {
   title: string
@@ -28,7 +29,7 @@ const MediaCardItemUI: FC<IMediaCardUIProps> = ({
       cover={
         <Image
           style={{ objectFit: 'cover' }}
-          src={thumbnail.base64}
+          src={getResourcePath(thumbnail.path)}
           width={120}
           height={80}
           fallback={DEFAULT_IMAGE}

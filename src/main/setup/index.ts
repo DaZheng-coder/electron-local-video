@@ -1,4 +1,5 @@
 import ResourceStore from '../electronStores/ResourceStore'
+import { registerResourceProtocol } from '../protocol/resourcesAccess'
 import WindowCenter from '../windowCenter'
 
 function setup() {
@@ -22,6 +23,9 @@ function setup() {
     mode: import.meta.env.MODE // development, production
   }
   console.log('mode:', global.env.mode)
+
+  // 5.注册资源访问协议
+  registerResourceProtocol()
 }
 
 export default setup

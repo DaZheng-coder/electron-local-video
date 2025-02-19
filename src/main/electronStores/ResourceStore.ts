@@ -42,8 +42,8 @@ class ResourceStore extends BaseStore {
     let resourceData: IBaseMediaData = {
       id,
       thumbnail: {
-        path: '',
-        base64: ''
+        path: ''
+        // base64: ''
       },
       title,
       path: filepath,
@@ -59,8 +59,8 @@ class ResourceStore extends BaseStore {
 
       resourceData = merge(resourceData, metaData, {
         thumbnail: {
-          path: imagePath,
-          base64: this.getBase64Image(imagePath)
+          path: imagePath
+          // base64: this.getBase64Image(imagePath)
         }
       })
     }
