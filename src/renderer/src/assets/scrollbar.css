@@ -1,0 +1,68 @@
+/* 滚动条样式 */
+.scrollbar-macos {
+  --scrollbar-size: 8px;
+  --scrollbar-thumb-color: rgba(0, 0, 0, 0.2);
+  --scrollbar-thumb-hover-color: rgba(0, 0, 0, 0.35);
+  --scrollbar-track-color: transparent;
+
+  /* Firefox 基础样式 */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+
+  /* 隐藏默认滚动条（仅限WebKit） */
+  &::-webkit-scrollbar {
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+    background: var(--scrollbar-track-color);
+  }
+
+  /* 滚动条轨道 */
+  &::-webkit-scrollbar-track {
+    background: var(--scrollbar-track-color);
+    border-radius: 4px;
+  }
+
+  /* 滚动条滑块 */
+  &::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-color);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  /* 悬停状态 */
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover-color);
+  }
+
+  /* 自动隐藏逻辑 */
+  &:not(:hover)::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-color);
+  }
+}
+
+/* 暗黑模式适配 */
+@media (prefers-color-scheme: dark) {
+  .scrollbar-macos {
+    --scrollbar-thumb-color: rgba(255, 255, 255, 0.2);
+    --scrollbar-thumb-hover-color: rgba(255, 255, 255, 0.35);
+  }
+}
+
+.scrollbar-x-only {
+  overflow-x: auto; /* 允许水平滚动 */
+  overflow-y: hidden; /* 隐藏垂直滚动条 */
+}
+
+.scrollbar-y-only {
+  overflow-x: hidden; /* 隐藏水平滚动条 */
+  overflow-y: auto; /* 允许垂直滚动 */
+}
+
+.scrollbar-hidden {
+  scrollbar-width: none; /* 隐藏滚动条 */
+}

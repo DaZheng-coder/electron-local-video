@@ -12,7 +12,6 @@ import {
   LAYOUT_TOP_Z_INDEX,
   LAYOUT_VIDEO_PLAYER_DEFAULT_SIZE
 } from '@renderer/src/constants'
-import './index.css'
 import clipStore from '@renderer/src/stores/clipStore'
 import PlayerDomain from './PlayerDomain'
 

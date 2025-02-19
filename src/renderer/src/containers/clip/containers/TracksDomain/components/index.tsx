@@ -6,7 +6,7 @@ import {
   getDraggingInTracksResult
 } from '@renderer/src/utils/dragUtils'
 import clipStore from '@renderer/src/stores/clipStore'
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import TrackDivider from './Tracks/components/TrackDivider'
 import dragStore from '@renderer/src/stores/dragStore'
 import { IDragItem, IPreviewCellData } from '@renderer/src/types'

@@ -5,6 +5,7 @@ import useNativeDrop from '@renderer/src/hooks/useNativeDrop'
 import resourceStore from '@renderer/src/stores/resourceStore'
 import { EMediaType } from '@typings/index'
 import { DeleteOutlined } from '@ant-design/icons'
+import '@renderer/src/assets/scrollbar.css'
 
 const ResourcePool = () => {
   const ref = useRef<HTMLDivElement | null>(null)
@@ -29,7 +30,7 @@ const ResourcePool = () => {
   return (
     <Flex className="h-full bg-[#303030] rounded-xl overflow-hidden">
       <div
-        className="flex-1 h-full overflow-scroll"
+        className="flex-1 h-full scrollbar-y-only"
         ref={ref}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}

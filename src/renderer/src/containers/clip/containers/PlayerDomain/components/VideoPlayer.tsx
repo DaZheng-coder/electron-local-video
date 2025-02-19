@@ -93,13 +93,13 @@ const VideoPlayer = () => {
       <div
         id="player0"
         ref={player0Dom}
-        style={{ opacity: activeIndex === 0 ? 1 : 0 }}
+        style={{ visibility: activeIndex === 0 ? 'visible' : 'hidden' }}
         className="w-full h-full absolute left-0 top-0 bg-black"
       />
       <div
         id="player1"
         ref={player1Dom}
-        style={{ opacity: activeIndex === 1 ? 1 : 0 }}
+        style={{ visibility: activeIndex === 1 ? 'visible' : 'hidden' }}
         className="w-full h-full absolute left-0 top-0 bg-white"
       />
     </div>

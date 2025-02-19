@@ -15,6 +15,7 @@ import { getGridPixel } from '@renderer/src/utils/timelineUtils'
 import { ICellData } from '@typings/track'
 import { IVideoData } from '@typings/index'
 import { DRAGGING_PREVIEW_CELL_ID, TRACK_EXCESS_SPACE_MULTIPLES } from '@renderer/src/constants'
+import '@renderer/src/assets/scrollbar.css'
 
 const Tracks = () => {
   const [highlightDivider, setHighlightDivider] = useState(-1)
@@ -161,7 +162,7 @@ const Tracks = () => {
     <div
       ref={containerRef}
       onScroll={handleScroll}
-      className="scrollbar-x-only flex-1 flex flex-col overflow-scroll"
+      className="scrollbar-macos scrollbar-x-only scrollbar-x-only scrollbar-thumb-gray-900 scrollbar-track-gray-100 flex-1 flex flex-col overflow-scroll"
     >
       {/* 占位元素，用于占据上下空白空间，使轨道保持居中 */}
       <div className="flex-1 min-h-10" />
