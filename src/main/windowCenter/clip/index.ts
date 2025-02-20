@@ -1,8 +1,7 @@
-import { ipcMain, screen } from 'electron'
+import { screen } from 'electron'
 import { BaseWindowOptions } from '../../types'
 import BaseWindow from '../BaseWindow'
 import path from 'path'
-import { EMediaToolChannels } from '../../../typings/store'
 import MediaTool from '../../mediaTool'
 import { staticPath } from '../../staticPath'
 
@@ -10,7 +9,7 @@ function CreateClipWindow() {
   const size = screen.getPrimaryDisplay().workAreaSize
   // const screenWidth = size.width
   // const screenHeight = size.height
-  const screenWidth = 1200
+  const screenWidth = 900
   const screenHeight = 800
   const options: BaseWindowOptions = {
     name: 'clip',
