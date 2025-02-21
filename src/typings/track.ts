@@ -5,11 +5,10 @@ export interface ITrackData {
 export interface ICellData {
   cellId: string
   trackId: string // 轨道id
-  startFrame: number // 起始帧数
-  frameCount: number // 当前总帧数
+  startFrame: number // 在轨道的起始帧数/起始位置
+  frameCount: number // 当前总帧数/当前显示的总帧数
   resourceId: string // 资源id
-  selfStartTime: number // 自身开始时间
-  selfEndTime: number // 自身结束时间
+  selfStartFrame: number // 自身开始帧数
 }
 
 export interface IPlayItem {

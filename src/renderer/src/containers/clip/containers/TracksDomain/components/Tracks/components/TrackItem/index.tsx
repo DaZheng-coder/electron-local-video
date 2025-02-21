@@ -20,7 +20,9 @@ const TrackItem: FC<ITrackItemProps> = ({ trackId, trackIndex }) => {
       style={{ height: TRACK_HEIGHT }}
       className="w-full bg-[#3B3B3B] rounded-[6px] relative"
     >
-      {trackData?.cellIds.map((cellId) => <CellItem key={cellId} cellId={cellId} />)}
+      {trackData?.cellIds.map((cellId) => (
+        <CellItem key={cellId} cellId={cellId} trackIndex={trackIndex} />
+      ))}
     </div>
   )
 }

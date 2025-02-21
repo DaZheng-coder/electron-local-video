@@ -27,7 +27,21 @@ export const getCellDataByVideoData = (videoData: IVideoData) => {
     trackId: '',
     startFrame: 0,
     frameCount: videoData.frameCount,
-    resourceId: videoData.id
+    resourceId: videoData.id,
+    selfStartFrame: 0
+  }
+}
+
+export const getNearByCell = (cellId: string, trackIndex: number) => {
+  const tracks = clipStore.getState().tracks
+  const cells = clipStore.getState().cells
+  const track = tracks[trackIndex]
+  const trackCells = track.cellIds.sort((a, b) => cells[a].startFrame - cells[b].startFrame)
+  const index = trackCells.findIndex((id) => id === cellId)
+  const len = trackCells.length
+  return {
+    prevCell: index - 1 < 0 ? null : cells[trackCells[index - 1]],
+    nextCell: index + 1 >= len ? null : cells[trackCells[index + 1]]
   }
 }
 

@@ -7,7 +7,9 @@ export const HANDLER_WIDTH_BOTTOM_RIGHT = 15 // 右下角手柄宽度
 
 export interface IResizableDivProps extends PropsWithChildren {
   options: IResizableOptions
-  onResize?: (dimensions: IDimensions, trigger) => void
+  onResizeStart?: (trigger: TTrigger) => void
+  onResize?: (dimensions: IDimensions, trigger: TTrigger) => void
+  onResizeEnd?: (trigger: TTrigger) => void
 }
 
 export interface IResizableOptions {
@@ -27,7 +29,13 @@ export interface IDimensions {
 
 export type TTrigger = 'left' | 'right' | 'bottom' | 'rightBottom' | undefined // 触发调整的手柄类型
 
-function ResizableDiv({ children, options, onResize }: IResizableDivProps) {
+function ResizableDiv({
+  children,
+  options,
+  onResize,
+  onResizeStart,
+  onResizeEnd
+}: IResizableDivProps) {
   const [isResizing, setIsResizing] = useState<boolean>(false)
   const [startPos, setStartPos] = useState<XYCoord>({ x: 0, y: 0 }) // 鼠标按下时的坐标
   const [startDim, setStartDim] = useState<IDimensions>({ width: 0, height: 0, left: 0 }) // 鼠标按下时的尺寸
@@ -43,8 +51,10 @@ function ResizableDiv({ children, options, onResize }: IResizableDivProps) {
 
       // 防止文本选中
       document.body.style.userSelect = 'none'
+
+      onResizeStart?.(trigger)
     },
-    [options]
+    [options, onResizeStart]
   )
 
   // 处理鼠标移动
@@ -92,7 +102,9 @@ function ResizableDiv({ children, options, onResize }: IResizableDivProps) {
     setIsResizing(false)
     setTrigger(undefined)
     document.body.style.userSelect = ''
-  }, [])
+
+    onResizeEnd?.(trigger)
+  }, [onResizeEnd, trigger])
 
   // 添加全局事件监听
   useEffect(() => {

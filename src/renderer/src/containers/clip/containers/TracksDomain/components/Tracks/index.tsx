@@ -82,7 +82,8 @@ const Tracks = () => {
                 startFrame: result.startFrame,
                 frameCount: result.frameCount,
                 trackId: newTrack.trackId,
-                resourceId: (item.data as IVideoData).id
+                resourceId: (item.data as IVideoData).id,
+                selfStartFrame: 0
               },
               newTrack.trackId
             )
@@ -103,7 +104,8 @@ const Tracks = () => {
                 startFrame: result.startFrame,
                 frameCount: result.frameCount,
                 trackId: tracks[result.insertTrackIndex].trackId,
-                resourceId: (item.data as IVideoData).id
+                resourceId: (item.data as IVideoData).id,
+                selfStartFrame: 0
               },
               tracks[result.insertTrackIndex].trackId
             )
