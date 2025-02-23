@@ -67,11 +67,16 @@ class MediaTool {
           // 获取时长
           const duration = Number(metadata.format.duration) || videoInfo.duration
 
+          console.log('*** duration', duration)
+
           // 计算总帧数
-          let frameCount = videoInfo.nb_frames
-          if (!frameCount && duration && fps) {
-            frameCount = Math.round(duration * fps)
-          }
+          // let frameCount = videoInfo.nb_frames
+          // if (!frameCount && duration && fps) {
+          //   frameCount = Math.round(duration * fps)
+          // }
+          const frameCount = Math.round(duration * fps)
+
+          console.log('*** frameCount', frameCount)
 
           const videoMetadata: IVideoMetadata = {
             videoInfo,

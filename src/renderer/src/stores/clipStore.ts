@@ -3,7 +3,7 @@ import { create } from 'zustand'
 import { v4 as uuid } from 'uuid'
 import { sortMainTrackCells } from '../utils/clipUtils'
 
-interface IClipStore {
+export interface IClipStore {
   init: () => void
 
   timelineScale: number

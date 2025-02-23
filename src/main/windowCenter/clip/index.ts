@@ -18,7 +18,9 @@ function CreateClipWindow() {
     height: screenHeight,
     // resizable: false,
     webPreferences: {
-      preload: path.join(__dirname, '../preload/clip.js')
+      preload: path.join(__dirname, '../preload/clip.js'),
+      nodeIntegration: true,
+      webSecurity: false
     }
   }
   const clipWindow = new BaseWindow(options)

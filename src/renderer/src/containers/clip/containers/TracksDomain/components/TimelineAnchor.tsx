@@ -6,7 +6,8 @@ import {
 import useAnchorDrag from '@renderer/src/hooks/useAnchorDrag'
 import clipStore from '@renderer/src/stores/clipStore'
 import { getGridFrame } from '@renderer/src/utils/timelineUtils'
-import { useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
+import { previewCurrentCell } from '@renderer/src/utils/playUtils'
 
 const TimelineAnchor = () => {
   const timelineScale = clipStore((state) => state.timelineScale)
@@ -14,12 +15,23 @@ const TimelineAnchor = () => {
   const setCurrentFrame = clipStore((state) => state.setCurrentFrame)
   const anchorRef = useRef<HTMLDivElement>(null)
 
-  const { style: draggingStyle } = useAnchorDrag({
-    ref: anchorRef,
-    onDragEnd(position) {
+  const handleDrag = useCallback(
+    (position) => {
+      console.log('*** ')
       const newCurFrame = getGridFrame(timelineScale, position.x)
       setCurrentFrame(newCurFrame)
-    }
+      requestAnimationFrame(() => {
+        console.log('*** in')
+        previewCurrentCell(newCurFrame)
+      })
+    },
+    [setCurrentFrame, timelineScale]
+  )
+
+  const { style: draggingStyle } = useAnchorDrag({
+    ref: anchorRef,
+    onDragging: handleDrag,
+    onDragEnd: handleDrag
   })
 
   return (

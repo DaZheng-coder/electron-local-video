@@ -45,29 +45,29 @@ export const getNearByCell = (cellId: string, trackIndex: number) => {
   }
 }
 
-// /**
-//  * 通过当前帧获取当前帧所在的cell
-//  * @param frame
-//  * @param tracks
-//  */
-// export const getCellByCurrentFrame = (currentFrame: number) => {
-//   const tracks = clipStore.getState().tracks
-//   const cells = clipStore.getState().cells
-//   for (let i = tracks.length - 1; i >= 0; i--) {
-//     const track = tracks[i]
-//     for (let j = 0; j < track.cellIds.length; j++) {
-//       const cell = cells[track.cellIds[j]]
-//       if (cell.startFrame <= currentFrame && cell.startFrame + cell.frameCount > currentFrame) {
-//         return cell
-//       }
-//     }
-//   }
-//   return null
-// }
+/**
+ * 通过当前帧获取当前帧所在的cell
+ * @param frame
+ * @param tracks
+ */
+export const getCellByCurrentFrame = (currentFrame: number) => {
+  const tracks = clipStore.getState().tracks
+  const cells = clipStore.getState().cells
+  for (let i = tracks.length - 1; i >= 0; i--) {
+    const track = tracks[i]
+    for (let j = 0; j < track.cellIds.length; j++) {
+      const cell = cells[track.cellIds[j]]
+      if (cell.startFrame <= currentFrame && cell.startFrame + cell.frameCount > currentFrame) {
+        return cell
+      }
+    }
+  }
+  return null
+}
 
-// export const getTimeByFrame = (frame: number, fps: number = 30) => {
-//   return frame / fps
-// }
+export const getTimeByFrame = (frame: number, fps: number = 30) => {
+  return frame / fps
+}
 
 // export const getPlayCellQueue = (tracks: string[][], cells: IPlayItem[]) => {
 //   // 创建cellId到track优先级的映射（track索引越高优先级越高）
