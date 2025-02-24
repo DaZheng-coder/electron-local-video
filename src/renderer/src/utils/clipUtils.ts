@@ -69,6 +69,10 @@ export const getTimeByFrame = (frame: number, fps: number = 30) => {
   return frame / fps
 }
 
+export const getFrameByTime = (frameCount: number, fps: number = 30) => {
+  return frameCount * fps
+}
+
 // export const getPlayCellQueue = (tracks: string[][], cells: IPlayItem[]) => {
 //   // 创建cellId到track优先级的映射（track索引越高优先级越高）
 //   const cellPriorityMap = new Map<string, number>()

@@ -102,6 +102,7 @@ const Timeline: React.FC<TimelineProps> = ({
     }
   }
 
+  // 窗口变化时，重新计算画布尺寸
   useEffect(() => {
     setCanvasRect()
     window.addEventListener('resize', setCanvasRect)
@@ -110,10 +111,12 @@ const Timeline: React.FC<TimelineProps> = ({
     }
   }, [setCanvasRect])
 
+  // 画布参数变化时，重新绘制画布
   useEffect(() => {
     updateTimeLine()
   }, [canvasConfigs, updateTimeLine])
 
+  // 初始化时，设置画布参数
   useEffect(() => {
     if (initSizeRef.current) {
       setTimeout(() => {

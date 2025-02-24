@@ -100,7 +100,6 @@ export const getFrameCountByDuration = (duration: number, fps: number = 30): num
 }
 // 获取当前scale下的单元格像素
 export const getGridPixel = (scale: number, frameCount: number) => {
-  console.log('*** frameCount', frameCount)
   const gridPixel = getGridSize(scale)
   let trackWidth = new Decimal(gridPixel).times(frameCount)
   if (scale < 70) {
